@@ -10,8 +10,8 @@ MAX_SNIPPET_SIZE = 20
 MIN_SNIPPET_SIZE = 2
 
 
-def generate_snippets(file_name, preferred_length=None, coverage=1.0):
-  with open(file_name) as file_:
+def generate_snippets(path, preferred_length=None, coverage=1.0):
+  with open(path) as file_:
     lines = file_.readlines()
 
   current_coverage = 0.0
