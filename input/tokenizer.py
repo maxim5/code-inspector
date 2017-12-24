@@ -3,6 +3,7 @@
 __author__ = 'maxim'
 
 
+import enum
 import string
 
 
@@ -51,8 +52,13 @@ def tokenize_by_lexems(text):
     yield text[prev:]
 
 
-def tokenize(text, mode=True):
-  if mode:
+class Mode(enum.Enum):
+  BY_CHAR = 0
+  BY_LEXEM = 1
+
+
+def tokenize(text, mode=Mode.BY_LEXEM):
+  if mode == Mode.BY_LEXEM:
     return tokenize_by_lexems(text)
   else:
     return tokenize_by_char(text)
