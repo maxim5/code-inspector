@@ -3,24 +3,90 @@
 __author__ = 'maxim'
 
 
-import data_provider as data
+from collections import deque
+import numpy as np
+import os
+
+import snippets
 import tokenizer
 import vocab
 
 
-def build_vocab(data_dir, mode=tokenizer.Mode.BY_LEXEM, min_count=0):
-  def token_stream():
-    for path, lang in data.list_all_data_files(data_dir):
-      with open(path) as file_:
-        content = file_.read()
-      for token in tokenizer.tokenize(content, mode):
-        yield token
-      print('File %s done' % path)
+def list_all_data_files(data_dir):
+  return [
+    (os.path.join(data_dir, lang, file_name), lang)
+    for lang in (os.listdir(data_dir))
+    for file_name in os.listdir(os.path.join(data_dir, lang))
+  ]
 
-  print('Building vocabulary')
-  return vocab.build_vocab(token_stream(), min_count)
+
+class DataProvider(object):
+  def __init__(self, data_dir, mode=tokenizer.Mode.BY_LEXEM):
+    self._data_dir = data_dir
+    self._all_files = list_all_data_files(data_dir)
+    self._mode = mode
+
+
+  def build(self, min_vocab_count=0):
+    self._labels = self._build_labels_vocab()
+    self._vocab = self._build_main_vocab(min_vocab_count)
+
+
+  def _build_main_vocab(self, min_vocab_count):
+    def token_stream():
+      for path, lang in self._all_files:
+        with open(path) as file_:
+          content = file_.read()
+        for token in tokenizer.tokenize(content, self._mode):
+          yield token
+        print('File %s done' % path)
+
+    print('Building vocabulary')
+    return vocab.build_vocab(token_stream(), min_vocab_count)
+
+
+  def _build_labels_vocab(self):
+    langs = set(lang for path, lang in self._all_files)
+    return vocab.build_vocab(langs, min_count=0)
+
+
+  def stream_data(self, batch_size, snippet_coverage=1.0, parallel_stream=2, max_size=1000):
+    files_queue = deque(self._all_files)
+    np.random.shuffle(files_queue)
+
+    streamers = deque()
+    while files_queue:
+      while len(streamers) < parallel_stream and files_queue:
+        path, lang = files_queue.popleft()
+        streamer = snippets.generate_snippets(path, coverage=snippet_coverage)
+        streamers.append((streamer, path, lang))
+
+      # Generate the next batch
+      batch_x = np.zeros([batch_size, max_size], dtype=np.int32)
+      batch_y = np.zeros([batch_size], dtype=np.int32)
+      batch_len = np.zeros([batch_size], dtype=np.int32)
+      i = 0
+      while streamers and i < batch_size:
+        streamer_idx = np.random.randint(len(streamers))
+        streamer, path, lang = streamers[streamer_idx]
+        snippet = next(streamer, None)
+
+        if snippet is None:
+          del streamers[streamer_idx]
+        else:
+          x, len_ = vocab.encode(snippet, self._vocab, max_size)
+          batch_x[i, :] = x
+          batch_y[i] = self._labels.token_to_idx[lang]
+          batch_len[i] = len_
+          i += 1
+      yield batch_x, batch_y, batch_len
 
 
 if __name__ == '__main__':
-  token_to_idx, idx_to_token = build_vocab('../data', min_count=20)
-  print(idx_to_token)
+  provider = DataProvider('../data')
+  provider.build(min_vocab_count=20)
+  for batch_x, batch_y, batch_len in provider.stream_data(batch_size=2, max_size=10):
+    print(batch_x)
+    print(batch_y)
+    print(batch_len)
+    print('-----')
