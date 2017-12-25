@@ -24,12 +24,25 @@ class DataProvider(object):
   def __init__(self, data_dir, mode=tokenizer.Mode.BY_LEXEM):
     self._data_dir = data_dir
     self._all_files = list_all_data_files(data_dir)
+    # TODO: split to test and train
     self._mode = mode
+    self._labels = None
+    self._vocab = None
 
 
   def build(self, min_vocab_count=0):
     self._labels = self._build_labels_vocab()
     self._vocab = self._build_main_vocab(min_vocab_count)
+
+
+  @property
+  def vocab_size(self):
+    return len(self._vocab.token_to_idx)
+
+
+  @property
+  def classes(self):
+    return len(self._labels.token_to_idx)
 
 
   def _build_main_vocab(self, min_vocab_count):
@@ -50,13 +63,15 @@ class DataProvider(object):
     return vocab.build_vocab(langs, min_count=0)
 
 
-  def stream_data(self, batch_size, snippet_coverage=1.0, parallel_stream=2, max_size=1000):
+  def stream_data(self, batch_size, snippet_coverage=1.0, parallel_streams=5, max_size=1000):
+    assert self._labels is not None and self._vocab is not None, 'Call `build()` method must be called first'
+
     files_queue = deque(self._all_files)
     np.random.shuffle(files_queue)
 
     streamers = deque()
     while files_queue:
-      while len(streamers) < parallel_stream and files_queue:
+      while len(streamers) < parallel_streams and files_queue:
         path, lang = files_queue.popleft()
         streamer = snippets.generate_snippets(path, coverage=snippet_coverage)
         streamers.append((streamer, path, lang))
