@@ -7,9 +7,9 @@ from collections import deque
 import numpy as np
 import os
 
-import snippets
-import tokenizer
-import vocab
+from . import snippets
+from . import tokenizer
+from . import vocab
 
 
 def list_all_data_files(data_dir):
