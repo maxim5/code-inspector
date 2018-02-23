@@ -39,5 +39,5 @@ def encode(text, vocabulary, max_size=None):
 def decode(text, length, vocabulary):
   result = []
   for idx in text[:length]:
-    result.append(vocabulary.idx_to_token[idx])
+    result.append(vocabulary.idx_to_token.get(idx, '{?}'))
   return ''.join(result)
