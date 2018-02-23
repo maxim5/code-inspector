@@ -94,8 +94,8 @@ class DataProvider(object):
 
 
   def stream_data(self, batch_size, files=Files.TRAIN,
-                  snippet_coverage=1.0, snippet_min_lines=5, snippet_max_lines=20,
-                  parallel_streams=5, max_tokens=1000):
+                  snippet_coverage=1.0, snippet_min_lines=3, snippet_max_lines=20,
+                  parallel_streams=10, max_tokens=2000):
     assert self._labels is not None and self._vocab is not None, \
       'Call `build()` method must be called first'
 
