@@ -50,8 +50,8 @@ def random_snippet(lines, length):
 
 
 if __name__ == '__main__':
-  file_name = 'data/java/Arrays.java'
-  file_name = 'data/c/hexagon_controller.c'
+  file_name = '../data/java/Arrays.java'
+  file_name = '../data/c/hexagon_controller.c'
   for snippet in generate_snippets(file_name, coverage=2.0):
     print(snippet)
     print('----------------------------------------------------')
