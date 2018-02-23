@@ -39,7 +39,7 @@ def indent(line):
 
 
 def random_snippet(lines, length):
-  for i in range(8):
+  for i in range(10):
     snippet = random_window(lines, length)
     if not is_low_quality(snippet):
       break
