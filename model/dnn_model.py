@@ -40,8 +40,9 @@ x = tf.placeholder(shape=[None, vocab_size], dtype=tf.float32, name='x')
 y = tf.placeholder(shape=[None], dtype=tf.int32, name='y')
 training = tf.placeholder_with_default(False, shape=[], name='training')
 
-hidden1 = tf.layers.dense(x, 128, activation=tf.nn.relu, name='hidden1')
-dropout1 = tf.layers.dropout(hidden1, rate=0.1, training=training, name='dropout1')
+reg = tf.contrib.layers.l2_regularizer(0.01)
+hidden1 = tf.layers.dense(x, units=96, kernel_regularizer=reg, activation=tf.nn.elu, name='hidden1')
+dropout1 = tf.layers.dropout(hidden1, rate=0.2, training=training, name='dropout1')
 
 logits = tf.layers.dense(dropout1, classes, activation=tf.nn.relu, name='logits')
 loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y))
