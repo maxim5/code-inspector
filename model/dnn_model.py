@@ -45,9 +45,9 @@ dropout1 = tf.layers.dropout(hidden1, rate=0.1, training=training, name='dropout
 
 logits = tf.layers.dense(dropout1, classes, activation=tf.nn.relu, name='logits')
 loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y))
-prediction = tf.argmax(logits, 1)
-correct_predicted = tf.nn.in_top_k(logits, y, 1, name='top-1')
-wrong_predicted = tf.logical_not(correct_predicted, name='not-top-1')
+prediction = tf.argmax(logits, axis=1)
+correct_predicted = tf.nn.in_top_k(logits, y, 1, name='in-top-k')
+wrong_predicted = tf.logical_not(correct_predicted, name='not-in-top-k')
 x_misclassified = tf.boolean_mask(x, wrong_predicted, name='misclassified')
 accuracy = tf.reduce_mean(tf.cast(correct_predicted, tf.float32), name='accuracy')
 
@@ -86,7 +86,7 @@ top_saver = tf.train.Saver(max_to_keep=3)
 writer = tf.summary.FileWriter(summary_path, tf.get_default_graph())
 
 def train_loop():
-  for batch_x, batch_y, batch_len in provider.stream_data(batch_size=512, files=Files.TRAIN):
+  for batch_x, batch_y, batch_len in provider.stream_data(batch_size=1024, files=Files.TRAIN):
     train_step(batch_x, batch_y)
 
 def train_step(batch_x, batch_y):
@@ -111,13 +111,15 @@ def predict(files):
     all_acc.append(acc)
 
   mean_accuracy = np.mean(all_acc)
-  print(files, 'mean accuracy = %.5f' % mean_accuracy)
-
+  marker = ''
   global current_top_accuracy
   if files == Files.VAL and mean_accuracy > current_top_accuracy:
     current_top_accuracy = mean_accuracy
+    marker = ' !!!'
     step = sess.run(global_step)
     top_saver.save(sess, os.path.join(top_ckpt_path, 'top-%.5f' % mean_accuracy), step)
+
+  print(files, 'mean accuracy = %.5f%s' % (mean_accuracy, marker))
 
 def explore(files):
   for batch_x, batch_y, batch_len in provider.stream_data(batch_size=100, files=files):
@@ -157,4 +159,4 @@ with tf.Session() as sess:
     train_loop()
     writer.flush()
     predict(Files.VAL)
-    predict(Files.TEST)
+  predict(Files.TEST)
