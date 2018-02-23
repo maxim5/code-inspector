@@ -27,7 +27,7 @@ def generate_snippets(path, preferred_length=None, coverage=1.0):
 
 def random_window(lines, length):
   total_lines = len(lines)
-  if total_lines < length:
+  if total_lines <= length:
     return lines
 
   start = np.random.randint(total_lines - length)
