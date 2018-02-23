@@ -4,6 +4,7 @@ __author__ = 'maxim'
 
 
 from collections import deque
+import enum
 import numpy as np
 import os
 
@@ -17,19 +18,34 @@ else:
   from . import vocab
 
 
-def list_all_data_files(data_dir):
-  return [
-    (os.path.join(data_dir, lang, file_name), lang)
+def get_all_files(data_dir):
+  return {
+    lang: [os.path.join(data_dir, lang, file_name)
+           for file_name in os.listdir(os.path.join(data_dir, lang))]
     for lang in (os.listdir(data_dir))
-    for file_name in os.listdir(os.path.join(data_dir, lang))
-  ]
+  }
+
+
+class Files(enum.Enum):
+  TRAIN = 0
+  VAL = 1
+  TEST = 2
 
 
 class DataProvider(object):
   def __init__(self, data_dir, mode=tokenizer.Mode.BY_LEXEM):
     self._data_dir = data_dir
-    self._all_files = list_all_data_files(data_dir)
-    # TODO: split to test and train
+
+    all_files = get_all_files(data_dir)
+    self._train_files, self._val_files, self._test_files = [], [], []
+    for lang, files in all_files.items():
+      n = len(files)
+      val_idx, test_idx = int(n * 0.7), int(n * 0.8)
+      self._train_files += [(path, lang) for path in files[:val_idx]]
+      self._val_files += [(path, lang) for path in files[val_idx:test_idx]]
+      self._test_files += [(path, lang) for path in files[test_idx:]]
+    self._vocab_files = self._train_files + self._val_files
+
     self._mode = mode
     self._labels = None
     self._vocab = None
@@ -50,9 +66,18 @@ class DataProvider(object):
     return len(self._labels.token_to_idx)
 
 
+  def get_files(self, files):
+    if files == Files.TRAIN:
+      return self._train_files
+    if files == Files.VAL:
+      return self._val_files
+    if files == Files.TEST:
+      return self._test_files
+
+
   def _build_main_vocab(self, min_vocab_count):
     def token_stream():
-      for path, lang in self._all_files:
+      for path, lang in self._vocab_files:
         with open(path) as file_:
           content = file_.read()
         for token in tokenizer.tokenize(content, self._mode):
@@ -64,17 +89,17 @@ class DataProvider(object):
 
 
   def _build_labels_vocab(self):
-    langs = set(lang for path, lang in self._all_files)
+    langs = set(lang for path, lang in self._vocab_files)
     return vocab.build_vocab(langs, min_count=0)
 
 
-  def stream_data(self, batch_size,
+  def stream_data(self, batch_size, files=Files.TRAIN,
                   snippet_coverage=1.0, snippet_min_lines=5, snippet_max_lines=20,
                   parallel_streams=5, max_tokens=1000):
     assert self._labels is not None and self._vocab is not None, \
       'Call `build()` method must be called first'
 
-    files_queue = deque(self._all_files)
+    files_queue = deque(self.get_files(files))
     np.random.shuffle(files_queue)
 
     streamers = deque()
