@@ -6,11 +6,7 @@ import itertools
 import numpy as np
 
 
-MAX_SNIPPET_SIZE = 20
-MIN_SNIPPET_SIZE = 2
-
-
-def generate_snippets(path, preferred_length=None, coverage=1.0):
+def generate_snippets(path, preferred_length=None, coverage=1.0, min_lines=1, max_lines=100):
   with open(path) as file_:
     lines = file_.readlines()
 
@@ -19,7 +15,7 @@ def generate_snippets(path, preferred_length=None, coverage=1.0):
   while current_coverage < coverage:
     length = preferred_length
     if length is None:
-      length = np.random.randint(MIN_SNIPPET_SIZE, MAX_SNIPPET_SIZE + 1)
+      length = np.random.randint(min_lines, max_lines + 1)
     current_coverage += length / total_lines
 
     yield random_snippet(lines, length)
@@ -52,6 +48,6 @@ def random_snippet(lines, length):
 if __name__ == '__main__':
   file_name = '../data/java/Arrays.java'
   file_name = '../data/c/hexagon_controller.c'
-  for snippet in generate_snippets(file_name, coverage=2.0):
+  for snippet in generate_snippets(file_name, coverage=1.0, min_lines=3, max_lines=10):
     print(snippet)
     print('----------------------------------------------------')
