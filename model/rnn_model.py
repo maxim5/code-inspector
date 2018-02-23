@@ -18,6 +18,7 @@ provider = DataProvider('../data')
 provider.build(min_vocab_count=20)
 vocab_size = provider.vocab_size
 classes = provider.classes
+print('Vocab size=%d classes=%d' % (vocab_size, classes))
 
 
 # Model
@@ -55,7 +56,7 @@ import os
 def make_dir(directory):
   if not os.path.exists(directory):
     os.makedirs(directory)
-make_dir('_temp/checkpoint')
+make_dir('_temp/checkpoints')
 
 saver = tf.train.Saver(max_to_keep=2)
 with tf.Session() as sess:
