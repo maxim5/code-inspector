@@ -71,6 +71,7 @@ def is_low_quality(lines):
 
   return False
 
+
 def common_prefix(strings):
   def all_same(x):
     return all(x[0] == y for y in x)
