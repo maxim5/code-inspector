@@ -26,14 +26,16 @@ def build_vocab(tokens_stream, min_count=0):
 
 
 def encode(text, vocabulary, max_size=None):
-  max_size = max_size if max_size is not None else len(text)
+  if max_size is None:
+    text = list(text)
+    max_size = len(text)
   result = np.ones([max_size], dtype=np.int32) * -1   # pad automatically with -1
   for i, token in enumerate(text):
     if i >= max_size:
       break
     idx = vocabulary.token_to_idx.get(token, -1)
     result[i] = idx
-  return result, min(len(text), max_size)
+  return result, i
 
 
 def decode(text, length, vocabulary):
