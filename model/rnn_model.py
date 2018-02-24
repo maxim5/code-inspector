@@ -3,25 +3,30 @@
 __author__ = 'maxim'
 
 
+import os
 import tensorflow as tf
 
-
-HIDDEN_SIZE = 200
-LR = 0.01
+from input import *
 
 
+########################################################################################################################
 # Data
+########################################################################################################################
 
-from input import DataProvider
 
 provider = DataProvider('../data')
-provider.build(min_vocab_count=20)
+provider.build(min_vocab_count=500)
 vocab_size = provider.vocab_size
 classes = provider.classes
 print('Vocab size=%d classes=%d' % (vocab_size, classes))
 
 
+########################################################################################################################
 # Model
+########################################################################################################################
+
+
+HIDDEN_SIZE = 200
 
 x = tf.placeholder(tf.int32, shape=[None, None])
 y = tf.placeholder(tf.int32, shape=[None])
@@ -42,35 +47,40 @@ output_last = output[-1]
 
 # fully_connected is syntactic sugar for tf.matmul(w, output) + b
 # it will create w and b for us
-logits = tf.contrib.layers.fully_connected(output_last, classes, None)
-loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y))
+logits = tf.layers.dense(output_last, units=classes, activation=None, name='logits')
+loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y))
 accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, 1), tf.cast(y, tf.int64)), tf.float32))
 global_step = tf.Variable(0, dtype=tf.int32, trainable=False, name='global_step')
-optimizer = tf.train.AdamOptimizer(LR).minimize(loss, global_step=global_step)
+optimizer = tf.train.AdamOptimizer().minimize(loss, global_step=global_step)
 
 
+########################################################################################################################
 # Training
+########################################################################################################################
 
 
-import os
-def make_dir(directory):
-  if not os.path.exists(directory):
-    os.makedirs(directory)
-make_dir('_temp/checkpoints')
+path = '_temp/rnn'
+summary_path = os.path.join(path, 'summary')
+cur_ckpt_path = os.path.join(path, 'checkpoints', 'cur')
+top_ckpt_path = os.path.join(path, 'checkpoints', 'top')
+os.makedirs(summary_path, exist_ok=True)
+os.makedirs(cur_ckpt_path, exist_ok=True)
+os.makedirs(top_ckpt_path, exist_ok=True)
+
 
 saver = tf.train.Saver(max_to_keep=2)
 with tf.Session() as sess:
-  writer = tf.summary.FileWriter('_temp/graphs', sess.graph)
+  writer = tf.summary.FileWriter(summary_path, sess.graph)
   sess.run(tf.global_variables_initializer())
 
-  ckpt = tf.train.get_checkpoint_state(os.path.dirname('_temp/checkpoints/checkpoint'))
+  ckpt = tf.train.get_checkpoint_state(cur_ckpt_path)
   if ckpt and ckpt.model_checkpoint_path:
     saver.restore(sess, ckpt.model_checkpoint_path)
 
   for epoch in range(10):
-    for batch_x, batch_y, batch_len in provider.stream_data(batch_size=100, parallel_streams=10):
-      _, loss_val, accuracy_val, iteration = sess.run([optimizer, loss, accuracy, global_step],
-                                                      feed_dict={x: batch_x, y: batch_y})
-      print('iteration=%d loss=%.3f accuracy=%.3f' % (iteration + 1, loss_val, accuracy_val))
-      if (iteration + 1) % 100 == 0:
-        saver.save(sess, '_temp/checkpoints/rnn', iteration)
+    for batch_x, batch_y, batch_len in provider.stream_data(batch_size=64):
+      _, loss_val, accuracy_val, step = sess.run([optimizer, loss, accuracy, global_step],
+                                                 feed_dict={x: batch_x, y: batch_y})
+      print('iteration=%d loss=%.3f accuracy=%.3f' % (step + 1, loss_val, accuracy_val))
+      if (step + 1) % 100 == 0:
+        saver.save(sess, os.path.join(cur_ckpt_path, 'current'), step)
