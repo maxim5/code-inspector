@@ -8,6 +8,8 @@ import tensorflow as tf
 
 from input import *
 
+import shutil
+shutil.rmtree('_temp')
 
 ########################################################################################################################
 # Data
@@ -15,16 +17,16 @@ from input import *
 
 
 provider = DataProvider('../data')
-provider.build(min_vocab_count=200)
+provider.build(min_vocab_count=300)
 vocab_size = provider.vocab_size
 classes = provider.classes
 print('Vocab size=%d classes=%d' % (vocab_size, classes))
 
-def encode(batch_x):
+def encode(batch_x, batch_len):
   batch_size = batch_x.shape[0]
   count_array = np.zeros([batch_size, vocab_size])
   for i in range(batch_size):
-    unique, counts = np.unique(batch_x[i], return_counts=True)
+    unique, counts = np.unique(batch_x[i,:batch_len[i]], return_counts=True)
     for idx, num in zip(unique, counts):
       if idx >= 0:
         count_array[i, idx] = num
@@ -40,9 +42,9 @@ x = tf.placeholder(shape=[None, vocab_size], dtype=tf.float32, name='x')
 y = tf.placeholder(shape=[None], dtype=tf.int32, name='y')
 training = tf.placeholder_with_default(False, shape=[], name='training')
 
-reg = tf.contrib.layers.l2_regularizer(0.01)
-hidden1 = tf.layers.dense(x, units=96, kernel_regularizer=reg, activation=tf.nn.elu, name='hidden1')
-dropout1 = tf.layers.dropout(hidden1, rate=0.2, training=training, name='dropout1')
+reg = tf.contrib.layers.l2_regularizer(0.1)
+hidden1 = tf.layers.dense(x, units=128, kernel_regularizer=reg, activation=tf.nn.elu, name='hidden1')
+dropout1 = tf.layers.dropout(hidden1, rate=0.5, training=training, name='dropout1')
 
 logits = tf.layers.dense(dropout1, units=classes, kernel_regularizer=reg, activation=None, name='logits')
 loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y))
@@ -91,11 +93,11 @@ writer = tf.summary.FileWriter(summary_path, tf.get_default_graph())
 
 def train_loop():
   for batch_x, batch_y, batch_len in provider.stream_data(batch_size=1024, files=Files.TRAIN):
-    train_step(batch_x, batch_y)
+    train_step(batch_x, batch_y, batch_len)
 
-def train_step(batch_x, batch_y):
+def train_step(batch_x, batch_y, batch_len):
   fetches = [train_op, loss, accuracy, merged, global_step]
-  feed_dict = {x: encode(batch_x), y: batch_y, training: True}
+  feed_dict = {x: encode(batch_x, batch_len), y: batch_y, training: True}
   _, loss_val, acc, summary, step = sess.run(fetches, feed_dict)
   step += 1
 
@@ -111,7 +113,7 @@ current_top_accuracy = 0.5
 def predict(files):
   all_acc = []
   for batch_x, batch_y, batch_len in provider.stream_data(batch_size=1024, files=files):
-    acc = sess.run(accuracy, feed_dict={x: encode(batch_x), y: batch_y})
+    acc = sess.run(accuracy, feed_dict={x: encode(batch_x, batch_len), y: batch_y})
     all_acc.append(acc)
 
   mean_accuracy = np.mean(all_acc)
@@ -127,9 +129,9 @@ def predict(files):
 
 def explore(files):
   for batch_x, batch_y, batch_len in provider.stream_data(batch_size=100, files=files):
-    acc, pred, idx = sess.run([accuracy, prediction, wrong_predicted],
-                              feed_dict={x: encode(batch_x), y: batch_y})
-    if acc < 0.7:
+    acc, pred, dist, idx = sess.run([accuracy, prediction, predicted_distribution, wrong_predicted],
+                                    feed_dict={x: encode(batch_x, batch_len), y: batch_y})
+    if acc < 0.9:
       label_decoder = provider.labels.idx_to_token
 
       x_val = batch_x[idx]
@@ -138,12 +140,14 @@ def explore(files):
       y_correct = batch_y[idx]
       print('Misclassified snippets:')
       for i in range(x_val.shape[0]):
-        # print('Idx:', x_len[i], x_val[i,:x_len[i]])
-        print()
-        print('Predicted=%s actual=%s' % (label_decoder[y_pred[i]], label_decoder[y_correct[i]]))
-        print('~~~~~~~~~~~~~~ Snippet start ~~~~~~~~~~~~~~')
-        print(vocab.decode(text=x_val[i], length=x_len[i], vocabulary=provider.vocab))
-        print('~~~~~~~~~~~~~~~ Snippet end ~~~~~~~~~~~~~~~')
+        with util.print_options(precision=4, suppress=True):
+          print('Dist:', dist[i])
+          # print('Idx:', x_len[i], x_val[i,:x_len[i]])
+          print()
+          print('Predicted=%s actual=%s' % (label_decoder[y_pred[i]], label_decoder[y_correct[i]]))
+          print('~~~~~~~~~~~~~~ Snippet start ~~~~~~~~~~~~~~')
+          print(provider.decode(snippet=x_val[i], length=x_len[i]))
+          print('~~~~~~~~~~~~~~~ Snippet end ~~~~~~~~~~~~~~~')
 
 
 ########################################################################################################################
