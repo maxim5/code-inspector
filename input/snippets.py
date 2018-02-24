@@ -87,9 +87,18 @@ if __name__ == '__main__':
   print(lines)
   print(common_prefix(lines))
   print(is_low_quality(lines))
+  print()
 
-  file_name = '../data/java/Arrays.java'
-  file_name = '../data/c/hexagon_controller.c'
-  for snippet in generate_snippets(file_name, coverage=1.0, min_lines=2, max_lines=3):
-    print(snippet)
-    print('----------------------------------------------------')
+  import os
+  langs = os.listdir('../data')
+  for lang in langs:
+    files = os.listdir('../data/%s' % lang)
+    file_name = np.random.choice(files)
+    file_name = '../data/%s/%s' % (lang, file_name)
+
+    print('~~~~~~~~~~~~ %s ~~~~~~~~~~~~' % lang)
+    for snippet in generate_snippets(file_name, coverage=0.1, min_lines=3, max_lines=6):
+      print(snippet)
+      print('----------------------------------------------------')
+    print()
+    print()

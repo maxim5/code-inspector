@@ -68,7 +68,7 @@ if (hnvml) {
 ```
 
 Clearly, not all languages can be distinguished within a short snippet, see for example **C** and **C++**, that's why
-the model outputs a probability distribution. 
+the model outputs a probability distribution. The larger the snippet, the more confident the model is.
 
 License
 -------
