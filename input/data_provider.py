@@ -135,7 +135,8 @@ class DataProvider(object):
         if snippet is None:
           del streamers[streamer_idx]
         else:
-          x, len_ = vocab.encode(snippet, self._vocab, max_tokens)
+          token_stream = tokenizer.tokenize(snippet, self._mode)
+          x, len_ = vocab.encode(token_stream, self._vocab, max_tokens)
           batch_x[i, :] = x
           batch_y[i] = self._labels.token_to_idx[lang]
           batch_len[i] = len_
@@ -143,11 +144,24 @@ class DataProvider(object):
       yield batch_x, batch_y, batch_len
 
 
+  def decode(self, snippet, length):
+    return vocab.decode(text=snippet, length=length, vocabulary=self.vocab)
+
+
 if __name__ == '__main__':
   provider = DataProvider('../data')
-  provider.build(min_vocab_count=20)
-  for batch_x, batch_y, batch_len in provider.stream_data(batch_size=2, max_tokens=10):
-    print(batch_x)
-    print(batch_y)
-    print(batch_len)
-    print('-----')
+  provider.build(min_vocab_count=500)
+  print(provider.vocab.token_to_idx.keys())
+  print()
+
+  for batch_x, batch_y, batch_len in provider.stream_data(batch_size=100, snippet_max_lines=4):
+    for i in range(batch_x.shape[0]):
+      x, y, len = batch_x[i], batch_y[i], batch_len[i]
+      print(len)
+      print(x[:len])
+      print([provider.vocab.idx_to_token.get(idx, '{?}') for idx in x[:len]])
+      print(y)
+      print('-----')
+      print('~~~~~~~~~~~~~~ Snippet start ~~~~~~~~~~~~~~')
+      print(provider.decode(snippet=x, length=len))
+      print('~~~~~~~~~~~~~~~ Snippet end ~~~~~~~~~~~~~~~')
