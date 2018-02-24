@@ -5,6 +5,8 @@ Programming language detector algorithm.
 Key feature: the algorithm is aimed on classifying *short* and possibly *incomplete* code snippets,
 without any prior knowledge of file extension, context, keywords, etc.
 
+Currently recognized languages: c, c++, c#, go, java, javascript, perl, php, python, r, ruby, swift.
+
 Snippets examples
 -----------------
 
@@ -27,7 +29,7 @@ if (count === 0) {
 }
 ```
 
-### C++
+#### C++
 
 ```cpp
 unsigned int mw = 0;
@@ -37,7 +39,7 @@ if (hnvml) {
 }
 ```
 
-### C
+#### C
 
 ```c
     BOOL ret;
@@ -47,7 +49,7 @@ if (hnvml) {
       return NULL;
 ```
 
-### Python
+#### Python
 
 ```python
     self.path = base_path
@@ -56,7 +58,7 @@ if (hnvml) {
     self.toolset = spec['toolset']
 ```
 
-### PHP
+#### PHP
 
 ```php
     {
@@ -64,6 +66,9 @@ if (hnvml) {
         $adapter->listContents();
     }
 ```
+
+Clearly, not all languages can be distinguished within a short snippet, see for example **C** and **C++**, that's why
+the model outputs a probability distribution. 
 
 License
 -------
