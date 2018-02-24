@@ -44,7 +44,7 @@ reg = tf.contrib.layers.l2_regularizer(0.01)
 hidden1 = tf.layers.dense(x, units=96, kernel_regularizer=reg, activation=tf.nn.elu, name='hidden1')
 dropout1 = tf.layers.dropout(hidden1, rate=0.2, training=training, name='dropout1')
 
-logits = tf.layers.dense(dropout1, classes, activation=tf.nn.relu, name='logits')
+logits = tf.layers.dense(dropout1, units=classes, kernel_regularizer=reg, activation=tf.nn.relu, name='logits')
 loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y))
 prediction = tf.argmax(logits, axis=1)
 correct_predicted = tf.nn.in_top_k(logits, y, 1, name='in-top-k')
@@ -62,6 +62,7 @@ tf.summary.scalar('accuracy', accuracy)
 
 tf.summary.histogram('x', x)
 tf.summary.histogram('hidden-activations-1', hidden1)
+tf.summary.histogram('logits', logits)
 for grad, var in grads_and_vars:
   name = var.name[:-2]
   tf.summary.histogram(name + '-var', var)
