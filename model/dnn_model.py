@@ -8,8 +8,6 @@ import tensorflow as tf
 
 from input import *
 
-import shutil
-shutil.rmtree('_temp')
 
 ########################################################################################################################
 # Data
