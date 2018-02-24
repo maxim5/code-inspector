@@ -30,12 +30,13 @@ def encode(text, vocabulary, max_size=None):
     text = list(text)
     max_size = len(text)
   result = np.ones([max_size], dtype=np.int32) * -1   # pad automatically with -1
+  i = -1
   for i, token in enumerate(text):
     if i >= max_size:
-      break
+      return result, max_size
     idx = vocabulary.token_to_idx.get(token, -1)
     result[i] = idx
-  return result, i
+  return result, i + 1
 
 
 def decode(text, length, vocabulary):

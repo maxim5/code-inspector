@@ -156,12 +156,12 @@ if __name__ == '__main__':
 
   for batch_x, batch_y, batch_len in provider.stream_data(batch_size=100, snippet_max_lines=4):
     for i in range(batch_x.shape[0]):
-      x, y, len = batch_x[i], batch_y[i], batch_len[i]
-      print(len)
-      print(x[:len])
-      print([provider.vocab.idx_to_token.get(idx, '{?}') for idx in x[:len]])
+      x, y, l = batch_x[i], batch_y[i], batch_len[i]
+      print(l)
+      print(x[:l])
+      print([provider.vocab.idx_to_token.get(idx, '{?}') for idx in x[:l]])
       print(y)
       print('-----')
       print('~~~~~~~~~~~~~~ Snippet start ~~~~~~~~~~~~~~')
-      print(provider.decode(snippet=x, length=len))
+      print(provider.decode(snippet=x, length=l))
       print('~~~~~~~~~~~~~~~ Snippet end ~~~~~~~~~~~~~~~')
