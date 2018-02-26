@@ -49,7 +49,7 @@ def random_snippet(lines, length):
 
 
 def is_low_quality(lines):
-  if len(lines) > 5:
+  if len(lines) > 10:
     return False
 
   non_empty_lines = [line for line in lines if len(line) > 0]
@@ -66,8 +66,10 @@ def is_low_quality(lines):
 
   # check if all lines are comments
   prefix = common_prefix(non_empty_lines)
-  if prefix in {'# ', '//', '*', '**', '/*'}:
-    return True
+  prefix = prefix.strip()
+  for s in ['# ', '//', '*', '**', '/*']:
+    if prefix.startswith(s):
+      return True
 
   return False
 
@@ -78,7 +80,7 @@ def common_prefix(strings):
 
   char_tuples = zip(*strings)
   prefix_tuples = itertools.takewhile(all_same, char_tuples)
-  return ''.join(x[0] for x in prefix_tuples if x[0] != ' ')
+  return ''.join(x[0] for x in prefix_tuples)
 
 
 if __name__ == '__main__':
