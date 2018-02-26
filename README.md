@@ -5,7 +5,7 @@ Programming language detector algorithm.
 Key feature: the algorithm is aimed on classifying *short* and possibly *incomplete* code snippets,
 without any prior knowledge of file extension, context, keywords, etc.
 
-Currently recognized languages: c, c++, c#, go, java, javascript, perl, php, python, r, ruby, swift.
+Currently recognized languages: c, c++, c#, css, go, html, java, javascript, objective c, perl, php, python, r, ruby, swift.
 
 Snippets examples
 -----------------
