@@ -78,7 +78,7 @@ with tf.Session() as sess:
     saver.restore(sess, ckpt.model_checkpoint_path)
 
   for epoch in range(10):
-    for batch_x, batch_y, batch_len in provider.stream_data(batch_size=64):
+    for batch_x, batch_y, batch_len in provider.stream_snippets(batch_size=64):
       _, loss_val, accuracy_val, step = sess.run([optimizer, loss, accuracy, global_step],
                                                  feed_dict={x: batch_x, y: batch_y})
       print('iteration=%d loss=%.3f accuracy=%.3f' % (step + 1, loss_val, accuracy_val))

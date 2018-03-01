@@ -92,9 +92,6 @@ class DataProvider(object):
           content = file_.read()
         for token in tokenizer.tokenize(content, self._mode):
           yield token
-        # print('File %s done' % path)
-
-    print('Building vocabulary')
     return vocab.build_vocab(token_stream(), min_vocab_count)
 
 
@@ -103,9 +100,32 @@ class DataProvider(object):
     return vocab.build_vocab(langs, min_count=0)
 
 
-  def stream_data(self, batch_size, files=Files.TRAIN,
-                  snippet_coverage=1.0, snippet_min_lines=3, snippet_max_lines=20,
-                  parallel_streams=10, max_tokens=2000):
+  def build_tf_idf(self):
+    assert self._labels is not None and self._vocab is not None, \
+      'Call `build()` method must be called first'
+
+    def token_func(content):
+      return tokenizer.tokenize(content, self._mode)
+
+    def stream_contents():
+      for path, lang in self._vocab_files:
+        with open(path) as file_:
+          content = file_.read()
+          yield content
+
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    vectorizer = TfidfVectorizer(vocabulary=self._vocab.token_to_idx,
+                                 tokenizer=token_func)
+
+    X = vectorizer.fit_transform(raw_documents=stream_contents())
+    idf = vectorizer.idf_
+
+    return X, idf
+
+
+  def stream_snippets(self, batch_size, files=Files.TRAIN,
+                      snippet_coverage=1.0, snippet_min_lines=3, snippet_max_lines=20,
+                      parallel_streams=10, max_tokens=2000):
     assert self._labels is not None and self._vocab is not None, \
       'Call `build()` method must be called first'
 
@@ -154,7 +174,7 @@ if __name__ == '__main__':
   print(provider.vocab.token_to_idx.keys())
   print()
 
-  for batch_x, batch_y, batch_len in provider.stream_data(batch_size=100, snippet_max_lines=4):
+  for batch_x, batch_y, batch_len in provider.stream_snippets(batch_size=100, snippet_max_lines=4):
     for i in range(batch_x.shape[0]):
       x, y, l = batch_x[i], batch_y[i], batch_len[i]
       print(l)

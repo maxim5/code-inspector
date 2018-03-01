@@ -14,11 +14,19 @@ from input import *
 ########################################################################################################################
 
 
+TF_IDF = False
+
+print('Building vocabulary...')
 provider = DataProvider('../data')
 provider.build(min_vocab_count=300)
 vocab_size = provider.vocab_size
 classes = provider.classes
 print('Vocab size=%d classes=%d' % (vocab_size, classes))
+
+if TF_IDF:
+  print('Building IDF...')
+  _, idf = provider.build_tf_idf()
+  print('IDF shape:', idf.shape)
 
 def encode(batch_x, batch_len):
   batch_size = batch_x.shape[0]
@@ -27,7 +35,11 @@ def encode(batch_x, batch_len):
     unique, counts = np.unique(batch_x[i,:batch_len[i]], return_counts=True)
     for idx, num in zip(unique, counts):
       if idx >= 0:
-        count_array[i, idx] = num
+        if TF_IDF:
+          tf_ = np.log(num) + 1 if num > 0 else 0
+          count_array[i, idx] = tf_ * idf[idx]
+        else:
+          count_array[i, idx] = num
   return count_array
 
 
@@ -77,7 +89,7 @@ merged = tf.summary.merge_all()
 ########################################################################################################################
 
 
-path = '_temp/dnn'
+path = '_temp/dnn_%d' % int(TF_IDF)
 summary_path = os.path.join(path, 'summary')
 cur_ckpt_path = os.path.join(path, 'checkpoints', 'cur')
 top_ckpt_path = os.path.join(path, 'checkpoints', 'top')
@@ -90,7 +102,7 @@ top_saver = tf.train.Saver(max_to_keep=3)
 writer = tf.summary.FileWriter(summary_path, tf.get_default_graph())
 
 def train_loop():
-  for batch_x, batch_y, batch_len in provider.stream_data(batch_size=1024, files=Files.TRAIN):
+  for batch_x, batch_y, batch_len in provider.stream_snippets(batch_size=1024, files=Files.TRAIN):
     train_step(batch_x, batch_y, batch_len)
 
 def train_step(batch_x, batch_y, batch_len):
@@ -110,7 +122,7 @@ current_top_accuracy = 0.5
 
 def predict(files):
   all_acc = []
-  for batch_x, batch_y, batch_len in provider.stream_data(batch_size=1024, files=files):
+  for batch_x, batch_y, batch_len in provider.stream_snippets(batch_size=1024, files=files):
     acc = sess.run(accuracy, feed_dict={x: encode(batch_x, batch_len), y: batch_y})
     all_acc.append(acc)
 
@@ -126,7 +138,7 @@ def predict(files):
   print(files, 'mean accuracy = %.5f%s' % (mean_accuracy, marker))
 
 def explore(files):
-  for batch_x, batch_y, batch_len in provider.stream_data(batch_size=100, files=files):
+  for batch_x, batch_y, batch_len in provider.stream_snippets(batch_size=100, files=files):
     acc, pred, dist, idx = sess.run([accuracy, prediction, predicted_distribution, wrong_predicted],
                                     feed_dict={x: encode(batch_x, batch_len), y: batch_y})
     if acc < 0.9:
