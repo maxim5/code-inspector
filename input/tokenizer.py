@@ -62,11 +62,3 @@ def tokenize(text, mode=Mode.BY_LEXEM):
     return tokenize_by_lexems(text)
   else:
     return tokenize_by_char(text)
-
-
-if __name__ == '__main__':
-  text = 'foo bar baz foo2  {x?_}!943 322 !# ^\t^& while (a<b): 0x00\n  int a[0:]'
-
-  print(tokenize_by_char(text))
-  print()
-  print(list(tokenize_by_lexems(text)))
