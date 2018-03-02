@@ -29,7 +29,7 @@ def tokenize_by_lexems(text):
     if state == SPACE:
       if prev >= 0:
         yield text[prev:i]
-        prev = i
+      prev = i
 
     if state == PUNCTUATION:
       if is_identifier or is_space:
