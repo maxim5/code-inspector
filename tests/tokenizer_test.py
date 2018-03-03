@@ -18,10 +18,15 @@ class TokenizerTest(unittest.TestCase):
     self.assertEqual(['f', 'o', 'o', ' ', 'b', 'a', 'r'], tokenize_by_char(text))
     self.assertEqual(['foo', ' ', 'bar'], list(tokenize_by_lexems(text)))
 
-  def test_spaces(self):
+  def test_spaces_1(self):
     text = '   '
     self.assertEqual([' ', ' ', ' '], tokenize_by_char(text))
     self.assertEqual([' ', ' ', ' '], list(tokenize_by_lexems(text)))
+
+  def test_spaces_2(self):
+    text = '  foo'
+    self.assertEqual([' ', ' ', 'f', 'o', 'o'], tokenize_by_char(text))
+    self.assertEqual([' ', ' ', 'foo'], list(tokenize_by_lexems(text)))
 
   def test_chars_1(self):
     text = 'a->b'
@@ -32,6 +37,10 @@ class TokenizerTest(unittest.TestCase):
     text = '(n):'
     self.assertEqual(['(', 'n', ')', ':'], tokenize_by_char(text))
     self.assertEqual(['(', 'n', '):'], list(tokenize_by_lexems(text)))
+
+  def test_chars_3(self):
+    text = '#include <math.h>'
+    self.assertEqual(['#', 'include', ' ', '<', 'math', '.', 'h', '>'], list(tokenize_by_lexems(text)))
 
   def test_long(self):
     text = 'foo bar baz foo2  {x?_}!943 322 !# ^\t^& while (a<b): 0x00\n  int a[0:]'
