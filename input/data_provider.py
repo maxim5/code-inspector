@@ -88,7 +88,7 @@ class DataProvider(object):
   def _build_main_vocab(self, min_vocab_count):
     def token_stream():
       for path, lang in self._vocab_files:
-        with open(path) as file_:
+        with open(path, errors='ignore') as file_:
           content = file_.read()
         for token in tokenizer.tokenize(content, self._mode):
           yield token

@@ -7,7 +7,7 @@ import numpy as np
 
 
 def generate_snippets(path, preferred_length=None, coverage=1.0, min_lines=1, max_lines=100):
-  with open(path) as file_:
+  with open(path, errors='ignore') as file_:
     lines = file_.readlines()
 
   current_coverage = 0.0
