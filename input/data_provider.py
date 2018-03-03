@@ -109,7 +109,7 @@ class DataProvider(object):
 
     def stream_contents():
       for path, lang in self._vocab_files:
-        with open(path) as file_:
+        with open(path, errors='ignore') as file_:
           content = file_.read()
           yield content
 
