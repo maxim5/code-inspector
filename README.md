@@ -7,7 +7,7 @@ without any prior knowledge of file extension, context, keywords, etc.
 
 Currently recognized languages: 
 c, c++, c#, css, go, html, java, javascript, lua, matlab, objective c, 
-perl, php, python, r, ruby, swift, visual basic.
+pascal, perl, php, python, r, ruby, shell, swift, typescript, visual basic.
 
 Snippets examples
 -----------------
