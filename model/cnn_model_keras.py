@@ -59,7 +59,7 @@ model.add(Dense(hidden_size))
 model.add(Dropout(dropout_rates[1]))
 model.add(Dense(classes))
 model.add(Activation('softmax'))
-model.compile(loss='categorical_crossentropy', optimizer='adadelta', metrics=['accuracy'])
+model.compile(loss='sparse_categorical_crossentropy', optimizer='adadelta', metrics=['accuracy'])
 
 ########################################################################################################################
 # Training
@@ -76,7 +76,6 @@ def gen(steps, batch_size):
       if steps == 0:
         return
       batch_x_one_hot = to_categorical(batch_x, vocab_size)
-      batch_y_one_hot = to_categorical(batch_y, classes)
-      yield batch_x_one_hot, batch_y_one_hot
+      yield batch_x_one_hot, batch_y
 
 model.fit_generator(gen(steps * epochs + 1, batch_size), epochs=epochs, steps_per_epoch=steps, verbose=1)
