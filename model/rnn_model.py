@@ -111,3 +111,4 @@ with tf.Session() as sess:
 
       if step % 50 == 0:
         cur_saver.save(sess, os.path.join(cur_ckpt_path, 'current'), step)
+    writer.flush()
