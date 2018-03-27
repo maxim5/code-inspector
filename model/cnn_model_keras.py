@@ -26,7 +26,7 @@ print('Vocab size=%d classes=%d' % (vocab_size, classes))
 ########################################################################################################################
 
 # Hyper-parameters
-sequence_length = 2 * 1024
+sequence_length = 2048
 filter_sizes = (3, 5, 9, 19)
 pooling_sizes = (2, 5, 9, 19)
 num_filters = 128
@@ -65,7 +65,7 @@ model.compile(loss='sparse_categorical_crossentropy', optimizer='adadelta', metr
 # Training
 ########################################################################################################################
 
-batch_size = 100
+batch_size = 200
 steps = 100
 epochs = 100
 
