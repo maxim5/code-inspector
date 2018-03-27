@@ -8,7 +8,7 @@ from keras import *
 from keras.layers import *
 from keras.utils import to_categorical
 
-from input import DataProvider, Mode
+from input import DataProvider, Mode, Files
 
 ########################################################################################################################
 # Data
@@ -66,16 +66,28 @@ model.compile(loss='sparse_categorical_crossentropy', optimizer='adadelta', metr
 ########################################################################################################################
 
 batch_size = 200
-steps = 100
 epochs = 100
 
-def gen(steps, batch_size):
+def gen(files, steps):
+  coverage = 1.0 if files == Files.TRAIN else 2.5
   while True:
-    for batch_x, batch_y, batch_len in provider.stream_snippets(batch_size=batch_size, max_tokens=sequence_length):
-      steps -= 1
-      if steps == 0:
-        return
+    for i, batch in enumerate(provider.stream_snippets(batch_size=batch_size,
+                                                       files=files,
+                                                       max_tokens=sequence_length,
+                                                       parallel_streams=classes,
+                                                       snippet_coverage=coverage)):
+      if i == steps:
+        break
+      batch_x, batch_y, batch_len = batch
       batch_x_one_hot = to_categorical(batch_x, vocab_size)
       yield batch_x_one_hot, batch_y
+    if i < steps:
+      print(files, 'Not enough steps for one epoch: ', i)
+      pass
 
-model.fit_generator(gen(steps * epochs + 1, batch_size), epochs=epochs, steps_per_epoch=steps, verbose=1)
+model.fit_generator(generator=gen(Files.TRAIN, 100), epochs=epochs, steps_per_epoch=100,
+                    validation_data=gen(Files.VAL, 50), validation_steps=50,
+                    verbose=1)
+
+test_result = model.evaluate_generator(generator=gen(Files.TEST, 100), steps=100)
+print(test_result)
