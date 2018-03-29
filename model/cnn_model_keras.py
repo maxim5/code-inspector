@@ -15,8 +15,8 @@ from input import DataProvider, Mode, Files
 ########################################################################################################################
 
 print('Building vocabulary...')
-provider = DataProvider('../data', mode=Mode.BY_CHAR)
-provider.build(min_vocab_count=30)
+provider = DataProvider('../data', mode=Mode.BY_LEXEM)
+provider.build(min_vocab_count=200)
 vocab_size = provider.vocab_size
 classes = provider.classes
 print('Vocab size=%d classes=%d' % (vocab_size, classes))
@@ -26,7 +26,7 @@ print('Vocab size=%d classes=%d' % (vocab_size, classes))
 ########################################################################################################################
 
 # Hyper-parameters
-sequence_length = 2048
+sequence_length = 1024
 filter_sizes = (3, 5, 9, 19)
 pooling_sizes = (2, 5, 9, 19)
 num_filters = 128
