@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" media="screen" href="../../../../library/css/editing.css" type="text/css" />
+  </head>
+  <body> <img src="http://web.archive.org/web/20071201115027im_/http://static.technorati.com/pix/icn-talkbubble.gif" title="tag technorati" />
+    <a class="Tags" href="http://web.archive.org/web/20071201115027/http://technorati.com/tag/Mistral" rel="tag">Mistral</a>
+    <a class="Tags" href="http://web.archive.org/web/20071201115027/http://technorati.com/tag/JAI" rel="tag">JAI</a> <a
+      class="Tags" href="http://web.archive.org/web/20071201115027/http://technorati.com/tag/Java2D" rel="tag">Java2D</a>
+    <a class="Tags" href="http://web.archive.org/web/20071201115027/http://technorati.com/tag/ImageJ" rel="tag">ImageJ</a><br />
+    <p class="ArticleLeadin"><a href="http://web.archive.org/web/20071201115027/http://mistral.tidalwave.it/">Mistral</a>
+      is still very young (spinned off another project last summer) and needs work for completing the API, testing and
+      documenting it. Nevertheless, in the last month it get involved in two small paid projects of mine:<br />
+    </p>
+    <ol>
+      <li>as the back end for a webapp used to manage a library of photos</li>
+      <li>in form of a small applet to perform a few operations on faxes</li>
+    </ol>
+    (BTW, both the projects will be opensourced and I will talk more about them later). As it happens in such
+    circumstances, I've been working on Mistral with specific focus on the issues related to the two projects (of course
+    there's also the other main workflow, which is supporting the <a href="http://web.archive.org/web/20071201115027/http://pleiaders.bloomingstars.com/">Pleiades</a>
+    project in distributed environments, where I'm working with <a href="http://web.archive.org/web/20071201115027/http://www.bloomingstars.com/">Emmanuele</a>).<br />
+    <br />
+    Yesterday I got the first two email messages from people interested in it. The former was from a guy that told me
+    "Mistral has failed the five minutes test". That is, he failed in downloading, compiling and trying some demo in a
+    very short time. He was right, unfortunately. But it was simple to fix it, and most of the needed changes are
+    already in the repository. The latter told me that he is evaluating Mistral, he's using it, but misses some simple
+    features to go on: basically, he needs to strip the "transparency" channel from some PNG images before resizing and
+    writing them in JPEG format (that doesn't support transparency). Fortunately, the flexible and simple design of
+    Mistral allows to easily solve this kind of problems without the need of patches.
+    <p class="ArticleText">We've not been able yet to write a decent documentation about the design, so I will briefly
+      talk about the main topics that are relevant for this blog entry (I'd like to add some diagrams, but unfortunately
+      I'm in a peak period and I don't have time at the moment). These are the basic patterns in the design:<br />
+    </p>
+    <ol>
+      <li><span style="font-weight: bold;">Facade pattern</span>. <span class="Code">EditableImage</span> is a facade,
+        encapsulating the image model and other features (for instance, some boilerplate code to make it easier and more
+        efficient the distribution of images in a parallel context). From the programmer perspective, <span class="Code">EditableImage</span>
+        is everything he needs to manipulate an image.</li>
+      <li><span style="font-weight: bold;">Command pattern</span>. <span class="Code">Operation</span> is a generic
+        class at the root of a hierarchy containing all the possible operations that you can apply to an image. For
+        instance, <span class="Code">PaintOp</span> and <span class="Code">CropOp</span> both extend <span class="Code">Operation</span>
+        and can be invoked as: <span class="Code">editableImage.execute(new PaintOp(...))</span> and <span class="Code">editableImage.execute(new
+          CropOp(...))</span>. <span class="Code">Operation</span>s don't contain an implementation, but are just
+        holders for the parameters needed to describe the specific the image manipulation to perform.<br />
+      </li>
+      <li><span style="font-weight: bold;">Abstract Factory pattern</span>. Behind the scenes, there are one or more
+        factories (called "implementation registers") that are able to provide the real implementations related to each
+        operation. There are many factories since multiple image models are supported (e.g. <span class="Code">BufferedImage</span>
+        from Java2D, <span class="Code">PlanarImage</span> from JAI, <span class="Code">ImagePlus</span> from ImageJ).
+        For instance, <span class="Code">PaintOp</span> is matched to a <span class="Code">PaintJ2DOp</span> and <span
+          class="Code">CropOp</span> to a <span class="Code">CropJ2DOp</span>, and in the end the <span class="Code">*J2DOp</span>
+        are invoked with the BufferedImage wrapped by the EditableImage.<br />
+      </li>
+    </ol>
+    The implementation registers are accessible to the programmer, that can easily create new operations and register
+    them into the core. This can be accomplished in three steps:<br />
+    <ol>
+      <li>write the abstract <span class="Code">Operation</span></li>
+      <li>write the concrete implementation</li>
+      <li>bind them in the <span class="Code">ImplementationRegistry</span></li>
+    </ol>
+    For instance, to strip the transparency channel we can create a custom operation that changes the buffer type of the
+    image to one of the many formats defined by the <span class="Code">BufferedImage.TYPE_XXX</span> constants - <span
+      class="Code">TYPE_3BYTE_BGR</span> is what we need. The abstract <span class="Code">Operation</span> can be
+    written as:<br />
+    <pre class="prettyprint lang-java">
+public class ChangeBufferTypeOp extends Operation<br /> {<br />   private final int bufferType;<br />  <br />   public ChangeBufferTypeOp (final int bufferType)   <br />     { <br />       if ((bufferType &lt;= 0) || (bufferType &gt; 13))<br />         {<br />           throw new IllegalArgumentException("bufferType: " + bufferType);<br />         } <br /><br />       this.bufferType = bufferType;   <br />     }         <br /><br />   public int getBufferType()<br />     {  <br />       return bufferType;   <br />     }<br /> }  
+</pre> The concrete implementation for Java2D is also simple:<br />
+    <pre class="prettyprint lang-java">
+public class ChangeBufferTypeJ2DOp extends <br />             OperationImplementation&lt;ChangeBufferTypeOp, BufferedImage&gt;<br />  {<br />    protected BufferedImage execute (final ChangeBufferTypeOp operation, <br />                                     final BufferedImage bufferedImage) <br />      {<br />        final int width = bufferedImage.getWidth();<br />        final int height = bufferedImage.getHeight();<br />        final BufferedImage result = <br />                  new BufferedImage(width, height, operation.getBufferType());<br />        Graphics g = null;<br />        <br />        try <br />          {<br />            g = result.createGraphics();<br />            g.drawImage(bufferedImage, 0, 0, null);<br />          } <br />        finally <br />          {<br />            if (g != null)<br />              {<br />                g.dispose();<br />              }<br />          }<br />        <br />        return result;<br />      }<br />  }<br />
+</pre> The new operation and its implementation can be registered with the following code:<br />
+    <pre class="prettyprint lang-java">
+ImplementationFactoryJ2D.getInstance().<br />    registerImplementation(ChangeBufferTypeOp.class, ChangeBufferTypeJ2DOp.class); 
+</pre> At this point, the new operation is available to the application just as the standard ones. For instance, the
+    following code works:<br />
+    <pre class="prettyprint lang-java">
+File file = new File("photo.jpg");<br />EditableImage image = EditableImage.create(new ReadOp(file)); <br />image.execute(new ChangeBufferTypeOp(BufferedImage.TYPE_3BYTE_BGR)); <br />image.execute(new WriteOp("JPEG", new File("Result.tif"))); 
+</pre>
+    <div style="margin-left: 40px;"><span style="font-style: italic;">Mistral supports more sophisticated stuff. For
+        instance, implementation registers are not mutually exclusive, they can be used at the same time if, for
+        instance, one supports most of the operation you need, but not all (this frequently happens with Java2D and
+        JAI). And if you want you can add an implementation register to deal with a completely new image model - some
+        time ago a researcher sent me some prototype code about a new filter he is designing - he used his own image
+        format, but we are integrating it inside Mistral and nevertheless application code will be able to use the
+        standard Image I/O for the input/output. Another crazy idea that we're just studying is the possibility to
+        implement a special implementation registry which binds to the CoreImage APIs of Mac OS X. We will publish
+        something about these features later, since their design still needs a final refinement.</span><br />
+    </div>
+    <br />
+    So, if you are curious about Mistral but you fear it's still too young and incomplete, just give it a try. Extending
+    it is easy and you probably don't need to wait for us to improve the coverage of operations. And if you do and write
+    some new operations for your needs, please consider sending them to us, provided by their JUnit testing code - we
+    will be happy to add them to the source repository. All the contributions will be added in a special "Contributions"
+    module, immediately available to everybody, and later incorporated in the official, supported APIs after some
+    refinement, if needed. See you on our <a href="http://web.archive.org/web/20071201115027/https://mistral.dev.java.net/servlets/ProjectMailingListList">mailing
+      list</a>.
+  </body>
+</html>

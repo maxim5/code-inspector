@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" media="screen" href="../../../../library/css/editing.css" type="text/css" />
+  </head>
+<body>
+<p><a href="/examples"><img style="width: 300px height=233px; margin: 10px; border: 0px; float: right" src="$mediaLink(relativePath='/ImageViewerScreenshot.png')$" alt="" /></a>Mistral is a high-level imaging engine for the Java&#8482; Standard Edition platform (J2SE). It has been designed as an abstraction layer over the real imaging engine, that can be freely choosen among one of the most popular around (e.g. JAI, ImageJ), thus allowing the programmer to focus on the algorithm, without wasting time on implementation details - a sort of extension of the WORA (Write Once, Run Anywhere) concept. Mistral goes even further, by providing a simple-but-effective ImagingProcessor which is able to schedule well-written image processing algorithms in different computing scenarios: from the single CPU,
+to the multi-core, up to the Sun Grid Computing Facility. Also cheap, local multiple node clusters based on Jini&#8482; and Rio technologies are supported. To learn more, please read the <a href="http://mistral.tidalwave.it/infoglueDeliverLive/ViewPage.action?siteNodeId=368&amp;languageId=1&amp;contentId=-1">white paper</a>, the <a href="http://mistral.tidalwave.it/blog/1595">introduction</a> and the <a href="http://mistral.tidalwave.it/infoglueDeliverLive/ViewPage.action?siteNodeId=369&amp;languageId=1&amp;contentId=-1">FAQs</a>.</p>
+<h2 class="ArticleHeadline">Features</h2>
+<p>
+    <img style="margin: 10px; border: 0px; float: right" src="$mediaLink(relativePath='/Overview.png')$" alt="" /><strong>Abstract Imaging Layer.</strong> The processing is performed on an opaque class <code>EditableImage</code>, which hides the concrete image representation from the programmer's view. In this way, in the code there is no explicit reference to any existing imaging API, such as JAI or ImageJ. You can plug in the imaging engine in a different part of your code (e.g. at the application startup) with the use of a registry.<br />
+<br />
+<strong>Flexible.</strong> Advanced programmers can define new operations and their implementations. Your user-defined operations behave just as the standard ones.<br />
+<br />
+<strong>Versatile Imaging Processor.</strong> Mistral embeds a simple but effective <code>ImagingTaskProcessor</code> which is based on the concept of an <code>ImagingTask</code>. An <code>ImagingTask</code> is a class which encapsulates an atomic piece of image processing code that has to be executed in a parallel way. You just have to decompose your algorithm in a group of <code>ImagingTask</code>s, that can also be executed in a multi-phase fashion. Different implementations of <code>ImagingTaskProcessor</code> are able to schedule the tasks in a context-dependent fashion. For instance, on a traditional, single core CPU all the tasks will be executed serially; on a dual core, up to two tasks will be parallelized and executed at the same time; on a multiple-node cluster, as many tasks as the available workers will be scheduled at the same time. Furthermore <span class=
+"Code">ImagingTaskProcessor</span> provides the programmer the tools to get the best from the context, by using the most appropriate inter-task communication protocol. For instance, the implementation for the Sun Grid Compute Server is able to use the distributed file system, thus avoiding unnecessary image serializations back and forth the nodes.<br />
+<br />
+<strong>Statistics.</strong> If needed, Mistral is able to collect performance statistics about your image processing algorithm, both coarse grained (<code>ImagingTask</code>s) and fine grained (single operations). Statistics are automatically aggregated and work both in local and distributed computing environments. Statistics are a great tool for optimizing your work.<br />
+<br style="font-weight: bold;" />
+<strong>Image Renderer.</strong> Mistral includes a simple image renderer which is able to perform zooming and panning.<br />
+<br />
+<strong>Metadata support.</strong> Last but not least, if you're going to process digital photos Mistral is able to provide you all the metadata you need (e.g. EXIF, Maker Note) in a simple way. Mistral is able to extract metadata from JPEG photos (using the popular Drew Noakes' metadata-extractor library), TIFF photos (using native Java Image I/O support) and camera raw photos (using the special Image I/O plugin <a href="http://jrawio.rawdarkroom.org/">jrawio</a>).<br />
+<br />
+<strong>Simple.</strong> Mistral is designed around a multi-phase version of the Master-Worker pattern, which is mostly useful for the so-called "embarrassingly distributed" tasks - generally speaking, parallel computations which require very limited inter-node communications.</p>
+</body>
+</html>

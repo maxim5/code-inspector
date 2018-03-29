@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" media="screen" href="../../../../library/css/editing.css" type="text/css" />
+  </head>
+  <body>
+    <p>In the third part of this exercise I'm going to focus on an issue related to just a few lines of code, that is
+      quite interesting: partly because it involves a minor quirk in Java 8, partly because the understanding of it and
+      its work-around is a good way to deepen the comprehension of lambdas.</p>
+    <p>Before moving to the main topic, there are a few things to say. First, I have to mention that the source code
+      underwent a slight refactoring, in which:</p>
+    <ol>
+      <li>I encapsulated everything related to progress tracking into a separate <code>ProgressTracker</code> class.</li>
+      <li>I turned some methods in the <code>Main</code> class from static to regular instance method - this means that
+        now <code>Main</code> is instantiated before being executed.</li>
+      <li>I also renamed the package, but this is just a cosmetic thing.</li>
+    </ol>
+    <div class="note">
+      <p>There could be many things to say about this transformation, which converts the original, functional “look”
+        into something traditionally object-oriented. But the scope of SolidBlue2, so far, is so simple that there is
+        not enough context to make serious considerations about this topic.</p>
+    </div>
+    <p>Second, the scanning of the filesystem has been improved with a try-with-resources:</p>
+    <pre class="prettyprint lang-java">
+try (final Stream&lt;Path&gt; s = Files.walk(targetPath, FOLLOW_LINKS))
+  {
+    final Map&lt;String, String&gt; storage = s.filter(Main::matchesExtension)
+                                         .peek(progressTracker::notifyDiscoveredFile)
+                                         .collect(toList())
+                                         .stream()
+                                         .collect(toMap(p -&gt; p.getFileName().toString(),
+                                                        p -&gt; computeFingerprint(p, "MD5"),
+                                                        (v1, v2) -&gt; v2));
+    store(targetPath, storage);
+  }
+</pre>
+    <p><code>Stream</code>, actually, has got a <code>close()</code> method. When the <code>Stream</code> source is in
+      memory there's no need to close it, as the memory resources are handled by the Garbage Collector as usual. But
+      when the source opens some system resources (such as sockets or files), the <code>Stream</code> should be
+      explicitly closed. SolidBlue2 is currently a tiny command line application that terminates after the scan, so this
+      aspect is not relevant now; but since it is going to become a full-fledged application with its own user
+      interface, it's better to properly handled the thing before I forget. The best way to do that is to use
+      try-with-resources, since <code>Stream</code> implements <code>AutoCloseable</code>.</p>
+    <p>Ok. Now we can focus on the main theme of this post. Let's look at the method that stores data into a file:</p>
+    <pre class="prettyprint lang-java">
+private void store (final Path targetPath, final Map&lt;String, String&gt; storage)
+  throws IOException
+  {
+    final Path folder = targetPath.resolve(".it.tidalwave.solidblue2");
+    final Path file = folder.resolve("fingerprints-j8.txt");
+    Files.createDirectories(folder);
+    log.info("Storing results into {} ...", file);
+
+    try (final PrintWriter w = new PrintWriter(Files.newBufferedWriter(file, Charset.forName("UTF-8"))))
+      {
+        storage.entrySet().stream()
+                          .sorted(comparing(Entry::getKey))
+                          .forEach(e -&gt; w.printf("MD5(%s)=%s\n", e.getKey(), e.getValue()));
+      }
+  }
+</pre>
+    <p>While the code is fine and it's also robust, as it uses try-with-resources, one might ask whether Java 8 offers a
+      less verbose way to do a simple operation such as writing some strings into a file. The verbosity related to <code>BufferedWriter</code>
+      and <code>PrintWriter</code> is the thing I'm aiming at. In Java 8, actually, the <code> Files</code> class has
+      been augmented with a couple of methods (I'm omitting some non relevant stuff):</p>
+    <pre class="prettyprint lang-java">
+public final class Files 
+  {
+    public static Stream&lt;String&gt; lines (Path path)
+      throws IOException;<br />
+    public static Path write (Path path, Iterable&lt;? extends CharSequence&gt; iterable) 
+      throws IOException;<br /><br />    ...
+  }
+</pre>
+    <p>They are pretty useful as they encapsulate all the technicalities about opening and closing a file and provide a
+      good abstraction that only focuses on the data to be read and written. Thus one might be induced to write
+      something such as:</p>
+    <pre class="prettyprint lang-java">
+Files.write(file, 
+            storage.entrySet().stream()
+                              .sorted(comparing(Entry::getKey))
+                              .map(e -&gt; String.format("MD5(%s)=%s", e.getKey(), e.getValue())), 
+            Charset.forName("UTF-8"));
+    </pre>
+    <p>Unfortunately this fails in compilation, because <code>Stream&lt;T&gt;</code> doesn't extend <code>Iterable&lt;T&gt;</code>.
+      This is pretty curious, since <code>Stream&lt;T&gt;</code> does provide indeed a <code>public Iterator&lt;T&gt;
+        iterator()</code> method (as well as another couple of methods defined in <code>Iterable</code>). The thing <a
+        href="http://stackoverflow.com/questions/20129762/why-does-streamt-not-implement-iterablet">has been already
+        debated at StackOverflow</a>, where one of the answers was more or less “the thing is deliberate, because
+      programmers are used to the fact that they can call <code>iterator()</code> on a collection multiple times, while
+      <code>Stream</code> can be used only once“. Actually, one should recall that <em><code>Stream</code> is not a
+        collection</em>, rather a manipulator of collections of data. And <code>Stream</code>s have been designed with
+      the <a href="http://gafter.blogspot.it/2007/07/internal-versus-external-iterators.html"><em> internal iteration</em></a>
+      concept in mind, while iterators are made for <em>external iteration</em>.</p>
+    <p>To have an authoritative answer I've asked about this issue at the core-libs-dev mailing list and <a href="http://mail.openjdk.java.net/pipermail/core-libs-dev/2015-November/036320.html">got
+        a very exhaustive reply</a> from Remi Forax, including this confirmation:</p>
+    <blockquote>
+      <p><code>iterator()</code> is not a 'real' method of <code>Stream</code>, it's a kind of escape hatch that you
+        can use if you have an API that takes an <code>Iterator</code> as parameter but it will be slow. </p>
+    </blockquote>
+    <p>Given that anyway <code>Stream&lt;T&gt;</code> provides all the methods in <code>Iterable&lt;T&gt;</code>, one
+      might be tempted to try a cast (I've slightly rewritten the code chunk for better readability):</p>
+    <pre class="prettyprint lang-java">
+final Stream&lt;String&gt; s = storage.entrySet().stream()
+                                           .sorted(comparing(Entry::getKey))
+                                           .map(e -&gt; String.format("MD5(%s)=%s", e.getKey(), e.getValue()));
+Files.write(file, (Iterable&lt;String&gt;)s, Charset.forName("UTF-8"));
+</pre>
+    <p>But this is clearly a naïve approach: you can fool the compiler, nevertheless you will get a <code>ClassCastException</code>
+      at runtime. After all, Java is still a strongly typed language, both statically and dynamically, and the JVM
+      cannot but tell you that <code>Stream&lt;T&gt;</code> doesn't extend <code>Iterable&lt;T&gt;</code>. A safe and
+      quick way to “convert” a <code>Stream&lt;T&gt;</code> into an <code>Iterable&lt;T&gt;</code> would be to just
+      add <code>collect(toList())</code>, but this would accumulate all the products into a memory buffer. No problem
+      with smaller scenarios, but it could be an issue for larger amounts of data. And it would be a pity to waste
+      memory for an operation that might be inherently pipeline-oriented.</p>
+    <div class="note">
+      <p><code>Stream.sorted()</code>, like in the code example above, is already buffering all data into a list,
+        because it's required by the sorting algorithm. Anyway I'd like to discuss a general case in which there could
+        be no sorting.</p>
+    </div>
+    <p>But there's a trick:</p>
+    <pre class="prettyprint lang-java">
+final Stream&lt;String&gt; s = storage.entrySet().stream()
+                                           .sorted(comparing(Entry::getKey))
+                                           .map(e -&gt; String.format("MD5(%s)=%s", e.getKey(), e.getValue()));
+Files.write(file, (Iterable&lt;String&gt;)s::iterator, Charset.forName("UTF-8"));
+</pre>
+    <p>This compiles and works. What's happening here? <code>s::iterator</code> is a method reference which matches a <code>Supplier&lt;Iterator&lt;T&gt;&gt;</code>.
+      By matching, in Java 8 we mean that the two things are both functional interfaces sharing the same “functional
+      descriptor”: Java 8 doesn't care of the method names, but of the fact that they have the same parameters and
+      return type (and eventually the throw clause). Since also <code>Iterable&lt;T&gt;</code> matches a <code>Supplier&lt;Iterator&lt;T&gt;&gt;</code>,
+      <code>s::iterator</code> can be assigned to an <code>Iterable&lt;String&gt;</code>.</p>
+    <p>So, why the explicit cast <code>(Iterable&lt;String&gt;)</code>? It is required indeed, otherwise the compiler
+      would complain again:</p>
+    <pre>error: no suitable method found for write(Path,s::iterator,Charset)</pre>
+    <p> The reason for this fact is more obscure. Again, Remi Forax explains that:</p>
+    <blockquote>
+      <p> The conversion from a method reference to a functional interface doesn't work if the target type is
+        parameterized by wildcard. This is specified like this in the Java spec. I consider that this is a bug but this
+        is actually what the spec says. I hope we will be able to fix that in Java 10, but that just my opinion. </p>
+    </blockquote>
+    <p>The problem is the wildcard, since <code>Files.write()</code> accepts an <code>Iterable&lt;? extends
+        CharSequence&gt;</code>. So we have to live with that cast, that it's just a minor annoyance after all. Unless <a
+        href="https://bugs.openjdk.java.net/browse/JDK-8141608">this RFE</a> is accepted for Java 10... </p>
+    <h4>A better approach</h4>
+    <p>Note that first comment of the RFE: the idea has been suggested to write a specific <code>Collector</code> to do
+      the job as an alternate solution - it is a smart idea IMHO, as what we're actually doing is a collection of the <code>Stream</code>
+      products into a file. <a href="/fabrizio/blog/a-real-world-example-of-refactoring-with-java-8-streams/">I've
+        already posted</a> about how to write a custom <code>Collector</code>. A possible solution is:</p>
+    <pre class="prettyprint lang-java">
+public final class FileCollector implements Collector&lt;String, PrintWriter, Void&gt;
+  {
+    private final PrintWriter pw;
+
+    private final AtomicBoolean parallelChecker = new AtomicBoolean();
+
+    public static Collector&lt;String, ?, ?&gt; toFile (final Path file,
+                                                  final Charset charset,
+                                                  final OpenOption ... openOptions)
+      throws IOException
+      {
+        return new FileCollector(file, charset, openOptions);
+      }
+
+    private FileCollector()
+      {
+        throw new UnsupportedOperationException();
+      }
+
+    private FileCollector (final Path file, final Charset charset, final OpenOption ... openOptions)
+      throws IOException
+      {
+        pw = new PrintWriter(Files.newBufferedWriter(file, charset, openOptions));
+      }
+
+    @Override
+    public Supplier&lt;PrintWriter&gt; supplier()
+      {
+        return this::oneShotPrintWriterSupplier;
+      }
+
+    @Override
+    public BiConsumer&lt;PrintWriter, String&gt; accumulator()
+      {
+        return PrintWriter::println;
+      }
+
+    @Override
+    public BinaryOperator&lt;PrintWriter&gt; combiner()
+      {
+        return (a, b) -&gt; { fail(); return null; }; // never called
+      }
+
+    @Override
+    public Function&lt;PrintWriter, Void&gt; finisher()
+      {
+        return pw -&gt; { pw.close(); return null; };
+      }
+
+    @Override
+    public Set&lt;Characteristics&gt; characteristics()
+      {
+        return Collections.emptySet();
+      }
+
+    private PrintWriter oneShotPrintWriterSupplier()
+      {
+        if (parallelChecker.getAndSet(true))
+          {
+            fail();
+          }
+
+        return pw;
+      }
+
+    private void fail()
+      {
+        pw.close();
+        throw new IllegalStateException("Can't be used with a parallel Stream!");
+      }
+  }
+
+</pre>
+    <p>Basically, we're saying that this collector can be applied to a <code>Stream</code> of <code>Strings</code>, it
+      uses a <code>PrintWriter</code> as the accumulator and doesn't produce a Java object as the result (that's why I
+      used <code>Void</code> as the third type parameter). The implementation is straightforward, but there is a point
+      that must be dealt with: parallelism. <code>Collector</code>s in fact are designed to work in parallel if the
+      incoming <code>Stream</code> is parallel; but writing objects to a file can't be a parallel operation.
+      Eventually, the incoming <code>Stream</code> must be turned into a sequential one before calling <code>collect()</code>;
+      and our <code>Collector</code> should perform a safety check. Unfortunately the <code>Collector</code> itself
+      never sees the <code>Stream</code> it is applied to; but we can assume that it is being run in parallel if the <code>Supplier</code>
+      of the accumulator is called more than once (note that the check might be triggered <em>after </em>that some
+      items have been already processed and written to the file). At this point, it is safe to assume (at least with the
+      current implementation of the Java 8 runtime...) <a href="http://stackoverflow.com/questions/29210176/can-a-collectors-combiner-function-ever-be-used-on-sequential-streams">that
+        the combiner is never called</a>. </p>
+    <p>The code can be tested with TestNG:</p>
+    <pre class="prettyprint lang-java">
+private Collector&lt;String, ?, ?&gt; underTest;
+
+...
+
+@BeforeMethod
+public void setup()
+  throws IOException
+  {
+    underTest = FileCollector.toFile(file, Charset.forName("UTF-8"));
+  }
+
+...
+
+@Test(invocationCount = 100,
+      expectedExceptions = IllegalStateException.class,
+      expectedExceptionsMessageRegExp = ".*Can't be used with a parallel Stream!")
+public void must_fail_with_a_parallel_stream()
+  {
+    IntStream.range(0, 10000)
+             .mapToObj(n -&gt; "String #" + n)
+             .collect(toList())
+             .parallelStream()
+             .collect(underTest);
+  }
+</pre>
+    <div class="alert">
+      <p> Note that not specifying <code>CONCURRENT</code> in the characteristics does not ensure that the <code>Collector</code>
+        is run in a sequential fashion: it only means that the accumulator cannot be manipulated in a concurrent way,
+        but with a parallel <code>Stream</code> the runtime might still <a href="http://stackoverflow.com/questions/22350288/parallel-streams-collectors-and-thread-safety">use
+          multiple accumulators in parallel</a> (synchronizing the calls to the <code>Collector</code> that manipulate
+        them). <em>As per Java 8, there is no way to surely force a <code>Collector</code> to run in a sequential
+          fashion with a parallel <code>Stream</code>.</em></p>
+    </div>
+    <p>It's possible to write the <code>Collector</code> in a radically shorter fashion. Given that in the end it's
+      just an aggregate of four lambdas, a factory method <code>Collector.or()</code> might be used by providing them
+      inline. Note that this is possible even when there are status variables, as they can be turned into variables in
+      the scope of the factory method. Since lambdas can be usually written in a single line, the result is shorter.
+      Below the shorter code, even though I'm unsure what version is more readable, especially considering a reader that
+      is at his first experience with Java 8.</p>
+    <div class="tip">
+      <p>Lambdas can access variables declared in the enclosing scope, but they must be final, as it happens with inner
+        classes. The compiler doesn't require them to be declared <code>final</code>, it suffices that they are not
+        re-assigned (<em>“effectively final”</em>). Nevertheless I prefer to always use the <code>final</code> keyword
+        every time something is final, for better readability.</p>
+    </div>
+    <pre class="prettyprint lang-java">
+public final class FileCollector
+  {
+    public static Collector&lt;String, ?, ?&gt; toFile (final Path file,
+                                                  final Charset charset,
+                                                  final OpenOption ... openOptions)
+      throws IOException
+      {
+        final PrintWriter pw = new PrintWriter(Files.newBufferedWriter(file, charset, openOptions));
+        final AtomicBoolean parallelChecker = new AtomicBoolean();
+
+        return Collector.of(() -&gt; safeGetPrintWriter(parallelChecker.getAndSet(true), pw),
+                            PrintWriter::println,
+                            (a, b) -&gt; safeGetPrintWriter(true, pw), // never called
+                            pw2 -&gt; { pw2.close(); return null; });
+      }
+
+    private FileCollector()
+      {
+        throw new UnsupportedOperationException();
+      }
+
+    private static PrintWriter safeGetPrintWriter (final boolean condition, final PrintWriter pw)
+      {
+        if (condition)
+          {
+            pw.close();
+            throw new IllegalStateException("Can't be used with a parallel Stream!");
+          }
+
+        return pw;
+      }
+  }
+</pre>
+    <p>With the new <code>Collector</code> this point the original code can be refactored into:</p>
+    <pre class="prettyprint lang-java">
+private void store (final Path targetPath, final Map&lt;String, String&gt; storage)
+  throws IOException
+  {
+    final Path folder = targetPath.resolve(".it.tidalwave.solidblue2");
+    final Path file = folder.resolve("fingerprints-j8.txt");
+    Files.createDirectories(folder);
+    log.info("Storing results into {} ...", file);
+    storage.entrySet().stream()
+                      .sorted(comparing(Entry::getKey))
+                      .map(e -&gt; String.format("MD5(%s)=%s", e.getKey(), e.getValue()))
+                      .collect(toFile(file, Charset.forName("UTF-8")));
+  }
+</pre>
+    <p>One relevant part of Remi's comment was about performance. Perhaps in most cases we can safely ignore the
+      performance hit (for instance, when we have just a few lines to write). Since I've started grokking with the <a href="http://openjdk.java.net/projects/code-tools/jmh/">Java
+        Micro Benchmarking Harness (JMH)</a> it could be a useful exercise to measure the performance of the alternate
+      solutions of the problem I presented here. Stuff for a further post. </p>
+    <p>The whole project, made with Maven, is available at <a href="https://bitbucket.org/tidalwave/solidblue2-src/">BitBucket</a>;
+      the source illustrated in this post is part of <a href="https://bitbucket.org/tidalwave/solidblue2-src/src/0ca5893f839c1d526e027afe8c197e84257639d7/?at=1.0-ALPHA-3">1.0-ALPHA-3</a>.</p>
+    <p>
+      <meta charset="utf-8" />
+    </p>
+  </body>
+</html>

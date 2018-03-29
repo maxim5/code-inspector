@@ -1,0 +1,243 @@
+#!/usr/bin/env perl
+#
+# Copyright (C) 2007 Ryan Kubica (ryankubica@yahoo.com)
+# Distributed under GPLv2; see License_Epic for details
+#
+
+BEGIN {
+
+   use Getopt::Std;
+   use File::Basename;
+ 
+   use vars qw(%cfg
+               %opts);
+ 
+   $cfg{'command'} =  shift(@ARGV) . "_" . shift(@ARGV);
+
+   getopts('g:G:a:t:c:o:w:l:dfuev', \%opts);
+
+   my($pwd) = $ENV{'PWD'};
+
+   if (($0   =~ /epic-(\S+?)\//) ||
+       ($pwd =~ /epic-(\S+?)\//) ||
+       ($pwd =~ /epic-(\S+)$/)) {
+ 
+      $cfg{'module'} =  $1;
+      $cfg{'module'} =~ s/^(\S+?)_/$1/;
+ 
+   }
+   elsif ($ARGV[0]) {
+ 
+      $cfg{'module'} = $ARGV[0];
+ 
+   }
+   else {
+ 
+      $cfg{'module'} = 'undefined';
+ 
+   }
+
+   $cfg{'program'} = 'manage';
+
+}
+
+use DBI;
+use Time::HiRes qw ( time );
+use Text::Table;
+
+use strict 'vars';
+
+use lib ("/apps/epic/epic-$cfg{'module'}/lib");
+
+use vars qw(%db
+            $dsn
+            $dbh);
+
+chomp($cfg{'hostname'} = `hostname`);
+
+require('manage.pl');
+require('config.pl');
+require('epic.pl');
+require('rrdlib.pl');
+
+#
+# - Subroutines
+#
+
+sub help {
+
+   print <<EOF;
+
+Syntax:
+
+   manage SECTION COMMAND [-g node_group] [arg(s)]
+
+      example: manage node list
+
+
+   SECTION: node
+
+      list              - list node(s) 
+                          -g - specifies group (not required)
+                          -e - extended information
+                          -a - age in days (use negative for less than days)
+                          -o - order by column, supports comma delimited columns
+
+      add               - add node(s)
+                          -g - specifies group (required unless -G)
+                          -G - specifies a secondary group for node to
+                               be added to
+
+      remove            - remove node(s) and all data (unless -G given)
+
+                          -G - specifies a secondary group for node to
+                               be removed from
+
+      enable_poller     - enable node(s) for polling
+      disable_poller    - disable node(s) for polling
+
+      disable_aggregate - disable host from aggregation in this group
+      enable_aggregate  - enabled host for aggregation in this group
+
+      check             - check IP in epic database against DNS
+                          -u - will request to update IP in epic with DNS IP
+
+
+   SECTION: aggregate
+
+      list              - list aggregate node_groups being reported on
+
+      enable            - enable aggregate reporting for a node_group
+
+      disable           - disable aggregate reporting for a node_group
+
+
+   SECTION: config
+
+      select            - select from a configuration table
+                          -t - defines table
+                          -w - specifies WHERE clause
+                          -l - limit of rows to return (default: 100)
+
+      insert            - insert a record into a configuration table
+
+                          -t - defines table
+                          -c - "column=val" pairs, delimiter is ;
+
+      delete            - delete a record from a configuration table
+
+                          -t - defines table
+
+                          notation must include id=(ID COLUMN) - this function
+                          will only modify one specific row id
+
+      update            - update a record in a configuration table
+
+                          -t - defines table
+                          -c - "column=val" pairs, delimiter is ;
+
+                          notation must include id=(ID COLUMN) - this function
+                          will only modify one specific row id
+
+      valid tables are:
+
+         configuration  - epic daemon configuration
+         eapi_auth      - eapi authentication table
+         snmp_mib       - snmp polling definitions
+         nsmt_mib       - icmp/tcp/http/plugin polling definitions
+         jmx_mib        - jmx polling definitions
+         wmi_mib        - wmi polling definitions (windows)
+
+         rrd_create     - rrd rra definitions for rrd creating
+         rrd_ds         - data source definitions
+         rrd_gr         - graph rules
+
+
+   SECTION: audit
+
+      rrd_aged          - audit rrd data files not written to recently
+                          -a - specifies in days for age (default: 180)
+
+      rrd_check         - audit rrd data files for corruption
+                          -a - specifies in days for check (default: 15)
+                          -d - delete files found corrupted
+
+      rrd_filesystem    - audit rrd_filesystem: sql table entries <-> rrd files
+                          -d - corrects inconsistencies found
+
+   SECTION: install
+
+      client            - pushes client to remote node(s), install and runs
+                          -g - specifies group
+
+   SECTION: create
+
+      client            - creates tar.gz and rpm of epic-client
+                          located at:
+                             tar.gz /apps/epic/dist/$cfg{'module'}/SOURCES
+                             rpm    /apps/epic/dist/$cfg{'module'}/RPMS/noarch
+
+EOF
+
+}
+
+#
+# - Main
+#
+
+require("/apps/epic/epic-$cfg{'module'}/conf/$cfg{'module'}/module.cf");
+
+$dsn = "DBI:$db{'driver'}:database=$db{'database'};host=$db{'hostname'};port=$db{'port'}";
+$dbh = DBI->connect($dsn, $db{'username'}, $db{'password'});
+
+read_configuration();
+
+# modify case of opts
+#
+
+$opts{'g'} =~ tr/A-Z/a-z/ if ($opts{'g'});
+$opts{'G'} =~ tr/A-Z/a-z/ if ($opts{'G'});
+
+# opts functions
+#
+
+CASE: {
+
+   manage_node_add               (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'node_add');
+   manage_node_remove            (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'node_remove');
+   manage_node_enable            (%opts, argv => \@ARGV, feature => 'Poller'),    last if ($cfg{'command'} eq 'node_enable_poller');
+   manage_node_disable           (%opts, argv => \@ARGV, feature => 'Poller'),    last if ($cfg{'command'} eq 'node_disable_poller');
+   manage_node_enable            (%opts, argv => \@ARGV, feature => 'Aggregate'), last if ($cfg{'command'} eq 'node_enable_aggregate');
+   manage_node_disable           (%opts, argv => \@ARGV, feature => 'Aggregate'), last if ($cfg{'command'} eq 'node_disable_aggregate');
+   manage_node_check_against_dns (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'node_check');
+   manage_node_list              (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'node_list');
+
+   manage_cnode_add              (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'cnode_add');
+
+   manage_aggregate_enable       (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'aggregate_enable');
+   manage_aggregate_disable      (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'aggregate_disable');
+   manage_aggregate_list         (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'aggregate_list');
+
+   manage_audit_rrd_aged         (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'audit_rrd_aged');
+   manage_audit_rrd_filesystem   (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'audit_rrd_filesystem');
+   manage_audit_rrd_check        (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'audit_rrd_check');
+   manage_audit_rrd_aged         (%opts, argv => \@ARGV),
+   manage_audit_rrd_filesystem   (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'audit_all');
+
+   manage_config_select          (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'config_select');
+   manage_config_select          (%opts, argv => \@ARGV, feature => 'count'),     last if ($cfg{'command'} eq 'config_count');
+   manage_config_modify          (%opts, argv => \@ARGV, feature => 'insert'),    last if ($cfg{'command'} eq 'config_insert');
+   manage_config_modify          (%opts, argv => \@ARGV, feature => 'delete'),    last if ($cfg{'command'} eq 'config_delete');
+   manage_config_modify          (%opts, argv => \@ARGV, feature => 'update'),    last if ($cfg{'command'} eq 'config_update');
+   manage_config_set             (%opts, argv => \@ARGV, feature => 'set'),       last if ($cfg{'command'} eq 'config_set');
+
+   manage_install_client         (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'install_client');
+   manage_create_client          (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'create_client');
+
+   manage_generate_authkey       (%opts, argv => \@ARGV),                         last if ($cfg{'command'} eq 'generate_authkey');
+
+   help();
+
+}
+
+$dbh->disconnect();

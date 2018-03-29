@@ -1,0 +1,3501 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- vim: set indentexpr=:   -->
+<!DOCTYPE
+    html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US">
+<head>
+<title>blogs.perl.org Blog</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+div.entry
+{
+    border: darkgreen solid medium;
+    padding: 0.5em;
+    margin: 0.5em;
+}
+</style>
+</head>
+<body>
+
+<div class="entry" id="text-table-1">
+
+<ul class="info">
+<li><b>Date:</b> 21-04-2011</li>
+</ul>
+
+<h1>Introduction to blogs.perl.org + Text::Table</h1>
+
+<p>
+Hello, Perl bloggers! I decided to start
+blogging about a most of my exclusively Perl-related stuff here on
+blogs.perl.org, in hope of getting more comments
+from active Perlers. (Until now, I've blogged about it
+<a href="http://shlomif-tech.livejournal.com/">on
+my technical LiveJournal blog</a> and previously on
+<a href="http://use.perl.org/~Shlomi+Fish/journal/">use.perl.org Journal</a>.).
+You can learn more about me on <a href="http://www.shlomifish.org/">my home
+site - www.shlomifish.org</a> .
+</p>
+
+<p>
+OK, having put that aside - let's move on to the main topic of this post.
+</p>
+
+<hr />
+
+<p>
+Many months ago I wanted to use the
+<a href="http://search.cpan.org/dist/Text-Table/">Text::Table CPAN module</a>
+to present a table related to the meta-scan heuristics construction
+scheme of <a href="http://fc-solve.berlios.de/">Freecell Solver</a>. Now,
+I wanted to present nicely formatted borders, using the
+<a href="http://en.wikipedia.org/wiki/Box-drawing_characters">Unicode
+box-drawing characters</a> (which some people would recall from DOS).
+However, I found it difficult to specify the separators in the
+rulers properly based on their indices - they were assumed to be the
+same globally. As a result, I've written
+<a href="https://rt.cpan.org/Public/Bug/Display.html?id=61610">a patch</a>,
+and placed the modifications in
+<a href="http://github.com/shlomif/Text-Table">a github repository</a>.
+</p>
+
+<p>
+The author of Text-Table (ANNO) told me he was working on a new version
+of Text-Table, which will contain many improvements. However, I was still
+interested in an enhanced version of the old Text-Table codebase with my
+patch, and after talking on <a href="irc://irc.freenode.net/#perl">#perl</a>,
+ANNO said I could have co-maint
+on Text-Table-1.x and continue to improve it. The new Text-Table will be
+released under a separate namespace - <tt>Text::Table2</tt> or so.
+</p>
+
+<p>
+Many thanks go to ANNO for agreeing that I further develop Text::Table.
+</p>
+
+<p>
+Using my git repository, I did many cleanups, like add
+pod.t and pod-coverage.t, tweak the author information, add more strict and
+warnings to the file, etc. ANNO 's original licence is
+<a href="http://perlbuzz.com/2009/07/help-end-licensing-under-same-terms-as-perl-itself.html">"Same
+terms as Perl"</a>, but since it is an iffy licensing, I decided that all
+further changes will be under the terms of the Public-Domain/X11L/etc.. People
+who send me pull requests on github may wish to add their names to the credits
+(in the changes or even in the core module) but must not claim copyrights to
+their changes.
+</p>
+
+<p>
+OK, now for some output of the Unicode table:
+</p>
+
+<pre>
+┌───────╥─────┬──────┬─────┬────┬──────┐
+│ Place ║ 1   │ 2    │ 3   │ 4  │ 5    │
+├───────╫─────┼──────┼─────┼────┼──────┤
+│ 1     ║ 68  │ 317  │ 15  │ 3  │ 381  │
+├───────╫─────┼──────┼─────┼────┼──────┤
+│ 2     ║ 171 │ 482  │ 31  │ 14 │ 594  │
+├───────╫─────┼──────┼─────┼────┼──────┤
+│ 3     ║ 275 │ 867  │ 42  │ 22 │ 1007 │
+├───────╫─────┼──────┼─────┼────┼──────┤
+│ 4     ║ 458 │ 1442 │ 125 │ 30 │ 1630 │
+├───────╫─────┼──────┼─────┼────┼──────┤
+│ 5     ║ 640 │ 1715 │ 137 │ 47 │ 1730 │
+└───────╨─────┴──────┴─────┴────┴──────┘
+</pre>
+
+<p>
+Future plans are:
+</p>
+
+<ol>
+
+<li>
+Convert the remaining test scripts to Test::More.
+</li>
+
+<li>
+Go over the code and clean it up
+</li>
+
+<li>
+Add CPAN keywords to the <tt>META.yml</tt>. (Perhaps this will require
+defining a Module-Build-based Build.PL file).
+</li>
+
+<li>
+Add URLs to the <tt>META.ym</tt>l - to the module's homepage, to the github repository,
+etc..
+</li>
+
+<li>
+Possibly implement some future features.
+</li>
+
+<li>
+Add some more tests.
+</li>
+
+</ol>
+
+<p>
+Contributions are naturally welcome, just fork the github repository and send
+me a pull request. (Or patches are also OK.)
+</p>
+
+</div>
+
+<div class="entry" id="entry-to-yapc-europe-2011">
+
+<ul class="info">
+<li><b>Date:</b> 20-06-2011</li>
+<li class="tags">YAPC</li>
+</ul>
+
+<h1>Transferring a Ticket to YAPC::Europe::2011</h1>
+
+<p>
+I originally planned to attend
+<a href="http://yapceurope.lv/ye2011/">YAPC::Europe::2011</a> in Riga, Latvia
+(on 15-17 August, 2011), and so bought an early bird ticket, but will no
+longer be able to attend due to personal reasons. As a result, I'm now seaking
+to transfer the ticket to someone else, for the right price (which will be
+cheaper than what I bought it.).
+</p>
+
+<p>
+If you are interested, please
+<a href="http://www.shlomifish.org/me/contact-me/">contact me</a> and we will
+negotiate a price. I hope everybody enjoys the YAPCs.
+</p>
+
+</div>
+
+<div class="entry" id="resuming-maintenance-of-xml-libxml">
+
+<ul class="info">
+<li><b>Date:</b> 20-06-2011</li>
+<li class="tags">XML, libxml, CPAN</li>
+</ul>
+
+<h1>Resuming Maintenance of XML-LibXML</h1>
+
+<p>
+For a long while, work on the
+<a href="http://beta.metacpan.org/release/XML-LibXML">XML-LibXML
+CPAN module</a> halted as the existing maintainer was busy.
+After <a href="http://code.activestate.com/lists/perl-xml/8885/">a
+discussion</a> on the Perl-in-XML mailing list, some people and I were
+given co-maintainer status and we resumed its maintenance inside
+<a href="https://bitbucket.org/shlomif/perl-xml-libxml">a Bitbucket.org
+Mercurial repository</a>.
+</p>
+
+<p>
+So far what I did, was fix some low-hanging fruit
+bugs, apply some patches, as well as start the long process of converting
+the test suite, which still uses Test.pm to
+<a href="http://beta.metacpan.org/module/Test::More">Test::More</a> . There are
+still many bugs lurking there, and some of them are XS bugs that are still
+beyond my reach, and I could use some assistance there. But it's a start.
+</p>
+
+<p>
+If you're interested in helping, the clone the repository, write a patch and
+send me a pull request.
+</p>
+
+<p>
+<b>Text::Table Update:</b> I've written about
+<a href="http://blogs.perl.org/users/shlomi_fish/2011/04/introduction-to-blogsperlorg-texttable.html">resuming
+the maintenance of Text::Table</a> in April, and it progressed nicely:
+the tests were converted to Test::More, a lot of the code was cleaned up,
+the build system was converted to Module::Build, and keywords and resource
+URLs were defined, and some bugs were solved (along with tests). I'm still
+looking into ways to clean up the code, and if anyone has an idea for a cool
+feature, then they should drop me a line (or provide a patch).
+</p>
+
+</div>
+
+<div class="entry" id="convert-away-from-Test.pm">
+
+<ul class="info">
+<li><b>Date:</b> 23-06-2011</li>
+<li class="tags">QA, PPI, Perl</li>
+</ul>
+
+<h1>PPI-Based Script to Convert Test.pm-based Test Programs to Test::More</h1>
+
+<p>
+Some CPAN modules I inherited used the old
+<a href="http://search.cpan.org/perldoc?Test">Test.pm</a> for some of their
+<tt>t/*.t</tt> scripts instead of the more modern
+<a href="http://en.wikipedia.org/wiki/Test::More">Test::More</a>. This
+annoys me to no end because Test.pm is very limited. When I worked on
+<a href="http://beta.metacpan.org/release/Config-IniFiles">Config-IniFiles</a>,
+I did the conversion manually, which was a lot of work. More recently, I
+<a href="http://blogs.perl.org/users/shlomi_fish/2011/06/resuming-maintenance-of-xml-libxml.html">started
+working on XML-LibXML</a> which has over 40 of those pesky Test.pm scripts, and
+I did not have the nerve to do all the manual and menial work.
+</p>
+
+<p>
+As a result, I ended up spending a few hours studying
+<a href="http://beta.metacpan.org/release/PPI">PPI</a> (the Perl Parsing
+Interface), and writing
+<a href="http://www.shlomifish.org/open-source/projects/Test.pm-Converter/">a
+script</a> to automatically convert Test.pm-based scripts to Test::More. The
+main issue at hand was that in Test.pm, a single argument <tt>ok()</tt>
+tests for the scalar's truth, while a double argument <tt>ok()</tt> tests for
+simple equivalence (similarly to Test::More's <tt>is()</tt>). Eventually, I got
+the script working, with some limitations (see <a
+href="http://www.shlomifish.org/open-source/projects/Test.pm-Converter/">the page</a>).
+</p>
+
+<p>
+So what was my impression of PPI? It naturally seems more robust than using
+regular expressions and hacks to process Perl code, but there were a few quirks.
+For example, a PPI
+<a href="http://beta.metacpan.org/module/PPI::Structure::List">list</a> contains
+an array of its contents, and the commas are part of them, as are the
+various other tokens in the sub-expressions. Therefore, divining the count of
+the  arguments is pretty hard. I would have expected to get a more <a href="http://en.wikipedia.org/wiki/Abstract_syntax_tree">abstract
+syntax tree</a> of the arguments, and since I didn't I had to work around
+it with an ugly kludge.
+</p>
+
+<p>
+Furthermore, after stringifying the document object, the contents of the
+<a href="http://en.wikipedia.org/wiki/Here_document">here-documents</a> were
+not included in the output from some reason. However, I may have done something
+wrong. I also wish the PPI PODs contained more meaningful examples.
+</p>
+
+<p>
+Nevertheless, my script is mostly working now and I can utilise it to
+"test-lift" legacy test programs. You might find it useful too, so it's there
+in case you need it, and patches to fix its limitations would be welcome.
+</p>
+
+</div>
+
+<div class="entry" id="Inline-C">
+
+<ul class="info">
+<li><b>Date:</b> 09-11-2011</li>
+<li class="tags">Perl, QA, XS, Inline, C, ctypes, gcc</li>
+</ul>
+
+<h1>My Experience with Inline::C</h1>
+
+<p>
+I know I didn’t write here for a long time, and I apologise for it, but I have
+this entry and another one in mind and I hope they can compensate for it.
+</p>
+
+<p>
+For my work on <a href="http://fc-solve.shlomifish.org/">Freecell Solver</a>,
+I’ve written some code for encoding and decoding game positions into a
+compact format, by encoding them as a delta from the position of origin. I
+first wrote it in Perl, in order to prototype it, and later
+translated it to C (which is the language that Freecell Solver is written in).
+I have written some rudimentary unit tests for it, but also wanted to test the
+code against a large number of positions, by runnign it over the solutions of
+many Freecell deals.
+</p>
+
+<p>
+The encoding rearranges the order of the card columns and the freecells, so
+testing that the output test is correct requires calculating that arrangement.
+This was also done by the Perl code. I decided to write a small wrapper for
+an encoding+decoding round-trip in C, and use it from a Perl program I was
+writing. So far so good.
+</p>
+
+<p>
+I first looked at <a href="https://gitorious.org/perl-ctypes">the
+Perl version of Ctypes</a>, but it failed a large number of its assertions
+on my system, so I could not really trust it. Then I looked at
+<a href="http://search.cpan.org/perldoc?Inline::C">Inline::C</a>. I could
+not understand from its main page, how to return an <tt>SV *</tt> containing
+a string from it, but this was covered in the extensive
+<a href="http://search.cpan.org/perldoc?Inline::C-Cookbook">Inline::C
+cookbook</a> and I wrote this Inline::C function:
+</p>
+
+<pre>
+extern char * fc_solve_user_INTERNAL_delta_states_enc_and_dec(
+    const char * init_state_str_proto,
+    const char * derived_state_str_proto
+    );
+
+SV* enc_and_dec(char * init_state_s, char * derived_state_s) {
+    SV * ret;
+    char * s;
+    s = fc_solve_user_INTERNAL_delta_states_enc_and_dec(init_state_s, derived_state_s);
+
+    ret = newSVpv(s, 0);
+    free(s);
+    return ret;
+}
+</pre>
+
+<p>
+I don't need to use “sv_2mortal” there because Inline::C does that for us.
+Then I tried to test it. It failed with this error:
+</p>
+
+<pre>
+perl: symbol lookup error: /home/shlomif/progs/freecell/trunk/fc-solve/source/_Inline/lib/auto/Mega_Test_for_C_delta_states_pl_9385/Mega_Test_for_C_delta_states_pl_9385.so: undefined symbol: fc_solve_user_INTERNAL_delta_states_enc_and_dec
+</pre>
+
+<p>
+I was familiar with errors like that, but it took me over an hour of playing
+with the various Inline::C configuration options, and trying to figure out
+why it didn’t link against the relevant Freecell Solver library to realise
+what the problem was. It was that the library in question did not export the
+symbol, and gcc realised it didn't give the XS extension anything and omitted
+it.
+</p>
+
+<p>
+After fixing this line in my C source:
+</p>
+
+<pre>
+char * DLLEXPORT fc_solve_user_INTERNAL_delta_states_enc_and_dec(
+</pre>
+
+<p>
+To this line:
+</p>
+
+<pre>
+DLLEXPORT char * fc_solve_user_INTERNAL_delta_states_enc_and_dec(
+</pre>
+
+<p>
+Everything worked properly, and I was able to run the so-called “mega-test”.
+</p>
+
+<p>
+If you’re having similar problems with Inline::C, you should try to add
+<tt>CLEAN_AFTER_BUILD =&gt; 0</tt> to its configuration. It ended up clarifying
+a lot for me.
+</p>
+
+<p>
+Cheers!
+</p>
+
+</div>
+
+<div class="entry" id="exec-portability">
+
+<ul class="info">
+<li><b>Date:</b> 09-11-2011</li>
+<li class="tags">exec, perl, portability, whitespace, windows, unix</li>
+</ul>
+
+<h1>exec's portability</h1>
+
+<p>
+Pop quiz! What does this perl 5 program prints when executed with no
+arguments?
+</p>
+
+<pre>
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+if (! @ARGV)
+{
+    exec($^X, $0, "hello world");
+}
+else
+{
+    my $arg = shift(@ARGV);
+    print "Got &lt;$arg&gt;\n";
+    if (@ARGV)
+    {
+        print "Other args are &lt;@ARGV&gt;\n";
+    }
+}
+</pre>
+
+<p>
+The answer is “it depends.”. On my Linux system it prints
+“Got &lt;hello world&gt;”, while on Windows, using Strawberry Perl, it
+prints “Got &lt;hello&gt;” and later on that the other args are “world”.
+</p>
+
+<p>
+I would expect the Linux behaviour were every argument passed to the list
+<a href="http://perldoc.perl.org/functions/exec.html">exec</a> arrives as
+one argument to <tt>@ARGV</tt> regardless of whitespace as the correct. It
+also the behaviour exhibited on both operating systems using
+<a href="http://perldoc.perl.org/functions/system.html">system</a>. Is this
+a bug?
+</p>
+
+<p>
+<a href="http://perldoc.perl.org/perlport.html">perlport</a> only has this
+to say about whitespace: <q>Whitespace in filenames is tolerated on most
+systems, but not all, and even on systems where it might be tolerated, some
+utilities might become confused by such whitespace.</q>.
+</p>
+
+<p>
+I discovered this strange mis-behaviour when working on a commission for
+a client who is Windows-based.
+</p>
+
+</div>
+
+<div class="entry" id="telaviv_pm_2011_Nov_report">
+
+<ul class="info">
+<li><b>Date:</b> 03-12-2011</li>
+<li class="tags">Perl, Mongers, Tel Aviv, Israel, meeting, DBI, DBIx-Class, local-lib, perlbrew, cpanminus, CPAN, Firebird, SQL</li>
+</ul>
+
+<h1>Report on the Latest Tel Aviv Perl Mongers Meeting</h1>
+
+<p>
+I attended the latest
+<a href="http://telaviv.pm.org/">Tel Aviv Perl Mongers (TelAviv.pm)</a>
+meeting the other
+day, and am writing this report in order to encourage more people
+to come. We didn't have meetings in September or October due to the Jewish
+holidays and some renovations on the site, so it was good to finally have
+a meeting.
+</p>
+
+<p>
+Before the meeting, I had helped publicise it on various online news channels,
+and thankfully quite a few people (about 20-30) came. I had a previous
+appointment that day at 12:00, and so returned home where I ate, worked on
+the computer, and rested before the TelAviv.pm meeting.
+</p>
+
+<p>
+After I rode the bus, I arrived there a few minutes earlier. I met a fellow
+Perl monger on the way. We found the room with some difficulty, as there were
+very few signs outside the doors of the various rooms in the building. Several
+people
+including  <a href="http://szabgab.com/">Gabor</a> were already sitting
+in the room.
+They were discussing the upcoming Israeli Perl Workshop in February. In any
+case, I decided to walk to the nearby
+grocery store to buy some refreshments for the meeting, and when I returned
+there were more people in the room.
+</p>
+
+<p>
+Quite a few people arrived relatively late, but the talks started mostly on
+schedule. The first talk (by Erez Schatz) was short, and it discussed some
+recent tools that
+facilitate the Perl programmer’s life: <a href="http://search.cpan.org/dist/local-lib/">local-lib</a>, <a href="http://www.perlbrew.pl/">perlbrew</a>, cpanm
+and pm-uninstall. The talk was very fun, and he ended up covering some other
+tools in brief in the last slide. I’m still not convinced that I should use
+CPAN-Minus instead of my CPANPLUS (especially given
+<a href="http://search.cpan.org/dist/CPANPLUS-Dist-Mageia/">CPANPLUS-Dist-Mageia</a>
+and friends), but I still like perlbrew and local::lib and pm-uninstall seems
+useful.
+</p>
+
+<p>
+Erez mentioned that on Perl forums there were several very common and hated
+questions like “How do I uninstall a perl module?” or “How can I use
+CPAN without root?” and that these technologies address these needs precisely.
+</p>
+
+<p>
+After this talk, Erez gave a longer talk about DBIx-Class, which is an
+Object-Relational Mapper (ORM) for Perl. For the demo, he used a company
+whose employees are dogs, and the slides featured many pictures of dogs in
+suits (some of them pretty scary). There were a few glitches in the
+demonstration, but they
+were promptly overcome, and the <tt>DBIC_TRACE=1</tt> flag was a big help.
+One bug in the code was that instead of updating the employee's department
+(by looking it up by name), the department's name was updated (globally). I
+any case, it was an enjoyable talk, but the person who sat next to me said
+that she didn’t like it because she used to be a DBA, and she was worried about
+performance.
+</p>
+
+<p>
+Erez mentioned that DBIx-Class was the “Elephant in the Room” of Perl ORMs,
+which I had concluded was the case as well.
+</p>
+
+<p>
+After that talk, there was a break, where people got to eat more of the
+cookies I bought and to chat. Afterwards, Ido Kanner presented about
+<a href="http://www.firebirdsql.org/">Firebird SQL</a>. It was a good talk,
+and Ido drew some comparisons between Firebird and SQLite, MySQL and
+PostgreSQL. Firebird looks interesting and it also has embedded (like
+SQLite) and read-only modes.
+</p>
+
+<p>
+One problem during the talk was that the projector kept shutting down,
+and it took us some trouble to restart it. We hoped this problem would be
+resolved in upcoming meetings.
+</p>
+
+<p>
+After the meeting, some of us (about 10) went to Spaghettim (a pasta/etc.
+place) and had dinner. We chatted about Atheism, Cable company tech-support,
+GNOME 3 and KDE 4, and lots of other stuff. This time I had a pizza, which
+although not too bad, made me realise I will be ordering pasta there from now
+on.
+</p>
+
+<p>
+To sum up, it was a very enjoyable meeting, and I’m looking forward for
+more future ones. One thing notable about it is that this time Sawyer did not
+deliver a talk, which made him happy because other people volunteered to do
+so instead.
+</p>
+
+</div>
+
+<div class="entry" id="breaking_the_perl_debugger_for_fun_and_profit">
+
+<ul class="info">
+<li><b>Date:</b> 26-12-2011</li>
+<li class="tags">perl,debugger,debugging,refactoring,features,sopa,telaviv,mongers</li>
+</ul>
+
+<h1>Breaking the Perl Debugger for Fun and Profit</h1>
+
+<p>
+Before I cover the main topic of this entry, here are some short news and
+action items:
+</p>
+
+<ol>
+<li>
+<p>
+If you have not acted against
+<a href="https://www.eff.org/deeplinks/2011/12/fight-blacklist-toolkit-anti-sopa-activists">SOPA
+- the proposed online blacklist/censorship bill</a>, you should. Follow the
+link for information on how to act against it.
+</p>
+</li>
+<li>
+<p>
+I have announced the
+<a href="http://shlomif-tech.livejournal.com/60825.html">next Tel Aviv
+Perl Mongers meeting</a> on my technical journal on LiveJournal.com. It will
+take place this Wednesday, on 28 December, 2011. More information in the link.
+</p>
+</li>
+
+<li>
+<p>
+<a href="http://golf.shinh.org/">Anarchy Golf</a> is a new server for Code Golf,
+which are online programming competitions for implementing code as shortly as
+possible. It supports Perl 5, Perl 6 and many other languages. There is
+<a href="http://golf.shinh.org/p.rb?Starburst">an active challenge</a>, where
+the only Perl 5 submission so far is mine, so I could use some competition.
+</p>
+</li>
+</ol>
+
+<p>
+Now for the main topic of the post. Recently, three patches were integrated
+into the perl-5 core implementing new features in the perl debugger:
+</p>
+
+<ol>
+<li>
+<a href="http://www.nntp.perl.org/group/perl.perl5.porters/2011/04/msg171038.html">Add "b &lt;filename&gt;:&lt;line&gt; &lt;cond&gt;" to perl -d</a> by me.
+</li>
+<li>
+<a href="http://www.nntp.perl.org/group/perl.perl5.porters/2011/08/msg176454.html">Add enable/disable commands for breakpoints in perl -d</a> also by me.
+</li>
+<li>
+<a href="https://rt.perl.org/rt3/Public/Bug/Display.html?id=104168">"Trace to max depth"</a> by Peter Scott.
+</li>
+</ol>
+
+<p>
+When Father Chrysostomos tried to apply the first patch, he noticed its tests
+started failing. Apparently, the breakpoint functionality (irrespective of
+the patch's added functionality) became broken in bleadperl, due to a change
+in the internals, and it wasn't caught by the debugger's existing tests. I
+ended up submitting another patch to add a test for some of the existing
+breakpoint functionality.
+</p>
+
+<p>
+The other two patches passed all of their own tests and the existing ones, but
+that wasn't the end of the story. A short time afterwards
+<a href="https://rt.perl.org/rt3/Public/Bug/Display.html?id=104820">a
+regression was reported in the debugger</a>, which was caused by one of the
+patches that I introduced. While, I fixed it with a test, it was soon followed
+by other reports and fixes. None of these bugs were caught by the test suite
+of the perl debugger, which is incredibly incomplete.
+</p>
+
+<p>
+Another E-mail that caused an active discussion was
+<a href="http://www.nntp.perl.org/group/perl.perl5.porters/2011/11/msg179847.html">my
+proposal to add strict and warnings to lib/perl5db.pl</a>, in which someone
+kept arguing against it, and eventually said he confused it (it being the
+defualt command-line debugger front-end) with the debugger's guts, and ended
+up also supporting adding "use strict;".
+</p>
+
+<p>
+I ended up working on adding "strict" to the debugger on a git branch, and
+was eventually successful (though I temporarily broken no-strict code on the
+debugger evaluated lines, to which I added a test.). RJBS (the current
+pumpking) said he'd like to integrate this patch only after perl-5.16.x
+is released.
+</p>
+
+<p>
+The morals of this story is that the perl debugger needs more tests, and
+that trying to enhance it can easily break it. I started
+<a href="https://github.com/shlomif/perl/tree/perl-d-add-tests-3">a branch
+on GitHub</a> where I've been committing more tests to the perl debugger
+to enhance its coverage.
+</p>
+
+<p>
+There's also a Google Code-In task for devising a strategy to do that, and
+I've volunteered to mentor it. All this will hopefully result in less breakage
+in the future.
+</p>
+
+<p>
+Happy Holidays, and a Happy New Year.
+</p>
+
+</div>
+
+<div class="entry" id="report_on_israeli_perl_workshop_2012">
+
+<ul class="info">
+<li><b>Date:</b> 27-03-2012</li>
+<li class="tags">perl, workshop, israel, events, 2012</li>
+</ul>
+
+<h1>Report on the Israeli Perl Workshop 2012</h1>
+
+<p>
+Well, I've got a lot of stuff I’d like to blog about in the various blogs of
+mine, and so I’m starting with this report on the
+<a href="http://act.perl.org.il/ilpw2012/">Israeli Perl Workshop of 2012</a>,
+which had taken place in 28 February, 2012. Moreover, April Fools' Day is
+approaching, and I had an idea for a Perl-related April Fools' gag, but after
+telling it to RJBS (the current Perl pumpking), he and I agreed that it would
+hit too many nerves. (PerlJam on IRC said he liked it, though). Maybe I’ll
+publish it on 2 April with a big disclaimer on top, just for kicks.
+</p>
+
+<p>
+Anyway, here is the report. I had originally posted it to the Perl in Israel
+mailing list for review, but did not get any reviews, so it may not be too
+letter-perfect, but I guess that’s life.
+</p>
+
+<p>This is my report about the
+<a href="http://act.perl.org.il/ilpw2012/">Israeli Perl Workshop of 2012</a> . It was
+a fun and educational event, and I'm glad I was able to attend it. For better
+or for worse, all the talks I attended were in Room 1, but I was still able
+to hear the ends of a few talks in Room 2 (because the corresponding talks
+in Room 1 ended before them).</p>
+<p>I set up an alarm the night before in order to wake up early in time for the
+event, and ended up waking up some time before it (and even the alarm time was
+much earlier than what I was used to). Then I made some preparations, ate
+breakfast, and caught the appropriate bus. After I walked from the bus station
+to Shenkar, it took me some time to find the place, because it wasn't the
+same entrance as our normal rooms, and the signs were confusing. What I needed
+to do was to take the stairs down to the yard, and then go to the organisation
+room, but it was hard to find.</p>
+<p>There I got my name sticker, the schedule, and some swag from booking.com. I’d
+like to thank <a href="http://www.booking.com/">Booking.com</a> for sponsoring the Israeli
+Perl Workshop 2012 (as well as having a presence there and giving some swag
+and chocolates), and they are looking for software developers with Perl
+experience to relocate to Amsterdam, so please consider working for them.</p>
+<p>In the yard, I met a few people including
+<a href="http://search.cpan.org/~flora/">Florian Ragwitz</a> (a.k.a &quot;FLORA&quot; on CPAN or
+&quot;rafl&quot; on IRC - he has many cool modules there, including quite a few XS ones),
+who was one of the workshop’s visitors from Germany. Despite being German, his
+English accent sounded English to us. Later on we discussed accents in English
+and he noted that the accents of some Israelis he met sounded like French to
+him (while ours seemed less so). This is strange, because Israelis can
+distinguish between a French accent in English and an Israeli Hebrew accent in
+English. </p>
+<p>Anyway, Florian told me that he is planning on reviewing and pulling my
+Test::Aggregate GitHub pull request Real Soon Now™, a fact which has brought
+me some relief, because I've tried to contact him on IRC and ask him if he
+remembers.</p>
+<p>For better or for worse, all the talks that I preferred to hear took place in
+room #1 (while sometimes visiting Room #2) to hear the ends of talks. I still
+would be happy to hear many of the talks that took place in Room #2 in the
+normal Tel Aviv Perl Mongers meetings, or alternatively, those talks in room #1
+which lacked enough time to be conveyed satisfactorily.</p>
+<p>The first talk in the day was
+<a href="http://search.cpan.org/~eilara/">Ran Eilam</a>’s talk about &quot;Syntactic Sugar
+causes Cancer of the Semicolon”, which had to be trimmed towards the end,
+because
+the introduction may have taken too long. The talk was interesting starting
+from an example of <code>ptr-&gt;val</code> being sugar in the C programming language
+for <code>(*ptr).val</code> and continuing to further examples. Ran raised the issue
+of whether syntactic sugar was important or not, which turns out to not be
+a straightforward question. He then demonstrated some modules for syntactic
+sugar on CPAN.</p>
+<p>I hope Ran can give a rerun of it on one of the mongers' meetings with more
+time allocated for that.</p>
+<p>After that I attended the talk of Stefan Hornburg (“racke”, known as
+<a href="http://search.cpan.org/~hornburg/">HORNBURG on CPAN</a>) who was another
+visitor from Germany, about
+<a href="http://act.perl.org.il/ilpw2012/talk/3955">Template::Flute</a> which is a
+designer’s friendly template system. In this template, one uses an HTML file
+with standard HTML attributes for designating the fields that needs to be
+replaced, and then an XML specification file that specifies how to process
+the HTML (and in addition one uses Perl to give it data). As a result the
+designers can manipulate the HTML with their own tools, while still
+allowing the programmers to populate it with data.</p>
+<p>This seems like an interesting and potentially useful tool, but it’s
+less expressive than template systems such as Template Toolkit. After the talk,
+another attendee whom we talked in private questioned the need for both the
+HTML file and the XML specification, but I didn't find a way to avoid it
+given the constraints that the HTML will be valid HTML 4/XHTML 1.</p>
+<p>The next talk about Time Management in Software Projects was cancelled because
+the presenter did not come (due to lack of time management as we joked then).
+I was able to catch a glimpse of the end of
+<a href="http://corky.net/dotan/">Dotan Dimet</a>’s “Perl and JavaScript:
+bioinformatics in a browser window” talk, but I don’t remember a lot of
+it except for a small amount of demonstration.</p>
+<p>The talk about Zero to CPAN was eventually given by
+<a href="http://blogs.perl.org/users/sawyer_x/">Sawyer</a> instead of by
+<a href="http://blogs.perl.org/users/erez_schatz/">Erez Schatz</a>. It was a nice one, and I’ve learned about
+<a href="http://metacpan.org/release/CPAN-Changes">the CPAN-Changes module</a> there
+(after Florian mentioned it, though). Sawyer covered the way to get to a
+working CPAN-like distribution from scratch using tools such as
+module-starter and explained what every file in the CPAN module hierarchy
+does, and demonstrated some test-driven-development. I knew most of it already,
+but it was still a fun talk.</p>
+<p><a href="http://www.linkedin.com/in/amirfr">Amir Friedman</a>‘s talk about software
+configuration management (SCM) came next,
+and he discussed some open-source solutions for the various parts of SCM,
+which include version control, release management, task management, and
+project management. He recommended Gitflow (which we had a talk about
+on the Tel Aviv mongers mailing list) for version control and release
+management, and a different solution called Jenkins for issue tracking (if
+I remember correctly). I then asked what he thought of integrated “all-in-one”
+solutions for SCM, and he said that those were pricey and he did not have
+any significant experience with them.</p>
+<p>The lunch break came next and I overheard a talk between two other people
+about teaching English to speakers of non-English languages. One of them
+said that he once worked with some Spanish Electrical Engineers and that they
+were “completely isolated” from the rest of the world because they didn’t
+read the literature in English. Then we discussed whether it was economical
+to teach English to hundreds of millions of speakers of Spanish, or whether
+we should expect most things to be translated. It was compared to the
+“give a man a fish” vs. “teach a man to fish”. We also discussed the fact that
+Dutchmen tended to have very good English, and one of the other people
+commented that it was true, but that they still tended to prefer using
+software with Dutch localisation.</p>
+<p>I’ve also talked with Sawyer about his upcoming
+<a href="http://act.perl.org.il/ilpw2012/talk/3936">“CGI.pm MUST DIE!” talk</a>. He
+said that he needs to become mentally energised for that talk because he
+feels strongly about it and wants to convey the energy. He passed an
+anecdote from a conference in Europe, in which he had given a talk about
+Dancer, and said he was so emotional then that people said “You must
+see him” and rushed to see his other talk. Moreover, afterwards, when asked
+who were the two best presenters in the conference, they said “[Someone
+very famous] and that Dancer guy”.</p>
+<p>The anti-CGI.pm presenting was indeed energetic and emotional, but kinda fell
+below my expectations due to the yard talk that preceded it. It was still
+pretty informative. Dotan Dimet later took the stage for the rebuttal
+of “CGI.pm - the only web development framework you’ll ever need” which was
+less emotional but still interesting. I was not convinced that CGI.pm’s
+HTML generation routines were a good way to do output HTML (I never really
+liked them), so I may have been more convinced by Sawyer.</p>
+<p><a href="http://www.ynonperek.com/">Ynon Perek</a>’s
+<a href="http://act.perl.org.il/ilpw2012/talk/3977">talk</a> about
+“Implementing Perl (Moose) Design Patterns” came next, which was interesting,
+but again lacked adequate time to cover everything, and I hope will be given
+with less time constraints. One anecdote from there was that Ynon said there
+where three primary ways for polymorphism in Perl: Inheritance (“is-a”),
+Roles/Traits (“does-a”) and Containment/Delegation (“has-a”) and that
+he could no longer recommend inheritance (but did not get to explain why not
+from what I recall).</p>
+<p>In any case, I was surprised at Ynon’s implementation of the Factory
+pattern, and don’t remember the implementation given by him.</p>
+<p>Next came Tamir Lousky’s
+<a href="http://act.perl.org.il/ilpw2012/talk/3953">talk</a> about generating vector
+graphics with Perl and SVG. Its slides contained a lot of very nice eye candy.
+The introduction
+to SVG and generating it was quite rudimentary, and did not cover the full
+potential of SVG. The demonstration and explanation of the module for
+generating random trees using SVG was interesting.</p>
+<p><a href="http://act.perl.org.il/ilpw2012/talk/3959">David Tabachnikov</a>’s next gave an
+interesting talk called “Scaling Up”. He
+contrasted optimisation (which makes your code run faster with the existing
+resources) to vertical scaling (= buying faster computers) to Horizontal
+scaling (= buying more hardware). He also noted that there’s some speed
+difference between the various SQL databases, but he did not encounter a
+situation where it would have made too much difference.</p>
+<p>The last feature of the evening were the lightning talks. I recall a talk
+by Florian Ragwitz about Google Code-In and Google Summer-of-Code. I also
+recall <a href="http://szabgab.com/">Gabor</a>’s talk about surviving in an uncooperative
+workplace. He said
+that if the workplace does not practise best practices such as using version
+control systems or writing automated tests, one can create their own
+small island of sanity where they make use of that on their own, and gradually
+convince the rest of the organisation that it’s beneficial.</p>
+<p>After the lightning talks, some people went to a local restaurant for dinner,
+but I decided against it because I was too tired from waking up early. As a
+result, I found someone who drove up north to drive me home, and got home.</p>
+<p>In the schedule I noticed that one could go to a certain URL at
+<a href="http://www.oreilly.com/">O’Reilly</a> and
+receive a free E-book of their choice. I used this opportunity to get the book
+<a href="http://shop.oreilly.com/product/9780596510046.do">Beautiful Code</a> , which
+I have started reading.</p>
+<p>The day was exhausting but very fun, and I enjoyed all the talks I attended.
+I’d like to thank the organisers of the event and most notably
+<a href="http://szabgab.com/">Gabor Szabo</a> and Sawyer X,
+<a href="http://www.shenkar.ac.il/">Shenkar college</a> for providing the venue,
+<a href="http://www.booking.com/">Booking.com</a> for the sponsorship, O’Reilly for
+the free book presents, the foreign guests who came to present and to attend,
+and all the other presenters, who volunteered to give talks.</p>
+<p>I hope we can repeat this the next year.
+</p>
+
+</div>
+
+<div class="entry" id="the_perl_april_fools_that_could_have_been">
+
+<ul class="info">
+<li><b>Date:</b> 09-04-2012</li>
+<li class="tags">perl, april fools, joke</li>
+</ul>
+
+<h1>The Perl April Fools' Gag That Could Have Been</h1>
+
+<p>
+On my <a href="http://blogs.perl.org/users/shlomi_fish/2012/03/report-on-the-israeli-perl-workshop-2012.html">last entry</a>,
+I told you that I have had an idea for a Perl-related April Fools’ day gag,
+and that I would possibly reveal it on 2-April with a big disclaimer
+on top, just for kicks. Well, it’s already 9-April, but I guess it is better
+late than never, right?
+</p>
+
+<p>
+OK, here is the big disclaimer: <b>THIS IS A JOKE. IT’S NOT SERIOUS. SO
+RELAX - IT IS NOT GOING TO HAPPEN SOON (AND HOPEFULLY WILL NOT EVER
+HAPPEN).</b>.
+</p>
+
+<p>
+OK, now let’s move on to the gag itself:
+</p>
+
+<blockquote>
+<p>
+1 April 2012, Tel Aviv, Israel: the Perl foundation has announced today
+that by inspiration from Mozilla Firefox, the perl-porters (formerly known
+as perl5-porters) will adopt a schedule of a quarterly major release.
+</p>
+
+<p>
+“Since version 6 of Perl has been claimed by a malevolent project that
+amounted to very little, we will release Perl version 7 next Summer, followed
+by Perl 8 in next Fall, and Perl 9 next Winter.” said the designated Perl
+pumpking.The Perl foundation commented that it is sure that users will
+appreciate the accelerated release schedule, despite the fact that a lot
+of backwards’ compatibility will be broken in each release to further
+the language’s improvement.
+</p>
+
+<p>
+Some prominent Perl porters have added that they are looking into ways
+to automatically upgrade the Perl version automatically upon new
+releases, similar to the approach followed by the Google Chrome browser.
+“We are tired of people using outdated versions of Perl, which results in
+a maintenance burden for us, to say nothing of the security risk by bugs in
+old Perl versions. So we think the best way to mitigate that would be to
+simply force people to upgrade.”
+</p>
+
+<p>
+The Perl porters are hard at work on perl-7.0.0, which will implement the
+upcoming Perl 7 specification with many new and exciting features and
+incompatibilities.
+</p>
+
+</blockquote>
+
+<p>
+Well, like I said, after discussing this idea with
+<a href="http://rjbs.manxome.org/">RJBS</a> (the current Perl 5 Pumpking),
+he and I agreed that it would be too cruel, given that many people
+are sensitive about upgrading their versions of Perl 5. Comparisons of how
+old the perl that your workplace/client/etc. has deployed on their systems
+is a common source of discussion among perl mongers (and someone told me
+one of his clients still used perl 4), and many people would have found
+such an announcement alarming instead of funny. But I hope you enjoyed reading
+it, and hope you're also looking forward to perl-5.16.0, which should be out
+soon.
+</p>
+
+</div>
+
+<div class="entry" id="perl_begin_news_9_July_2002">
+
+<ul class="info">
+<li><b>Date:</b> 09-07-2012</li>
+<li class="tags">perl, begin, beginners, perl-begin, learn</li>
+</ul>
+
+<h1>What’s new on the Perl Beginners’s Site</h1>
+
+<p>
+The last update on the news feed for
+<a href="http://perl-begin.org/">The Perl Beginners’s site</a> was almost a
+year ago. While the site continued to improve, I neglected writing a new
+entry until now, so I hope this one will compensate for that.
+</p>
+
+<p>
+So without further ado, here is what is new:
+</p>
+
+<ol>
+
+<li>
+<p>
+We now have a page about <a href="http://perl-begin.org/humour/">Perl
+Humour</a>, which was restored from a page in the now offline perl.net.au
+wiki.
+</p>
+</li>
+
+<li>
+<p>
+Also originally from that wiki is the <a
+href="http://perl-begin.org/FAQs/freenode-perl/">Freenode’s #perl channel
+Frequently Asked Questions (FAQ) List</a>, which is well worth a read.
+</p>
+</li>
+
+<li>
+<p>
+Another restored page is
+<a href="http://perl-begin.org/topics/cpan/wrappers-for-distributions/">the
+list of CPAN Wrappers for Distributions</a>.
+</p>
+</li>
+
+<li>
+<p>
+We added <a href="http://perl-begin.org/uses/web-automation/">a page</a>
+about web automation in Perl, and <a
+href="http://perl-begin.org/topics/files-and-directories/">one about
+manipulating files and directories</a>.
+</p>
+</li>
+
+<li>
+<p>
+The
+<a href="http://perl-begin.org/platforms/windows/">Perl on Windows page</a>
+was enhanced with new links to Strawberry Perl and DWIM Perl.
+</p>
+</li>
+
+
+<li>
+<p>
+We have a new page about
+<a href="http://perl-begin.org/training/">Perl Training Providers</a>, which
+currently only contains a link to <a href="http://perltraining.org/">the Perl
+Training Directory</a>.
+</p>
+</li>
+
+<li>
+<p>
+<a href="http://perl-begin.org/tutorials/bad-elements/">The “Perl
+Elements to Avoid” page</a> contains many new entries.
+</p>
+</li>
+
+<li>
+<p>
+<a href="http://perl-begin.org/tutorials/modern-perl/">Our mirror of
+the book <i>Modern Perl</i> by chromatic</a> was updated to its latest
+edition.
+</p>
+</li>
+</ol>
+
+<p>
+We hope you find these additions useful or enlightening.
+</p>
+
+</div>
+
+<div class="entry" id="App_Notifier_cpan_distributions">
+
+<ul class="info">
+<li><b>Date:</b> 22-07-2012</li>
+<li class="tags">perl, cpan, dancer</li>
+</ul>
+
+<h1>Announcement: the App-Notifier CPAN Distributions</h1>
+
+<p>
+I would like to announce two new CPAN distributions of mine:
+<a href="https://metacpan.org/release/App-Notifier-Service">App-Notifier-Service</a>
+and
+<a href="https://metacpan.org/release/App-Notifier-Client">App-Notifier-Client</a>.
+These are derived from a few simplistic scripts I've written in shell and
+Perl, to allow me to notify when a task has finished (e.g:
+<tt>make ; finish-client</tt>) or a certain time has elapsed (e.g:
+<tt>sleep 240 ; finish-client</tt>), and I decided to create something
+more serious as CPAN modules.
+</p>
+
+<p>
+App-Notifier-Service implements an HTTP service (using Dancer), which
+listens for requests, and once one arrives, implements a callback, which
+notifies the user on the localhost that the event occured. App-Notifier-Client
+complements it by implementing a client that connects to the service
+and sends the event.
+</p>
+
+<p>
+Currently documentation may be lacking, and there are almost no automated
+tests in the distributions, but it appears to work nicely. To get started,
+read the documentation and you may wish to peruse some of these files
+from my home directory. First of all, the <tt>.app_notifier.yml</tt> file:
+</p>
+
+<pre>
+commands:
+    default:
+        - /home/shlomif/bin/desktop-finish-cue
+    cookie:
+        - /home/shlomif/bin/desktop-finish-cue
+        - "--song"
+        - "/home/music/Music/dosd-mp3s/Cookie.mp3"
+client:
+    targets:
+        default:
+            url: "http://localhost:6300/"
+        lap:
+            url: "http://lap.shlomifish.org:6300/"
+
+</pre>
+
+<p>
+The <tt>desktop-finish-cue</tt> file:
+</p>
+
+<pre>
+#!/bin/bash
+
+song="/home/music/Music/dosd-mp3s/Theme - Eurovision.mp2"
+
+param="$1"
+shift
+if test "$param" = "--song"; then
+    arg="$1"
+    shift
+    song="$arg"
+fi
+
+xmessage "Your task has been finished! Go check it out." &amp;
+mplayer "$song"
+</pre>
+
+<p>
+And the <tt>finish-server</tt> script:
+</p>
+
+<pre>
+#!/bin/bash
+cd "$HOME"/progs/perl/alert/http-based/hg/App-Notifier-Service &amp;&amp;
+    perl ./bin/app.pl --port=6300
+</pre>
+
+<hr />
+
+<p>
+Otherwise, if you're in the Tel Aviv or vicinity, you are invited to
+<a href="http://mail.perl.org.il/pipermail/perl/2012-July/012671.html">the
+next Tel Aviv Perl Mongers meeting on Wednesday, 25 July 2012</a>. Otherwise,
+I wish to note that I have written my first Java golf program as part
+of <a href="http://golf.shinh.org/p.rb?Alphabet+texture+">Anarchy golf’s
+“Alphabet Texture” challenge</a> (Anarchy golf accepts challenges in many
+languages). At 167 bytes, it is over 3 times longer than the shortest Perl
+entry which is only 50 bytes (my Perl solution is 52 bytes). But it
+was fun to write. For your information,
+<a href="http://en.wikipedia.org/wiki/Code_golf">code golf</a> is a challenge
+in which, participating programmers are challenged to write the shortest
+program that achieves a certain objective. I find it fun and addictive.
+</p>
+
+</div>
+
+<div class="entry" id="tech_tip_packaging_cpan_distributions_in_mageia">
+
+<ul class="info">
+<li><b>Date:</b> 16-08-2012</li>
+<li class="tags">perl, cpan, tip, tech, tech tip, mageia, linux</li>
+</ul>
+
+<h1>Tech Tip: How to Package and Maintain CPAN Distributions in Mageia</h1>
+
+<p>
+<a href="http://www.mageia.org/">Mageia Linux</a> is an RPM-based
+Linux distribution, whose repositories contain
+<a href="http://jquelin.blogspot.co.il/2012/07/more-than-3000-perl-packages-in-mageia.html">over
+3,000 CPAN packages</a>, and part of the reason why it has so many is
+because Jerome Quelin and the other maintainers have worked on tools to
+facilitate creating Mageia packages for CPAN distributions and maintaining
+them.
+</p>
+
+<p>
+However, I was a little confused about using
+<a href="https://metacpan.org/release/App-Magpie">magpie</a>, so I'd like
+to share my findings here:
+</p>
+
+<ol>
+
+<li>
+<p>
+In order to import, upload and submit a new CPAN package into Mageia,
+along with all of its dependencies, one should not use magpie, but rather
+<a href="https://metacpan.org/release/App-CPAN2Pkg">cpan2pkg</a>. Its use
+is very simple: make <tt>rpm</tt> and <tt>urpmi</tt> sudoable, and type
+<tt>cpan2pkg Package::Name</tt> from the command-line inside an X terminal.
+This will start a Tk window where one can monitor the progress of preparing
+new RPM packages and it has an entry box to create more packages (which
+saves time on re-initialising CPAN.pm or CPANPLUS.pm).
+</p>
+</li>
+
+<li>
+<p>
+In order to upgrade a package, one can type
+<tt>eval $( magpie co -s perl-[PACKAGE_NAME] )</tt> and then
+<tt>magpie update</tt>. magpie requires <a href="https://metacpan.org/release/CPAN-Mini">minicpan</a> to be installed and updated.
+</p>
+</li>
+
+<li>
+<p>
+In order to install packages, one can do
+<tt>sudo urpmi 'perl(Package::Name)'</tt>. My
+<a href="https://metacpan.org/release/Module-Format">Module-Format module</a>
+facilitates the translation from other notations for writing modules:
+</p>
+
+<pre>
+up()
+{
+    sudo urpmi --auto $(perlmf as_rpm_colon "$@")
+}
+</pre>
+</li>
+</ol>
+
+</div>
+
+<div class="entry" id="tpf_debugger_grant_and_new_cpan_distributions">
+
+<ul class="info">
+<li><b>Date:</b> 01-09-2012</li>
+<li class="tags">perl, foundation, tpf, grant, debugger, cpan, ruby</li>
+</ul>
+
+<h1>Grant for Improving the Perl Debugger + New CPAN Distributions</h1>
+
+<p>
+First of all, I am glad to announce that the Perl Foundation grant
+committee has accepted my
+<a href="http://news.perlfoundation.org/2012/08/2012q3-grant-proposal-adding-t.html">grant
+proposal for adding tests and refactoring the built-in perl debugger</a>.
+Here is <a href="http://news.perlfoundation.org/2012/08/2012q3-grant-proposals---resul.html">the announcement</a> for which grant proposals were
+accepted. My grant manager for this grant is
+<a href="http://alanhieu.ml/">Alan Haggai Alavi</a>, whom I've been
+talking with online and have collaborated on a few projects, so I'm really
+happy to work with him again.
+</p>
+
+<p>
+I have already made some progress with the grant (and this post is part
+of it), and sent a log for Alan Haggai to post as a grant update.
+</p>
+
+<p>
+That put aside, I'd now like to publicise some of the new distributions
+I have uploaded to CPAN, as I had some ideas for new ones, and am also
+contemplating making enough uploads to have 100 CPAN distributions or more:
+</p>
+
+<ol>
+
+<li>
+<p>
+<a href="https://metacpan.org/release/WWW-LinkChecker-Internal">WWW-LinkChecker-Internal</a>
+is a distribution wrapping a script that checks for internal broken links. I
+released the first three versions of it in a day, and it uses WWW::Mechanize.
+The reason why I wrote it was that the WDG HTML validator reported some broken
+links in one of my sites, but not their origins, so I had to trace them in
+a different way, and ended up writing that.
+</p>
+</li>
+
+<li>
+<p>
+<a href="https://metacpan.org/release/Inline-Ruby">Inline-Ruby</a> is
+an Inline:: distribution I adopted that allows to embed Ruby code inside
+Perl programs. I applied some fixes for it (some of which were not released
+to CPAN yet and some are ugly workarounds), and am planning to maintain it
+further down the road.
+</p>
+</li>
+
+<li>
+<p>
+<a href="https://metacpan.org/release/Test-TrailingSpace">Test-TrailingSpace</a>
+is a <tt>Test::</tt> namespace distribution for verifying that your code
+does not contain trailing space. Death to trailing space!
+</p>
+</li>
+
+</ol>
+
+<p>
+A final anecdote is that when working on one of my CPAN modules I found the
+<tt>b [filename]:[line_num]</tt> feature that I implemented in the perl
+debugger to be of great help, and can be content that I'm eating my own
+dogfood.
+</p>
+
+<p>
+Cheers for now.
+</p>
+
+</div>
+
+<div class="entry" id="tech_tip_overriding_eumm_compiler">
+
+<ul class="info">
+<li><b>Date:</b> 09-09-2012</li>
+<li class="tags">tech, tip, tech tip, perl, eumm, compiler, gcc, clang</li>
+</ul>
+
+<h1>Tech Tip: Overriding the C compiler with ExtUtils::MakeMaker</h1>
+
+<p>
+In order to override the C compiler with ExtUtils::MakeMaker, one can
+do something like:
+</p>
+
+<pre>
+perl Makefile.PL CC=/usr/bin/clang
+</pre>
+
+<p>
+Which will make the "CC" variable in the generated makefile be set to
+<tt>/usr/bin/clang</tt> instead of the default. Apparently, setting the
+<tt>CC</tt> environment variable does not work like it does with CMake.
+</p>
+
+<p>
+Thanks to <a href="http://www.mail-archive.com/makemaker@perl.org/msg03060.html">Sisyphus for the tip</a>.
+</p>
+
+</div>
+
+<div class="entry" id="perl_events_should_be_placed_on_lwn.net">
+
+<ul class="info">
+<li><b>Date:</b> 18-10-2012</li>
+<li class="tags">lwn, lwn.net, events, perl, conferences, yapc</li>
+</ul>
+
+<h1>Please Publish Perl Events on the LWN.net Calendar</h1>
+
+<p>
+As I read last week’s
+<a href="http://lwn.net/Articles/518564/">LWN.net’s Announcement Page</a>
+(LWN.net is a news site for open-source-related news, formerly standing
+for “Linux Weekly News”),
+I noticed that there were few if any Perl events featured in its upcoming
+events calendar. However, these events appear in
+<a href="http://perlweekly.com/">the Perl Weekly</a>, and there are many
+upcoming Python events featured in LWN.net.
+</p>
+
+<p>
+So, please, if you are organising a Perl-related event (or any other major
+open-source event), make sure you put it on
+<a href="http://lwn.net/Calendar/">the LWN.net calendar</a>.
+</p>
+
+</div>
+
+<div class="entry" id="three_command_line_utilities">
+
+<ul class="info">
+<li><b>Date:</b> 14-11-2012</li>
+<li class="tags">cpan, perl, command, line, cli, bash, gnu, parallel, sleep</li>
+</ul>
+
+<h1>Three Command-Line Utilities</h1>
+
+<p>
+So, November is
+<a href="http://en.wikipedia.org/wiki/National_Novel_Writing_Month">NaNoWriMo</a> (“National Novel Writing Month”), and I was hoping to get some serious
+writing done (instead of coding), but I kept being distracted with coding
+and random writing in various Internet forums. Well, hopefully this blog
+post will compensate a little for that.
+</p>
+
+<p>
+In this post, I’d like to cover three command-line utilities - two of them
+new and were written by me, and one of them somewhat older, but also written
+in Perl.
+</p>
+
+<p>
+The first utility is
+<a href="http://en.wikipedia.org/wiki/GNU_parallel">GNU Parallel</a>, which
+allows one to run several command-line jobs in parallel, using forking and/or
+ssh remote logins. I used it to speed up some processing I've been doing on
+my computer. For more information and some examples of usage, see
+<a href="http://zgp.org/pipermail/linux-elitists/2012-November/013428.html">my
+post about it to the linux-elitists mailing list</a>, and also read
+<a href="http://zgp.org/pipermail/linux-elitists/2012-November/013429.html">Thomas
+Sattler’s response</a> which provides some further insights.
+</p>
+
+<p>
+The second utility is
+<a href="http://www.shlomifish.org/open-source/projects/countdown/">countdown</a>, which is
+similar to the UNIX command-line sleep command, but displays the remaining
+time on the console. I wrote a prototype for it in Perl 6, only to discover it
+consumed far too many resources. The second prototype, as a Perl 5 program
+consumed close to zero resources of my computer. Yesterday, I converted it to
+a modulino (a Perl application implemented as a module) and uploaded
+several versions to the CPAN.
+</p>
+
+<p>
+The third utility is something I have placed in my
+<tt>~/.bashrc</tt> file in order to implement reminders when the shell
+starts. The code for it is:
+</p>
+
+<pre>
+reminder_file="$HOME/.local/share/shlomif/reminder/reminder.txt"
+if [ -s "$reminder_file" ] ; then
+    perl -Mstrict -Mwarnings -MTerm::ANSIColor -E 'my $x = colored("===", "bold red"); say "$x Reminders $x"'
+    cat "$reminder_file"
+fi
+
+Cancel_reminder()
+{
+    rm "$reminder_file"
+}
+</pre>
+
+<p>
+I wrote it because I wasn't prompted in time by Thunderbird+Lightning
+due to a strange bug, and because I had to ditch KOrganizer because it
+consumed too many resources here. This displays the Reminders whenever you
+start a new shell, which happens quite often with me, so it's OK. I use
+cron jobs to append stuff into "$reminder_file", and the Perl code displays
+a header in colour.
+</p>
+
+<p>
+That’s it for today.
+<a href="https://metacpan.org/release/App-Countdown">App-Countdown</a> is one
+step closer for the count-up (pun intended) towards the coveted 100
+distributions under “SHLOMIF” on CPAN, so that's another plus.
+</p>
+
+</div>
+
+<div class="entry" id="countup100_dec2012">
+
+<ul class="info">
+<li><b>Date:</b> 06-12-2012</li>
+<li class="tags">cpan, perl, xml, 100, hacktivity, hacktivity log, javascript, llvm</li>
+</ul>
+
+<h1>Count-up to 100 CPAN Distributions: Test-XML-Ordered, SDLx-Betweener, and more</h1>
+
+<p>
+Well, it's no longer a secret that I’m craving to join the “100 CPAN
+Distributions Club” by releasing some code that is hopefully not too useless.
+Here I would like to blog about the two new additions to
+<a href="http://metacpan.org/author/SHLOMIF">my CPAN page</a> which are
+the 83rd and 84th distributions respectively. The story is a bit more
+complicated than that.
+</p>
+
+<p>
+The first upload is
+<a href="https://metacpan.org/release/SDLx-Betweener">SDLx-Betweener</a>,
+which allows for creating high-performance and smooth animations in SDL
+by making use of Perl/XS. Almost all of the coding (and a related
+YAPC::Israel talk) was done by
+<a href="http://metacpan.org/author/EILARA">Ran Eilam</a>, who is a very
+cool guy, a good friend and a former boss of mine, and I've just done
+(with his permission) some last-minute cleanups and did the initial upload
+to CPAN. So I kinda feel like the frog that sat on top of the elephant
+who crossed the river and said “We did it!”.
+</p>
+
+<p>
+However, I needed SDLx::Betweener
+for something I've been intending to work on, and wanted it on CPAN
+and packaged in Mageia Linux, so I did that. If you run into any problems
+with it, drop me a note or file a bug report, and hopefully I can resolve
+these problems (possibly with some help from Ran).
+</p>
+
+<p>
+The next distribution is original, but its story is more complicated.
+It all started when I decided to resume work on Qantor, which aims
+to eventually be a modern and saner alternative to TeX/LaTeX and Troff
+(although it is still extremely far from that now). I noticed that the parsing
+was still done by Regexp::Grammars, and so decided to convert it into
+<a href="https://metacpan.org/module/Parser::MGC">Parser::MGC</a>.
+Parser::MGC worked eventually and I was impressed from the straightforward
+way to do stuff with it, but it was time consuming to get there (like most
+other parser generators I tried, only a bit better), and involved writing
+some Moose 'around' code to debug the method calls, and also sometimes delving
+into the code. Parser::MGC is still not perfect (and some of the code I read
+there had gems like
+<tt>die $e if $committed or
+not eval { $e-&gt;isa( "Parser::MGC::Failure" ) };</tt> which I found hard
+to parse, and made me want to drown a kitten), but I think it sucks less
+and is more transparent than other parser generators I tried.
+</p>
+
+<p>
+Anyway, after I got it working, I noticed that the Test::XML::Ordered code
+(then still unreleased), generated a some memory problems and I suspected
+either XML::LibXML or libxml2 to be the culprit. This involved a long
+investigation process with valgrind, gdb, <tt>perl -d</tt> and other tools
+which culminated in a very small change and more lines of test code. This
+was released in XML::LibXML. After that I received a report that the tests
+got stuck, but that turned out to be due to external loading of DTDs and
+was easily fixed. There's another
+<a href="https://rt.cpan.org/Ticket/Display.html?id=81739">report</a> for
+a problem with perl-5.8.8 (ouch!) on Red Hat Enterprise Linux (ouch again!),
+but I'm not too motivated to do a lot about it (see
+<a href="http://www.shlomifish.org/humour/fortunes/show.cgi?id=hamakor-discs-mozilla-1.1-1">this fortune cookie</a>).
+</p>
+
+<p>
+Well, after I fixed the problem with XML::LibXML, I decided to release
+Test::XML::Ordered. I'm well aware of
+<a href="https://metacpan.org/module/Test::XML">Test::XML</a>, but found
+it hard to rely on it, because it uses
+<a href="https://metacpan.org/module/XML::SemanticDiff">XML::SemanticDiff</a>
+(the latter I adopted) and which attempts to rearrange the order of the
+nodes when it sees fit (so
+<tt>&lt;ul&gt;&lt;li&gt;One&lt;/li&gt;&lt;li&gt;Two&lt;/li&gt;&lt;/ul&gt;</tt>
+and
+<tt>&lt;ul&gt;&lt;li&gt;Two&lt;/li&gt;&lt;li&gt;One&lt;/li&gt;&lt;/ul&gt;</tt>
+may be considered the same), which was not what I want and not what other
+people who contacted me about XML::SemanticDiff wanted.
+</p>
+
+<p>
+After Test::XML::Ordered, I decided it would be a good idea to finally
+work on the release of <tt>XML::GrammarBase</tt> which aims to provide
+“base classes and roles” for facilitating creating XML validators
+and processors. Work on it was pretty straightforward after I had
+Test::XML::Ordered available, but required some refactoring the classes
+from using <tt>Any::Moose</tt> to using <tt>Moo</tt> per advice of the
+people on <tt>#moose</tt>, and I have yet to convert the XSLT role into
+a parameterised role.
+</p>
+
+<p>
+I have some other code I'd like to release on CPAN after all that.
+</p>
+<hr />
+
+<p>
+Another related hacktivity was a set of patches to the core Vim that I've
+written to improve support for DocBook 5. Since I wanted to maintain
+compatibility with DocBook 4 documents (because DocBook 4 is still popular),
+this involved writing a Perl, Bash and Python Amalgam to generate the
+Vim code in question with a list of common, DocBook 4-only and DocBook 5-only
+tags. You can find it in
+<a href="http://bitbucket.org/shlomif/vim-docbook-5-support">its BitBucket
+repository</a>. It is very hacky, but it works. Using the Python code
+gave me an idea for a missing XML::LibXML feature - DTD introspection - which
+I'd like to implement in the future.
+</p>
+
+<p>
+Well, that's all for now - just wanted to get it out of my system. Enjoy the
+holidays, and Cheers!
+</p>
+
+<!-- TODO : Python+bash+perl amalgam to generate Vimscript code. -->
+</div>
+
+<div class="entry" id="countup100_jan2013">
+
+<ul class="info">
+<li><b>Date:</b> 07-01-2013</li>
+<li class="tags">cpan, perl, sdlx, xml, 100, hacktivity, hacktivity log</li>
+</ul>
+
+<h1>Count-up to 100 CPAN Distributions: Quality *as well as* Quantity</h1>
+
+<p>
+Going over the previous count-ups to 100 CPAN distributions in this
+blog, I feel I have been carried away: I tried to release a lot
+of new distributions to the CPAN, while neglecting all the existing
+distributions I have, and not tending to their pending problems and their
+lack of <b>software quality</b> in several aspects (See
+<a href="http://www.shlomifish.org/philosophy/computers/high-quality-software/rev2/">an
+older essay I have written about it</a>).
+</p>
+
+<p>
+I was reminded of it when
+working on a few new or existing distributions using
+<a href="http://dzil.org/">Dist-Zilla</a>. I ran into a few places where some
+of its plugins or features were underdocumented, and non-exemplified (in
+the SYNOPSIS sections or wherever), which consumed many hours of my time,
+sometimes made me need to read or grep the code, and made me frustrated. While
+I sent the maintainers some pull requests for better documenting this (and
+some of them were applied), I would have prefered for them to be
+properly documented and exemplified in the first place.
+</p>
+
+<p>
+While I believe most of my CPAN distributions are in better condition, there
+are some aspects that are lacking, and I would like to fix them: more examples
+outside the SYNOPSES, and better SYNOPSES; documenting all methods of the
+super classes as well as the classes themselves for
+<a href="http://metacpan.org/release/XML-LibXML">XML-LibXML</a>; adding
+support for DTD introspection and the oft requested
+<a href="http://code.activestate.com/lists/perl-xml/8953/">DOM elements
+annotations</a> for it; more
+<a href="http://cpants.cpanauthors.org/kwalitee.html">kwalitee</a>; etc. and
+naturally also better publicity and advertising
+(<a href="http://freecode.com/">Freecode.com</a> (formerly known
+as Freshmeat.net), Reddit, blogs.perl.org, video screencasts, etc.) because
+people should see how cool your code is. I’m
+not sure if any of these things would be as blog worthy as new
+CPAN distributions, but it will make CPAN a bit better.
+</p>
+
+<p>
+(Now that I think of it, perhaps a CPAN janitors initiative, which will
+submit pull requests and patches for existing distributions to improve
+their quality will be a good idea.)
+</p>
+
+<p>
+Anyway, I am going to split this report into sections:
+</p>
+
+<h2>XML-GrammarBase</h2>
+
+<p>
+After some work (and misunderstanding of some of the Moo / MooX
+documentation, which resulted in some pull requests), I released
+<a href="http://www.shlomifish.org/open-source/projects/XML-Grammar/Base/">XML-GrammarBase</a>
+which aims provides roles and base classes for easily writing wrappers around
+XML schema formats and XML translation languages. So far only RELAXNG and
+XSLT are supported. Here is the synopsis from the docs:
+</p>
+
+<pre>
+package XML::Grammar::MyGrammar::ToOtherStuff;
+
+use MooX 'late';
+
+use XML::GrammarBase::Role::RelaxNG;
+use XML::GrammarBase::Role::XSLT;
+
+with ('XML::GrammarBase::Role::RelaxNG');
+with XSLT(output_format =&gt; 'html');
+with XSLT(output_format =&gt; 'docbook');
+
+has '+module_base' =&gt; (default =&gt; 'XML-Grammar-MyGrammar');
+has '+rng_schema_basename' =&gt; (default =&gt; 'my-grammar.rng');
+
+has '+to_html_xslt_transform_basename' =&gt; (default =&gt; 'mygrammar-xml-to-html.xslt');
+has '+to_docbook_xslt_transform_basename' =&gt; (default =&gt; 'mygrammar-xml-to-docbook.xslt');
+
+package main;
+
+my $xslt = XML::Grammar::MyGrammar::ToOtherStuff-&gt;new(
+    data_dir =&gt; "/path/to/data-dir",
+);
+
+# Throws an exception on failure.
+my $as_html = $xslt-&gt;perform_xslt_translation(
+    {
+        output_format =&gt; 'html'
+        source =&gt; {file =&gt; $input_filename, },
+        output =&gt; "string",
+    }
+);
+</pre>
+
+<p>
+perform_xslt_translation supports  myriad options and formats, and you
+get it all for free.
+</p>
+
+<p>
+I've also been contemplating something like
+<code>App::XML::GrammarBase</code>
+or <code>XML::GrammarBase::App</code> that will allow for easy registry
+of such formats from the command line and for processing them.
+</p>
+
+<p>
+At first, I believed that Moo was “almost-completely-unlike-Moose”, but
+«use MooX 'late';» makes it much more Moose-like and I enjoy it, and it is
+now recommended over Any::Moose or maybe even plain Mouse. Mouse is very
+fast as well and has a far smaller startup time than Moose, but it does not
+interoperate very well with pure-Moose classes, which Moo does
+well.
+</p>
+
+<h2>HTML-Widgets-NavMenu-ToJSON</h2>
+
+<p>
+As I was working on <a href="http://www.shlomifish.org/">my homepage</a>, I
+noticed that after I placed all the sub-navigation menus inside the main
+navigation menu, it increased the size of the navigation menu considerably,
+having it consume over 40,000 bytes. I decided to put only a subset of it
+as HTML, and load and populate the rest using an AJAX call to a common
+and static .json file. So I needed a way to convert the input of
+<a href="https://metacpan.org/release/HTML-Widgets-NavMenu">HTML-Widgets-NavMenu</a>
+</p>
+
+<p>
+So enter
+<a href="https://metacpan.org/module/HTML::Widgets::NavMenu::ToJSON">HTML::Widgets::NavMenu::ToJSON</a>,
+which serialises a navigation menu structure as JSON. I also implemented a
+persistence layer for it, currently with only one backend - a YAML file,
+so the IDs which jqTree require would be, well, persisted. This is a bit of
+an <a href="http://www.joelonsoftware.com/articles/fog0000000018.html">architecture
+astronautics</a>, but I ended up with something concrete at the end so it's
+under control.
+</p>
+
+<p>
+Here is the synopsis:
+</p>
+
+<pre>
+use HTML::Widgets::NavMenu::ToJSON;
+use HTML::Widgets::NavMenu::ToJSON::Data_Persistence::YAML;
+
+my $persistence =
+    HTML::Widgets::NavMenu::ToJSON::Data_Persistence::YAML-&gt;new(
+        {
+            filename =&gt; &#39;/path/to/persistence_data.yaml&#39;,
+        }
+    );
+
+my $obj = HTML::Widgets::NavMenu::ToJSON-&gt;new(
+    {
+        data_persistence_store =&gt; $persistence,
+        # The one given as input to HTML::Widgets::NavMenu
+        tree_contents =&gt; $tree_contents,
+    }
+);
+
+use IO::All;
+
+io-&gt;file(&#39;output.json&#39;)-&gt;println(
+    $obj-&gt;output_as_json(
+        {
+            %args
+        }
+    )
+);
+</pre>
+
+<p>
+It could be made a bit simpler using an abstraction, but I feel it's not
+too bad. You can write custom
+<a href="http://metacpan.org/module/HTML::Widgets::NavMenu::ToJSON::Data_Persistence">HTML::Widgets::NavMenu::ToJSON::Data_Persistence</a>
+child classes by implementing the <code>load()</code>
+and <code>save()</code> methods - I did not document the process yet,
+but you can base your efforts on
+<a href="http://metacpan.org/module/HTML::Widgets::NavMenu::ToJSON::Data_Persistence::YAML">HTML::Widgets::NavMenu::ToJSON::Data_Persistence::YAML</a>.
+</p>
+
+<h2>Dist-Zilla-Plugin-TestRun</h2>
+
+<p>
+Since I'm used to running <kbd>./Build runtest</kbd> instead of
+<kbd>./Build test</kbd> for my distributions, I sought a way of doing the
+same using Dist-Zilla. It turned out there wasn't an easy way, and
+<a href="http://metacpan.org/release/Dist-Zilla-Plugin-TestRun">Dist-Zilla-Plugin-TestRun</a>
+is the best I could do. I hope to write a patch to make the <kbd>test</kbd>
+command more configurable.
+</p>
+
+<h2>Test-XML-Ordered</h2>
+
+<p>
+<a href="http://metacpan.org/module/Test::XML::Ordered">Test::XML::Ordered</a>
+makes a non-“semantic” diff of XML files and tells you if they are
+equivalent (up to differences of whitespace and namespace prefixes). It grew
+out of my frustration with
+<a href="http://metacpan.org/module/XML::SemanticDiff">XML::SemanticDiff</a>,
+upon which Test::XML is based, and which I maintain. A quick CPAN search
+revealed other modules for testing XML in a similar manner, but since I have
+already written my code, I decided to release it.
+</p>
+
+<p>
+One tip is that with the current API, one should use something like:
+</p>
+
+<pre>
+my @common = (validation =&gt; 0, load_ext_dtd =&gt; 0, no_network =&gt; 1);
+
+is_xml_ordered (
+    [ string =&gt; normalize_xml($results_buffer), @common, ],
+    [ location =&gt; "./t/data/xhtml-results/$fn_base.xhtml", @common, ],
+    "Testing for Good XSLTing of '$fn_base'",
+);
+</pre>
+
+<p>
+In order to test XHTML documents for equivalency.
+</p>
+
+<h2>Vered-XML</h2>
+
+<p>
+I thought that Vered-XML (currently only available in the
+<a href="http://bitbucket.org/shlomif/perl-begin">Perl Beginners’ Site’s
+repository</a> was probably the most ad-hoc and tailored to match
+XML grammar I have ever created, and was used to convert the markup of
+<a href="http://perl-begin.org/tutorials/bad-elements/">the “Perl Elements
+to Avoid” page</a> from hacky Website META Language markup to XML, so it
+will be easier to translate to different (human) languages and also somewhat
+easier to maintain and render. Currently it renders to DocBook/XML, which
+allows translation to many other formats.
+</p>
+
+<p>
+So why did I call it Vered? Since it was so ad-hoc, and I didn't know what
+else it would be useful for, I wanted to give it an artsy name, and considered
+using a random Hebrew feminine name. Then I thought that “a rose by any other
+name would smell as sweer”, and thought of calling it Rose, but translated
+to Hebrew it was “Vered”, which is also a Hebrew feminine name. I still have
+to tie up some loose ends, but expect XML-Grammar-Vered at a CPAN mirror
+near you Real Soon Now™.
+</p>
+
+<p>
+Vered-XML supports a subset of XHTML, as well as some specialised tags such
+as <code>&lt;pdoc /&gt;</code> (perldoc),
+<code>&lt;pdoc_f /&gt;</code> (perldoc -f),
+<code>&lt;cpan_self_mod /&gt;</code> (CPAN self link to module), etc. and
+contains a RELAX NG schema and an xsltproc/libxslt2-compatible
+XSLT 1.0 stylesheet. Here is an excerpt from
+<a href="http://bitbucket.org/shlomif/perl-begin/src/d183a648b865a223c353b16664e05b6046bd478d/src/tutorials/bad-elements/perl-elements-to-avoid.xml-grammar-vered.xml?at=default">the “Perl Elements to Avoid” source XML</a>:
+</p>
+
+<pre>
+&lt;item xml:id=&quot;slurp&quot;&gt;
+&lt;info&gt;
+&lt;title&gt;Slurping a file (i.e: Reading it all into memory)&lt;/title&gt;
+&lt;/info&gt;
+&lt;p&gt;
+One can see several bad ways to read a file into memory in Perl. Among them
+are:
+&lt;/p&gt;
+&lt;code_blk syntax=&quot;perl&quot;&gt;
+# Not portable and suffers from possible
+# shell code injection.
+my $contents = `cat $filename`;
+# Wasteful of CPU and memory:
+my $contents = join(&quot;&quot;, &amp;lt;$fh&amp;gt;);
+# Even more so:
+my $contents = &#39;&#39;;
+while (my $line = &amp;lt;$fh&amp;gt;)
+{
+    $contents .= $line;
+}
+&lt;/code_blk&gt;
+&lt;p&gt;
+You should avoid them all. Instead the proper way to read an entire file
+into a long string is to either use CPAN distributions for that such as
+&lt;cpan_self_dist d=&quot;File-Slurp&quot; /&gt; or
+&lt;cpan_self_dist d=&quot;IO-All&quot; /&gt;, or alternatively
+write down the following function and use it:
+&lt;/p&gt;
+&lt;code_blk syntax=&quot;perl&quot;&gt;
+sub _slurp
+{
+    my $filename = shift;
+    open my $in, &#39;&amp;lt;&#39;, $filename
+        or die &quot;Cannot open &#39;$filename&#39; for slurping - $!&quot;;
+    local $/;
+    my $contents = &amp;lt;$in&amp;gt;;
+    close($in);
+    return $contents;
+}
+&lt;/code_blk&gt;
+&lt;/item&gt;
+</pre>
+
+<p>
+I'm not sure if Vered-XML will have much utility outside that use case, but
+I think that putting it on CPAN won't hurt much.
+</p>
+
+<h2>Improving perlresume.org</h2>
+
+<p>
+I filed a few issues and sent some pull requests for
+<a href="http://perlresume.org/">perlresume.org</a> for some problems
+I ran into, and <a href="http://showmetheco.de/">vti</a> fixed or
+applied them promptly. Thanks!
+</p>
+
+<h2>Beginners’ Sites</h2>
+
+<p>
+I invested more work into <a href="http://perl-begin.org/">the Perl Beginners’
+site</a>
+and also, after some encouragement from the good people on
+<a href="irc://irc.freenode.net/#vim">#vim</a> began work on
+<a href="http://vim.begin-site.org/">the Vim Beginners’s site</a>, which
+I publicised on <a href="http://shlomif-tech.livejournal.com/65619.html">my
+tech blog</a>,
+on <a href="http://www.reddit.com/r/vim/comments/15o6v1/announcing_the_vim_beginners_site/">Reddit</a>,
+and on some mailing lists. While in the past I used my own
+<a href="http://web-cpan.shlomifish.org/latemp/">static site
+generator called “Latemp”</a> based on Website Meta Language for sites
+like that,
+I used Jekyll this time, at least for the first prototype. I did so
+in order to evaluate it for use in a different site
+(<a href="http://www.linux.org.il/">The
+Israeli Linux Portal</a> which is currently implemented using an awkward
+custom PHP-based system, that mostly just reads stuff out of XML data
+files and outputs a constant static HTML as XSLT.). While at first I was
+impressed with Jekyll,
+I then realised that it was quite opaque, often required many plugins to
+get some basic functionality and that one plugin I looked at lacked examples
+and was otherwise under documented.
+</p>
+
+<p>
+There is <a href="http://iwantmyname.com/blog/2011/02/list-static-website-generators.html">a
+list of many more static site generators / offline content-management
+systems</a> around (which does not include my own Latemp), and it may be
+easier to roll up something on my own based on Template Toolkit or its ttree.
+All this just confirms my
+(and <a href="http://blogs.perl.org/users/su-shee/">Su-Shee</a>’s) suspicion
+that every self-respecting web programmer has written at least one.
+</p>
+
+<h2>Freecell Solver for JavaScript - ☺</h2>
+
+<p>
+I have been distracted for many hours trying to port Freecell Solver
+to JavaScript using the very cool
+<a href="https://github.com/kripken/emscripten">Emscripten</a> LLVM bitcode
+to JavaScript compiler.
+The <a href="http://fc-solve.shlomifish.org/js-fc-solve/text/">mostly
+final result</a> could still use some work, and is still under optimised (in
+large part due to what appear to be an Emscripten bug) but it's working.
+</p>
+
+<p>
+The <a href="https://github.com/kripken/emscripten/wiki">Emscripten
+wiki</a> contains links to many, much more impressive, demos including
+<a href="http://kripken.github.com/meandmyshadow.web/mams.html">a
+JavaScript version of the open-source graphical game “Me and My Shadow”</a>.
+</p>
+
+<h2>Two Anecdotes from ##programming</h2>
+
+<p>
+I enjoy chatting on
+<a href="irc://irc.freenode.org/##programming">##programming (on Freenode)</a>
+and along with all the rants about how much every popular programming langauge
+in existence sucks, and trying to help various students with their often
+badly indented and badly formatted homework code, there are often some
+insightful discussions by some smart people. I’d like to share two Perl-related
+anecdotes from there.
+</p>
+
+<p>
+The first one was that someone there who has taken studying programming, before
+starting to study in university, seriously, and also read the Camel book
+and other books and resources about Perl, asked me to look at my code
+to see how readable it is. I referred him to the
+<a href="https://metacpan.org/source/SHLOMIF/HTML-Widgets-NavMenu-1.0701/lib/HTML/Widgets/NavMenu.pm">source
+code</a> of HTML::Widgets::NavMenu, which will being an early code of
+mine (and still not fully modernised), was written in a modular manner, and he
+said he found it to be well-factored and yet very readable . He noted that he
+suspected that Perl would be less believed to “hard to understand” or
+“unreadable”, if it sandardised on using my preferred style -
+<a href="http://en.wikipedia.org/wiki/Indent_style#Allman_style">Allman
+style</a> - instead of its default style with the opening braces on the
+same line as the opening clause (e.g: <tt>if ( COND ) {</tt>).
+</p>
+
+<p>
+The other anecdote was that someone else there, who is working in Visual
+Basic and Visual Basic for Applications for a living (for lack of good
+alternative for software development job prospects in his homeland), told us
+that he found the CPAN documentation to usually be superior than the MSDN
+(Microsoft Developers Network) one.
+I found it a little strange, because I recall finding the MSDN documentation
+to give detailed examples for almost every subroutine and a page of prose and
+explanation for each one, and reportedly large parts of it were also
+translated into some non-English languages by Microsoft. Then I showed him
+the “SYNOPSIS” sections of some of the .pm files in CPAN and he was
+even more impressed and said it was useful (because you can copy+paste it and
+tweak it), but naturally commented that not all .pm files had those.
+</p>
+
+<h2>Conclusion</h2>
+
+<p>
+I currently stand at <a href="http://perlresume.org/SHLOMIF">87 CPAN
+distributions</a>, some of which a bit lacking, and I still have some in the
+pipe. One of them will require quite a lot of cleanup work to do, but it's
+not a high priority. I also have to juggle some other endeavours, and also
+recently started contracting for an Internet friend as a Drupal developer
+(and in the future possibly one for Moodle as well), which may consume even
+more of my time (but on the bright side pay a little money). It’s no secret
+that I am not a big fan of PHP, but Drupal seems impressive so far, and
+hides away a lot of PHP’s ugliness. It took me some time to get acquainted
+with it, so I hope now things will be smoother and easier to do. It seems that
+there's quite a bit of demand for converting sites into Drupal, setting up new
+sites, or maintaining them in Israel (and possibly elsewhere as well) so it
+is probably a useful skill to have under my belt.
+</p>
+
+<p>
+Hope you enjoyed this hacktivity log, and see you next time. Byeeeee!
+</p>
+
+</div>
+
+<div class="entry" id="just_write_the_god_damn_test_motherfucker">
+
+<ul class="info">
+<li><b>Date:</b> 07-01-2013</li>
+<li class="tags">tdd, tests, philosophy, essay</li>
+</ul>
+
+<h1>Essay: “Just write the God-damn tests, motherfucker!”</h1>
+
+<p>
+(I originally wrote this in
+<a href="http://www.nntp.perl.org/group/perl.qa/2013/01/msg13350.html">a post to qa@perl.org</a>, and I apologise for the profanity in the title, but I felt
+it is needed in this case.)
+</p>
+
+<p>
+So why am I writing this? I used to feel guilty about not being conscious of
+the distinction between the various scopes of tests, like unit tests vs.
+integration tests vs. system tests vs. functional tests etc. when I wrote the
+tests. I just noticed that I need a test here (as a regression test for a bug,
+or to <a href="http://en.wikipedia.org/wiki/Test-driven_development">TDD</a> (=
+test-driven develop a new feature, or after implementing a new feature,
+etc.), and wrote it using Test::More or whatever. However, now I feel that
+trying to philosophise about the distinction between all those is not so
+useful for the people who are actually trying to write the tests.
+</p>
+
+<p>
+<q>Tests are good, mmkay? Just freaking write them!</q>
+</p>
+
+<p>
+chromatic has expressed <a href="http://modernperlbooks.com/mt/2012/04/what-testing-dsls-get-wrong.html">some sentiments</a> against the so-called “Behaviour
+Driven Development” (BDD) Domain-specific-languages (DSLs) such as cucumber.
+</p>
+
+<p>
+One thing that he notes in a comment there is:
+</p>
+
+<blockquote>
+
+<p>
+Our clients are the parents, guardians, and teachers of children between the
+ages of eight and twelve inclusive.
+</p>
+
+<p>
+The intent of Cucumber is to make readable testcases, just as the intent of
+COBOL and AppleScript and visual component programming is to enable
+non-programmers to create software without having to learn how to program.
+</p>
+
+</blockquote>
+
+<p>
+It is impossible to have people who are non-programmers write
+structure code without learning how to program, at least until we get
+sufficiently intelligent Sci-Fi-like artificial intelligence (not the current
+crop of artificial ultra-stupidities) that will be able to perform
+programming like humans do, and will be willing to do so, while not having
+free will and still be obedient to us, and that will perform adequately. I
+feel that you need to write <b>some</b> kind of code, however formatted, to
+write tests, just like HTML and CSS and spreadsheet programs, involve writing
+some kind of *code*.
+</p>
+
+<p>
+If you want to have your clients write tests, my best suggestion is to either
+instruct them in the proper methodology and discipline of coding, or
+alternatively have them show you how to reproduce the problem (using
+screenshots, screencasts, shared remote desktop sessions, etc.) and then
+<b>you</b> should write a test for it.
+</p>
+
+<p>
+Some people fear that teaching laymen how to code will create
+competition for professional programmers, and dilute the profession. However,
+this is not true, because there's always a difference between a casual dealer
+in a craftsmanship or art, and someone who invested a substantial amount of
+time doing it. E.g: lots of people can cook well, but not everyone is a
+professional Chef, and Chefs still often teach other people cooking, or share
+their recipes, because that does not dilute their profession.
+</p>
+
+<p>
+So I think the distinction between the various tests may be useful for
+methodologists and software engineering researchers (people who try to guide
+other people how to code) more than the people who are actually coding. To quote
+Picasso: “When art critics get together they talk about Form and Structure and
+Meaning. When artists get together they talk about where you can buy cheap
+turpentine.”
+( taken from <a href="http://orip.org/">Ori Peleg’s blog</a> ).
+</p>
+
+<p>
+Similarly, literature critics and researchers have very little to say that is
+of use for most writers and even authors. I hated studying Literature (what
+Americans might call “English” although naturally in Israel, we study Hebrew
+texts) with a passion, and didn't do too well on the tests (in part because
+out of personal honesty, I refused to write a lot of extraneous text, which
+the teacher seemed to have preferred), only to become a writer of
+<a href="http://www.shlomifish.org/humour/">fiction</a> and
+<a href="http://www.shlomifish.org/philosophy/">essays</a> (see
+<a href="http://www.paulgraham.com/essay.html">Paul
+Graham’s “The Age of the Essay”</a> for why they are not only about
+literature) after graduation. Furthermore, most people I
+talked with seem to have liked and appreciate the textual works I have
+written (although I admit they are certainly not letter perfect), and I
+could usually find some value in the criticisms of people who did not, even
+if expressed very destructively, and often was able to improve my works
+accordingly.
+</p>
+
+<p>
+Similarly, I'm now struggling with <a href="http://www.amazon.com/xUnit-Test-Patterns-Refactoring-Code/dp/0131495054">this tome</a>
+which seems like I cannot see the forest for the trees from it, while I
+really enjoyed reading the much shorter and much more hands-on
+<a href="http://en.wikipedia.org/wiki/Test-Driven_Development_by_Example"><i>Test Driven Development by Example</i> (by Kent Back)</a>.
+</p>
+
+<p>
+The time we talk about how to write tests is often better spent writing tests
+(or production code, which is, naturally, what tests are aimed to support and
+are meaningless without it), so I think we should just “freaking write them”.
+</p>
+
+<p>
+<q>Just write the god-damn test, motherfucker!</q>
+</p>
+
+<p>
+(
+<b>Note:</b> the title of this essay was inspired by
+the <a href="http://programming-motherfucker.com/">“Programming,
+Motherfucker”</a> of Zed Shaw, which is very amusing, even if it seems
+to be written in a somewhat ironic tone, and that contains the useful
+<a href="http://programming-motherfucker.com/become.html">huge list of free
+books for learning programming</a>.
+)
+</p>
+
+<h3 id="license">Licence</h3>
+
+<p>
+As opposed to most of my previous essays, this work is Copyright by Shlomi
+Fish, 2013, under the
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">Creative
+Commons Attribution-NonCommercial 3.0 Unported licence</a>, with a
+deliberate exemption for using the text on web pages with web commercials.
+For more information, see
+<a href="http://www.shlomifish.org/meta/copyrights/">my interpretation of
+the licence</a>.
+If you wish to use it under any different licence, then
+<a href="http://www.shlomifish.org/me/contact-me/">drop me a line</a>.
+</p>
+
+</div>
+
+<div class="entry" id="soft_dev_to_writer">
+
+<ul class="info">
+<li><b>Date:</b> 07-01-2013</li>
+<li class="tags">cpan, perl, philosophy, humor, humour, hacking</li>
+</ul>
+
+<h1>ANN: My Transition From Software Developer to Writer/Entertainer/Amateur Philosopher/Internet Celebrity</h1>
+
+<p>
+I’d like to make an announcement: after some serious thought, I decided that
+from now on, being a software developer (which I am not too bad at) will only
+be the means (but the absolutely necessary ones) to me being a writer /
+entertainer / philosopher / Internet celebrity (a little bit of all those
+and then some) whose main pride and passion is
+<a href="http://www.shlomifish.org/">his personal web site</a>, which is full
+of a lot of material, and various pages and material is constantly added to it.
+</p>
+
+<p>
+Note: I am not going to “quit” from the Perl world or am going to
+stop programming completely. In fact, programming in HTML, XHTML, CSS, XSLT,
+Website Meta Language, Perl 5, Bash, Vim/gvim, and many other general
+purpose and/or domain-specific languages, is
+absolutely necessary for what I do on a daily basis. Furthermore, I have
+little
+patience for
+laymen who do not wish to learn HTML, and just require more and more of our
+(= my peers and mine's) time to be wasted in a typical
+<a href="http://en.wikipedia.org/wiki/Parable_of_the_broken_window">“Parable
+of the broken window”</a> fashion. I think even most of our sisters,
+mothers (and yes, I'm being facetiously sexist on purpose, because a lot of
+the most clueless people we can think of are male), etc. can learn some basic
+programming skills and even be good at that with the right attitude. When put
+in a corner, they will be forced to learn it. and that programming is becoming
+more and more essential for everyone to know. Furthermore, clients who wish to
+remain ignorant (and often hostile) forever should be avoided, with a clear
+honest and sincere explanation telling them why and how to improve.
+</p>
+
+<p>
+Anyway, as is evident from
+<a href="http://www.shlomifish.org/humour/TheEnemy/">my first story</a>,
+I have already made a gradual transition from being a mathematician and
+a mathematical logician, to being a software developer and web developer,
+so now it's another transition. It took me a lot of time to hone my skills
+as a writer of stories, screenplays, aphorisms, Chuck Norris/etc. factoids,
+etc. etc. so it’s now much easier for me. It took me over a year to write
+my first story, but now I can whip up text fairly quickly, and find it
+enjoyable. Moreover, I now also have not one - but two ideas for new
+stories - both of which I have not started writing.
+</p>
+
+<p>
+One implication is that I decided to <b>transfer the maintenance</b> of
+<a href="https://metacpan.org/release/XML-LibXML">XML::LibXML</a> to someone
+else, because while I believe I proved myself of utility in maintaing
+it, I find it hard to keep with its ongoing maintenance. One can easily
+fork
+<a href="https://bitbucket.org/shlomif/perl-xml-libxml">its bitbucket
+repository</a>, or given enough motivation, one can set up a similar one
+on GitHub or wherever (I recall receiving several patches with “--git” there)
+so if you have the skills, time, and motivation - just do it, and I’ll just
+upload the archives on your behalf (and eventually ask for giving you COMAINT).
+I have mentioned some ideas about what I have in mind for XML-LibXML elsewhere
+and you can always ask me on IM or IRC.
+</p>
+
+<h2>“Putting all the cards on the table - 2013”</h2>
+
+<p>
+I have started to write <a href="http://unarmed.shlomifish.org/2109.html">an
+essay</a> on my “Unarmed but still Dangerous” blog titled “Putting all the
+Cards on the Table” - I start from the Technion, M.I.T., the film
+<a href="http://en.wikipedia.org/wiki/Silver_Linings_Playbook"><i>Silver
+Linings Playbook</i></a>
+and <a href="http://en.wikipedia.org/wiki/Jennifer_Lawrence">its lead
+actress - Ms. Jennifer Lawrence</a> (♥!) and goes on to discuss lots of other
+stuff including David vs. Goliath, computer networking, the second major
+battle that Chuck Norris lost, and to why we should initiate action (any
+action) instead of letting things go from bad to worse on their own, and
+there is much more to come. Hopefully, it will be amateur philosophy (
+where amateur is someone who: 1) Loves what he does. 2) Is not professional.
+3) Does not play by the same rules as professionals. - i.e: what we often
+call today as “hackers”) at the best I can do.
+</p>
+
+<p>
+My main issue is that I felt the truly amateuristic intellectuals like me
+have been speaking too much in riddles, and that even I have been lying
+to myself and hiding many things from other people, and I want to offload
+everything I know as of March, 2013 (and it may be very different 10 years
+from now or even a year from now). And I want to do it in a truly honest,
+sincere, and putting all the cards I have now on the table fashion. There is
+a lot of humour in the essay, and a lot of personal analogies and references,
+some sex talk, (even sexism) and personal reflections (and my typical
+self-promotion), but it's still serious, honest, and sincere, and
+hopefully enjoyable.
+</p>
+
+<p>
+Please comment on it on the blog, where you should be able to register using
+any OpenID provider, but anonymous comments, that are not spam, and where you
+give a link to identify yourself can also be done (just <b>please</b> preview
+the comment before sending it). I am planning on working on further publicity.
+</p>
+
+<h2>How to Achieve World Domination</h2>
+
+<p>
+A lot of people think that the proper way to achieve world domination is
+to create an
+<a href="http://www.joelonsoftware.com/articles/fog0000000018.html">architecture
+that will solve the whole world’s problems and then some</a>. We’ve been seeing
+quite a few of them since <i>Joel on Software</i> wrote this article: Ruby,
+Google Go, Node.js, Mozilla’s Rust, Clojure, Scala, Perl 6, etc. Some of them
+have or will mature to something truly nice, or have inspired a lot of
+features in other languages, but it’s hard for
+plain-old-single-you to compete with them, and here is something interesting:
+not too many people want them.
+</p>
+
+<p>
+What do people want? Chuck Norris/etc. factoids, lolcats and other captioned
+images, funny cat videos, parodies of
+<i>My Little Pony: Friendship is Magic</i> (♥), photos of attractive (or even
+not too attractive) men and women, screencasts of games or other programs
+(including many open source programs), photos of scenery, new and improved
+recipes for preparing food (and of course - tasty food itself), new, old or
+renovated jokes, and some interesting tales and anecdotes from your life. And
+naturally - programs that can will scratch an itch - however small.
+</p>
+
+<p>
+Some people told me that my solver for Freecell and other solitaire games,
+simply called
+<a href="http://fc-solve.shlomifish.org/">Freecell Solver</a> is useless, but
+it's not - it's just a niche program. And I received hundreds of E-mails
+about it. Furthermore, given that Freecell is (or used to be) a big phenomenon
+in Israel, where many boys and girls starting from 18 found themselves
+playing it
+on the <a href="http://en.wikipedia.org/wiki/Israel_Defense_Forces">Israeli
+military</a> computers out of boredom, then the fact that I have written a
+solver for it,
+has impressed many people I talked with or met, including some attractive
+(both physically and intellectually) young ladies (or what people may
+refer to as “hot chicks”), and they ended up asking me about how it was
+written, and which algorithms it employed.
+</p>
+
+<p>
+So Freecell Solver was one of my most successful programs, not despite being
+a niche program, but because of it. Niche programs own. Not only that,
+but niche everything is great. Many people whom I referred to
+<a href="http://www.shlomifish.org/humour/stories/">my stories</a> helped
+themselves to the screenplay
+<a href="http://www.shlomifish.org/humour/Star-Trek/We-the-Living-Dead/">Star Trek:
+“We, the Living Dead”</a> <b>because</b> it contained Star Trek in the name,
+and because there are quite a few fans of the <i>Star Trek</i> franchise and
+worlds.
+</p>
+
+<p>
+The more of a niche artwork you write, the more a large subset of those
+who like it, are likely to pay attention to it, try it out, and enjoy it.
+For more information, see
+Eric Sink’s excellent and inspiring essay
+<a href="http://www.ericsink.com/articles/Buzz.html">“How to get
+people talking about your product”</a>.
+For example,
+<a href="http://en.wikipedia.org/wiki/DuckDuckGo">DuckDuckGo</a> was originally
+marketed as a search engine by Perl geeks, and for Perl geeks, and it was
+a good marketing decision because the Perl community is small, cohesive and
+is at a good strategical position to influence other communities. Now, many
+people who are not Perl programmers, are using it, as well as, or even in
+preference to Google, but choosing Perl was a good strategical decision.
+We can expect that with the future growth of DuckDuckGo, that it will
+use more performant technologies than Perl more and more, but it will still
+owe some of its initial success to be a Perl product.
+</p>
+
+</div>
+
+<div class="entry" id="recent_hacktivity_log_13_april_2013">
+
+<ul class="info">
+<li><b>Date:</b> 13-04-2013</li>
+<li class="tags">perl, philosophy, humor, hacktivity log, xml, films, fiction</li>
+</ul>
+
+<h1>Recent Hacktivity Log</h1>
+
+<p>
+This is another recent hacktivity log of what I have been up to recently, as
+far as software development and writing is concerned.
+</p>
+
+<h2>“Every Publicity is Good Publicity…”</h2>
+
+<p>
+True to my belief that “The Gods help them that help themselves”, I have been
+working much more on publicity recently, utilising
+<a href="http://twitter.com/shlomif">my Twitter account</a>,
+<a href="http://www.reddit.com/user/shlomif">my Reddit account</a>,
+<a href="http://www.facebook.com/shlomi.fish">my Facebook account</a>
+and other online resources. I am not exclusively promoting only my own works,
+and also share/retweet/etc. the posts of my friends. I had great success
+with <a href="http://www.reddit.com/r/xkcd/comments/1bignr/xkcdinspired_screenplay_starring_summer_glau_as/">this
+/r/xkcd subreddit post</a> which so far received 150 upvotes (and 36 down
+votes) about my
+new screenplay
+<a href="http://www.shlomifish.org/humour/Summerschool-at-the-NSA/"><i>Summerschool
+at the NSA</i></a> which has a strong
+<a href="http://en.wikipedia.org/wiki/Xkcd">xkcd (= the web comics)</a> theme,
+and also had some lesser success with posts to other subreddits. As usual,
+I also upvote and comment on other people's posts and comments.
+</p>
+
+<p>
+It seems that the main problem with my site up to now has not been
+that it lacked good content, but
+that most people were not aware of the site.
+</p>
+
+<p>
+I’ve also been experimenting with buying
+<a href="http://www.projectwonderful.com/">Project Wonderful</a> web
+advertisements, but so far they did not yield too many clicks.
+</p>
+
+<h2>The Olamot Sci-Fi/Fantasy Conference</h2>
+
+<p>
+As I <a href="http://hamakor.org.il/pipermail/discussions/2013-March/004518.html">reported
+on the Hamakor mailing list</a>, I attended the Olamot
+Science-Fiction/Fantasy/etc. conference that took place during Passover in
+Tel Aviv, Israel, and had a great time. I didn't bring a camera to the first
+day, so people on IRC did not believe me that I saw many highly attractive
+geeks there, which I remedied by bringing a camera
+and taking many
+<a href="http://www.flickr.com/photos/shlomif/sets/72157633111982891/">photos</a>
+during the second day.
+</p>
+
+<p>
+The conference was colourful, zany, and inspiring and most of the people I saw
+agreed to be photographed. I spent most of the time there
+helping with the booth of the
+<a href="http://en.wikipedia.org/wiki/Open_source">open source community</a>
+and we were better organised and more prepared than a similar
+conference several years ago, where we only had a very huge and heavy
+Sun CRT screen that did not yield to our attempts to get it to display
+something on the computer.
+</p>
+
+<h2>Work on Selina Mandrake - The Slayer (a Buffy Parody)</h2>
+
+<p>
+I was able to mostly complete my work on the screenplay
+<a href="http://www.shlomifish.org/humour/Selina-Mandrake/"><i>Selina Mandrake -
+The Slayer</i></a>, which is marketed as a parody of
+<a href="http://en.wikipedia.org/wiki/Buffy_the_Vampire_Slayer_%28TV_series%29"><i>Buffy the Vampire Slayer</i></a>, but which also
+crosses over many other elements, including from
+<a href="http://en.wikipedia.org/wiki/Star_Trek:_Deep_Space_Nine"><i>Star
+Trek: Deep Space Nine</i></a>,
+Judaism, history of the Near East and Europe, and computer geekdom. It is
+in a usable condition now, but there are still some missing scenes, and the
+screenplay may also need some polishing.
+</p>
+
+<h2>Buffy and Clarissa Facts</h2>
+
+<p>
+In the name of <a href="http://en.wikipedia.org/wiki/Girl_power">girl
+power</a>, and
+<a href="http://tvtropes.org/pmwiki/pmwiki.php/Main/ForGreatJustice">FOR
+GREAT JUSTICE</a>,
+I have continued to collect factoids about females:
+<a href="http://www.shlomifish.org/humour/bits/facts/Buffy/">Buffy Summers</a>
+from the show
+<i>Buffy the Vampire Slayer</i>, and
+and <a href="http://www.shlomifish.org/humour/bits/facts/Clarissa/">Clarissa
+Darling</a> from
+<a href="http://en.wikipedia.org/wiki/Clarissa_Explains_It_All"><i>Clarissa
+Explains It All</i></a> (which I fear no one is familiar with or remember
+now, but still makes for some awesome factoids). Additions are welcome.
+</p>
+
+<h2>Summerschool at the NSA</h2>
+
+<p>
+I got the idea for the screenplay
+<a href="http://www.shlomifish.org/humour/Summerschool-at-the-NSA/"><i>Summerschool
+at the NSA</i></a> during the Olamot conference mentioned above, and I
+am thankful for such great conference for providing a lot of inspiration.
+I was able to complete the screenplay in less than two weeks and
+it is in a usable condition now (but likely still has many rough spots).
+Quoting from the abstract:
+</p>
+
+<blockquote>
+<p>
+The Hollywood actresses
+<a href="https://en.wikipedia.org/wiki/Sarah_Michelle_Gellar">Sarah
+Michelle Gellar</a> (of
+<a href="http://en.wikipedia.org/wiki/Buffy_the_Vampire_Slayer">Buffy</a>
+fame) and
+<a href="https://en.wikipedia.org/wiki/Summer_Glau">Summer Glau</a> (of
+<a href="http://en.wikipedia.org/wiki/Xkcd">xkcd</a> notability)
+conspire to kick the ass of the
+<a href="https://en.wikipedia.org/wiki/National_Security_Agency">NSA</a>
+(= the United States government’s National Security Agency), while using
+special warfare that is completely non-violent.
+</p>
+</blockquote>
+
+<p>
+This screenplay crosses Judaism, the Mother Goose nursary rhymes,
+<a href="http://en.wikipedia.org/wiki/My_Little_Pony:_Friendship_Is_Magic">My
+Little Pony</a>, substance/etc. addiction, xkcd, Buffy, the song
+<a href="http://en.wikipedia.org/wiki/99_Problems">“99
+Problems” by Jay-Z</a>, and some personal insights and memes, and despite
+all that is actually mostly realism for a change.
+</p>
+
+<h3>“All Truth is God’s Truth”</h3>
+
+<p>
+Some people, with whom I talked on <a href="http://freenode.net/">the Freenode
+chat network</a>, complained that I didn’t stay loyal to my Jewish roots,
+and instead crossed Judaism with other idea system, and some newer sources of
+influence. However I’d like to quote Larry Wall from his
+<a href="http://cos.polyamory.org/text/T/lwall-keynote.txt">“Perl Culture”
+keynote</a>:
+</p>
+
+<blockquote>
+<p>
+I have a book on my bookshelf that I’ve never read, but that has a great title.
+It says, <a href="http://en.wikipedia.org/wiki/All_truth_is_god%27s_truth">“All
+Truth is God’s Truth.”</a> And I believe that. The most viable belief
+systems are those that can reach out and incorporate new ideas, new memes, new
+metaphors, new interfaces, new extensions, new ways of doing things. My goal
+this year is to try to get Perl to reach out and cooperate with Java. I know it
+may be difficult for some of you to swallow, but Java is not the enemy. Nor is
+Lisp, or Python, or Tcl. That is not to say that these languages don't have
+good and bad points. I am not a cultural relativist. Nor am I a linguistic
+relativist. In case you hadn't noticed. :-)
+</p>
+</blockquote>
+
+<p>
+Furthermore, like Ayn Rand
+<a href="http://books.google.co.il/books?id=5_NDTA9x-qMC&amp;pg=PA279&amp;lpg=PA279&amp;dq=ayn+rand+philosophy+writer+diary+%22absolutely+necessary+means%22&amp;source=bl&amp;ots=str9ABfMXk&amp;sig=z0TChWLzDHhcEWcBg17X7MW_Srk&amp;hl=en&amp;sa=X&amp;ei=VydpUbGdLemI4ASKvYDIDQ&amp;redir_esc=y#v=onepage&amp;q=ayn%20rand%20philosophy%20writer%20diary%20%22absolutely%20necessary%20means%22&amp;f=false">noted in her journal</a>,
+a good work of fiction requires a solid philosophy, and so one can learn
+a lot from works of fiction. Furthermore,
+<a href="http://en.wikiquote.org/wiki/Peter_Ustinov">Peter Ustinov</a>
+noted that “Comedy is simply a funny way of being serious.”, so even
+humorous works of art convey a good philosophy.
+</p>
+
+<p>
+I think the main difference between
+contemporary or old works of fiction, such as the Greek mythology, Aesop’s
+fables, the works of Alexandre Dumas Pere,
+<a href="http://en.wikipedia.org/wiki/Star_Trek">Star Trek</a>, Buffy, etc.
+and “holy” works such as
+<a href="http://en.wikipedia.org/wiki/Bible">the Holy Bible</a>
+or <a href="http://en.wikipedia.org/wiki/Quran">the Qur’an</a> is that some
+people still take the latter too seriously, and consider them the final
+word on how to lead your life, rather than just another step in the road
+to enlightenment.
+</p>
+
+<p>
+So I’m not going to let my personal philosophy stagnate by sticking only
+to traditional Judaism, which itself was never pure, and always
+incorporated many useful ideas from elsewhere, and still should.
+</p>
+
+<h2>XML-Grammar-Screenplay / XML-Grammar-Fiction</h2>
+
+<p>
+When working on the screenplays, I noticed that some of the error messages
+were quite unhelpful, so I implemented more informative error messages
+in
+<a href="http://www.shlomifish.org/open-source/projects/XML-Grammar/Fiction/">XML-Grammar-Fiction
+/ XML-Grammar-Screenplay</a>. I noticed that the code was getting quite
+complicated, so I refactored it a little, but there is still a long way
+to go.
+</p>
+
+<h2>Freecell Solver</h2>
+
+<p>
+Someone reported problems understanding the solutions of the online (JS-based)
+port of <a href="http://fc-solve.shlomifish.org/">Freecell Solver</a>, and
+I decided to convert the card suit identifiers to their Unicode equivalents.
+So from:
+</p>
+
+<pre>
+Foundations: H-0 C-0 D-0 S-0
+Freecells:
+: 4C 2C 9C 8C QS 4S 2H
+: 5H QH 3C AC 3H 4H QD
+: QC 9S 6H 9H 3S KS 3D
+: 5D 2S JC 5C JH 6D AS
+: 2D KD TH TC TD 8D
+: 7H JS KH TS KC 7C
+: AH 5S 6S AD 8H JD
+: 7S 6C 7D 4D 8S 9D
+</pre>
+
+<p>
+We get:
+</p>
+
+<pre>
+Foundations: ♥-0 ♣-0 ♦-0 ♠-0
+Freecells:
+: 4♣ 2♣ 9♣ 8♣ Q♠ 4♠ 2♥
+: 5♥ Q♥ 3♣ A♣ 3♥ 4♥ Q♦
+: Q♣ 9♠ 6♥ 9♥ 3♠ K♠ 3♦
+: 5♦ 2♠ J♣ 5♣ J♥ 6♦ A♠
+: 2♦ K♦ T♥ T♣ T♦ 8♦
+: 7♥ J♠ K♥ T♠ K♣ 7♣
+: A♥ 5♠ 6♠ A♦ 8♥ J♦
+: 7♠ 6♣ 7♦ 4♦ 8♠ 9♦
+</pre>
+
+<p>
+Moreover, Shirl Hart informed me that he/she have uploaded
+<a href="https://github.com/shirha/freecell-solver">a Java port of
+their Freecell Solver</a> to GitHub, which runs much faster (70x reportedly)
+than the Perl version (but might still consume more RAM than an equivalent
+C port). All the power to Shirl!
+</p>
+
+<h2>DocBook EPUB generation</h2>
+
+<p>
+I ran into some problems with getting the EPUB (an Electronic book format)
+generation of the
+<a href="http://en.wikipedia.org/wiki/DocBook">DocBook</a>/5 XSLT stylesheet
+to work properly, but it was fixed in
+<a href="https://github.com/shlomif/Human-Hacking-Field-Guide/commit/337ad3365e6b375ecb34492954a7b37da960e7b6">this
+commit</a> thanks in part to help I got on the docbook-apps mailing list.
+</p>
+
+<h2>Wiki-ing</h2>
+
+<p>
+I have been desperately
+<a href="http://thread.gmane.org/gmane.science.linguistics.wikipedia.english/111411">trying
+to find</a> a usable photo (under a Creative
+Commons licence/etc.) of
+<a href="http://en.wikipedia.org/wiki/Christina_Grimmie">Christina Grimmie</a>
+(= the singer and musician known for <a href="http://www.youtube.com/user/zeldaxlove64">her YouTube videos</a>)
+for her Wikipedia pages, without luck so far.
+</p>
+
+<p>
+I also have been trying to protect
+<a href="http://en.wikipedia.org/wiki/Tiffany_Alvord">the
+English Wikipedia page of Tiffany Alvord</a> (another superb artist) from
+deletionism, and it’s ironic that the
+<a href="http://es.wikipedia.org/wiki/Tiffany_Alvord">Spanish
+Wikipedia page</a> about her is longer and more comprehensive, even though
+Alvord is American and almost always sings in English.
+</p>
+
+<p>
+Furthermore, I have been using
+<a href="http://buffyfanfiction.wikia.com/wiki/Category:Selina_Mandrake_-_The_Slayer">several
+pages in the Buffy Fan Fiction Wikia</a> to organise my thoughts for
+<a href="http://www.shlomifish.org/humour/Selina-Mandrake/">the
+Selina Mandrake screenplay</a>.
+</p>
+
+<h2>Thanks</h2>
+
+<p>
+Thanks to protist (Jonathan Avery) for reviewing this post and commenting
+on it.
+</p>
+
+</div>
+
+<div class="entry" id="heroic_people_make_any_job_awesome">
+
+<ul class="info">
+<li><b>Date:</b> 13-04-2013</li>
+<li class="tags">jobs, work, employment, hacktivity log</li>
+</ul>
+
+<h1>Copied from Slashdot.org: “Heroic people make any job they take awesome.”</h1>
+
+<p>
+First of all, I have written my
+<a href="http://shlomif.dreamwidth.org/464.html">recent hacktivity log</a>
+over on my new dreamwidth.org blog, and I am not posting it here, because
+it involves a lot of non-code hacktivity, which I expect to do quite a lot
+more of from now.
+</p>
+
+<p>
+That put aside, I am copying here something that I wrote
+<a href="http://news.slashdot.org/comments.pl?sid=3619331&amp;cid=43371075">in
+a Slashdot comment</a> about why I am looking for a job not in IT. Especially
+of note there are my frustrations with employers being too domineering and
+control-freaks, and not letting the good developers do things the way they
+most prefer to do it. Here goes:
+</p>
+
+<p>
+I'll put it on the table: I have a Bachelor of Science (B.Sc. - 4 year degree)
+in Electrical Engineering (more like a mixed CE/EE/CS degree) from <a
+href="http://en.wikipedia.org/wiki/Technion_%E2%80%93_Israel_Institute_of_Technology"
+title="wikipedia.org" rel="nofollow">The Technion in their Haifa, Israel
+Campus</a> [wikipedia.org], and graduated cum laude, and I have a qualified
+engineer certificate which theoretically allows me to write software for
+guiding missiles (or other flaw-free software) and give my signature that it is
+flaw-free. Nevertheless, right now I'm looking for part-time jobs as a
+seller/vendor in icecream parlours, candy/snack stores,
+caf&#233;s/restaurants/bars/etc. or even as a street sweeper. Lots of places in
+Tel Aviv, Israel are now advertising for this, and this seems like a good way
+to earn some money, as well as interact with other people and get inspired
+which will really help me with my <a href="http://www.shlomifish.org/humour/"
+title="shlomifish.org" rel="nofollow">creative writing</a> [shlomifish.org] and
+my <a href="http://www.shlomifishorg/philosophy/" title="www.shlomifishorg"
+rel="nofollow">essays</a> [www.shlomifishorg]. And I can buy an Android
+smartphone (nothing really better now and some people have successfully
+installed GNU/Linux chroots there) so I can type stuff for later incoporation
+into my desktop and laptop devices.
+</p>
+
+<p>
+So why not work as a software developer? I don't mind getting a job as a
+software developer or a hardware developer or whatever, but lately employers in
+Tel Aviv and vicinity have become extremely picky: you go to an interview,
+answer most technical questions nicely, and don't get hired. Furthermore, even
+if they like you they are often very domineering: don't work from home, work
+10-12 hours a day, only full time, don't play computer games at all (I only
+played some card Patience/Solitaire and Sokoban and not for long and still got
+flack), don't go to Facebook/Twitter/Google-Plus, we don't want you accessing
+imgur.com (too muchu traffic to there so let's firewall it) etc. etc. Thing is
+- <a
+href="http://www.avc.com/a_vc/2012/02/the-management-team-guest-post-from-joel-spolsky.html"
+title="avc.com" rel="nofollow">the junior developers are kings</a> [avc.com]
+(see the link for the Joel article), and you should leave them alone to their
+elements to get shit done at their own pace, and using their own resources
+instead of being a control freak. If, as a boss, my developer watched porn for
+6 hours a day, while still being available on the forums for questions, and
+spent 2 hours creating great code that is functional and beautiful, I would be
+happy, and give him a full salary. But finding such enlightened employers is a
+big problem.
+</p>
+
+<p>
+Software was the first field where workers were in constant demand, but now it
+seems that other fields are headed the same way here in Tel Aviv and other
+major centres of commerce worldwide: the food outlets, the music industry,
+photography, and soon - writing, acting/drama/film and then hopefully also
+modelling, and then if we can get past the normal and silly legal barriers -
+also more brick-and-mortar industries. Right now I've decided to make a <a
+href="http://blogs.perl.org/users/shlomi_fish/2013/03/ann-my-transition-from-software-developer-to-writerentertaineramateur-philosopherinternet-celebrity.html"
+title="perl.org" rel="nofollow">transition</a> [perl.org]
+from a software developer to a writer/Internet-entertainer/amateur-philosopher
+- a field where I feel I produce better results and also something that people
+will find cooler and sexier (although like I note in the article, the fact that
+I wrote a Freecell solver has impressed some really cute and intelligent
+chicks), and will have a larger influence. I still see knowing programming and
+other software development as an absolutely necessary means for that, just like
+I can no longer survive without knowing how to read and write English. Everyone
+should know at least HTML/XHTML/etc.
+</p>
+
+<p>
+What I'm trying to say is that one should avoid Fatalism. People can improve
+for the better. I spent six and a half year doing my Elec. Eng. degree in the
+Technion and it cost me a lot of frustrations, but I'm still alive and have
+constantly become a better person - more competent, more able, smarter, wiser,
+and with a greater capacity for love and friendship. As long as you're not dead
+and still have some health in you, you will do fine. My suggestion to someone
+who got a Ph.D. in literature is to realise that that may make them a really
+awesome programmer , or a bartender, or a candy store vendor, or a secretary,
+or a sys admin, or anything else that they will find a job at. Don't think "I'm
+too good for that" because like they say in Hollywood "There are no small roles
+- only small (= small-minded) actors." You can be an awesome superheroic person
+even if you're just a factory worker.
+</p>
+
+</div>
+
+<div class="entry" id="hacktivity_02_06_2013">
+
+<ul class="info">
+<li><b>Date:</b> 07-01-2013</li>
+<li class="tags">cpan, perl, hacking, hacktivity, rsync, uploading</li>
+</ul>
+
+<h1>The “sky” command-line application and other Recent hacktivity</h1>
+
+<p>
+If you have a good web hosting, you may have run into a pattern, where you
+are uploading files to it for other people to download and need to find the
+URL where they were uploaded to. Thing is - recalling the exact
+<a href="http://en.wikipedia.org/wiki/Rsync">Rsync</a> (= a file
+uploader) command and then going to the web browser to access the URL
+is time-consuming, and repetitive.
+<a href="http://www.shlomifish.org/open-source/projects/sky/">sky</a>,
+written in Perl using Moo and available on CPAN, aims to fix all that.
+</p>
+
+<p>
+Here is a sample invocation from the web-site:
+</p>
+
+<pre>
+shlomif@telaviv1:~$ sky up /home/music/Music/mp3s/Thierry\ de\ Massia/Elements\ essentiels/01\ -\ Le\ vent.ogg
+X11 forwarding request failed on channel 0
+sending incremental file list
+01 - Le vent.ogg
+     5271287 100%  147.24kB/s    0:00:34 (xfer#1, to-check=0/1)
+
+sent 5272011 bytes  received 31 bytes  87141.19 bytes/sec
+total size is 5271287  speedup is 1.00
+Got URL:
+http://www.shlomifish.org/Files/files/music/mp3-ogg/01%20-%20Le%20vent.ogg
+shlomif@telaviv1:~$
+</pre>
+
+<p>
+As you can see, we just specified the file, and it divined the rsync
+command and gave us the resultant URL. Convenient.
+</p>
+
+<p>
+sky requires a configuration file in <code>~/.config/Perl/App-Sky/app_sky_conf.yml</code> such as this one:
+</p>
+
+<pre>
+---
+default_site: homepage
+sites:
+    homepage:
+        base_upload_cmd:
+            - 'rsync'
+            - '-a'
+            - '-v'
+            - '--progress'
+            - '--inplace'
+        dest_upload_prefix: 'hostgator:public_html/'
+        dest_upload_url_prefix: 'http://www.shlomifish.org/'
+        sections:
+            code:
+                basename_re: '\.(?:pl|pm|c|py)\z'
+                target_dir: 'Files/files/code/'
+            music:
+                basename_re: '\.(?:mp3|ogg|wav|aac|m4a)\z'
+                target_dir: 'Files/files/music/mp3-ogg/'
+            video:
+                basename_re: '\.(?:webm|flv|avi|mpeg|mpg|mp4|ogv)\z'
+                target_dir: 'Files/files/video/'
+</pre>
+
+<p>
+And it uses the <code>basename_re</code> to figure out where to upload it
+later. The next features I would like to see added are an ability to specify
+the target directory or alternatively override the target section, and naturally
+- better documentation. But I'm happy with what I have so far.
+</p>
+
+<h2>CPAN Cleanups</h2>
+
+<p>
+I have been going over many of <a href="https://metacpan.org/author/SHLOMIF">my
+CPAN distributions</a>
+and doing various cleanups such as removing trailing whitespace (with tests
+based on
+<a href="https://metacpan.org/release/Test-TrailingSpace">Test-TrailingSpace</a>),
+or converting the <code>Changes</code> file to be compliant with
+<a href="https://metacpan.org/release/CPAN-Changes">CPAN-Changes</a>. It was
+kinda fun, though time consuming.
+</p>
+
+<h2>New Version of Freecell Solver</h2>
+
+<p>
+There’s a
+<a href="http://fc-solve.blogspot.co.il/2013/05/freecell-solver-3180-was-released.html">new
+stable version of Freecell Solver</a>, 3.18.0 released with some improvements
+including a port to JavaScript.
+</p>
+
+<h2>Black Hole Solitaire Solver</h2>
+
+<p>
+I have done a lot of work on
+<a href="http://www.shlomifish.org/open-source/projects/black-hole-solitaire-solver/">Black
+Hole Solitaire Solver</a>, and it can now also solve All-in-a-Row-Solitaire,
+and has some other improvements.
+</p>
+
+<h2>Binary Puzzle Solver</h2>
+
+<p>
+The
+<a href="http://www.shlomifish.org/open-source/projects/japanese-puzzle-games/binary-puzzle/">Binary
+Puzzle Solver</a> (written in Ruby) is now at version 0.0.3, with some bug
+fixes, several new moves and a convenient command line application.
+</p>
+
+</div>
+
+<div class="entry" id="some_perl_related_bugs__june_2013">
+
+<ul class="info">
+<li><b>Date:</b> 25-06-2013</li>
+<li class="tags">perl, Module-Build-Tiny, valgrind, windows, open, source</li>
+</ul>
+
+<h1>Some Perl-Related Bugs and How They Were Fixed.</h1>
+
+<p>
+In this entry, I’d like to tell about several Perl-related bugs I have run
+into, and how they were fixed. I know I have not been blogging a lot lately,
+but, on the bright side, I was busy coding.
+</p>
+
+<h2>XML-Grammar-Fortune-Synd Test Failures on Some Windows-based Testers</h2>
+
+<p>
+For a long time, I've been getting test failures such as
+<a href="http://www.cpantesters.org/cpan/report/28051c7c-71ca-1014-9ba1-70af6b2677eb">this
+one</a> for my
+<a href="https://metacpan.org/release/XML-Grammar-Fortune-Synd">XML-Grammar-Fortune-Synd</a>
+module, from some Windows-based systems, which I was unable to reproduce on
+my local Linux system. Per
+<a href="http://www.nntp.perl.org/group/perl.cpan.testers.discuss/2013/05/msg3151.html">Michael G. Schwern’s advice</a>,
+I tried to convert all the path handling to use File::Spec for paths
+portability, but it did not fix the problem. Then I tried it on a Windows XP
+VM, but the tests passed there fine. Eventually, I had to install a Windows 7
+VM, and run the tests there, and they failed. I originally suspected the
+problem was with
+<a href="https://metacpan.org/release/File-Temp">File::Temp</a>’s
+<code>tempdir()</code> function,
+but it turned out to be an inconsistency in the behaviour of
+<a href="https://metacpan.org/module/File::Copy">File::Copy</a> across
+the systems. On some systems, it copied a read only file to the temporary
+directory, preserving its read-only status, which made
+<code>open()</code> throw an error when writing to it.
+</p>
+
+<p>
+This was fixed by these two subroutines:
+</p>
+
+<pre>
+sub _my_copy
+{
+    my ($src, $dest) = @_;
+
+    open my $out_fh, '&gt;', $dest;
+    print {$out_fh} _slurp($src);
+    close($out_fh);
+
+    return;
+}
+
+sub _slurp
+{
+    my $filename = shift;
+
+    open my $in, "&lt;", $filename
+        or die "Cannot open '$filename' for slurping - $!";
+
+    local $/;
+    my $contents = &lt;$in&gt;;
+
+    close($in);
+
+    return $contents;
+}
+</pre>
+
+<p>
+Where I used <code>_my_copy()</code> to copy from one file location to another.
+</p>
+
+<p>
+Since this was fixed, I didn't get any test failures for the module
+from Microsoft Windows machines or otherwise. Silence is golden.
+</p>
+
+<h2>Module-Build-Tiny Test Failures on Mageia Linux</h2>
+
+<p>
+I noticed that some of the tests of Module-Build-Tiny (which some CPAN
+distributions started using)
+<a href="https://bugs.mageia.org/show_bug.cgi?id=10449">failed to run</a>
+on Mageia Linux, while they ran fine in a perl installed from perlbrew. The
+problem was that the file was partly writable while Module-Build-Tiny
+wanted it to be completely read-only. At first, we suspected a combination of
+the perl build-time flags caused it, but a perl I built from source with all
+the Mageia flags, passed all the tests. So it was likely caused by a Mageia
+patch.
+</p>
+
+<p>
+By using the perl debugger, I realised that a downstream patch changed the
+permissions in the Perl ExtUtils::Install to 0644 instead of 0444, and after
+testing the package without this patch, the Module-Build-Tiny tests passed.
+</p>
+
+<p>
+We ended up removing the patch permanently from the Mageia perl package.
+</p>
+
+<h2>Second Problem with Module-Build-Tiny: Double-Dash</h2>
+
+<p>
+Another problem I had with Module-Build-Tiny, after the previous
+one was that <a href="https://rt.cpan.org/Public/Bug/Display.html?id=86240">it
+appeared to have ignored</a> the “destdir” and “installdirs” command line
+arguments , but it turned out that we
+needed to spell them <code>--destdir=$FOO</code> instead of
+<code>destdir=$FOO</code>, and as <code>--installdirs=vendor</code> instead
+of <code>installdirs=vendor</code> (with double-dash prefixes). This
+was noted in the <a href="https://wiki.mageia.org/en/Perl_policy">Mageia
+Perl Policy</a>, and I also sent
+<a href="https://github.com/jquelin/cpanplus-dist-mageia/pull/3"> a pull
+request</a> for fixing it to CPANPLUS-Dist-Mageia.
+</p>
+
+<h2>Parallelising Time-Consuming Automated Tests Using prove -j</h2>
+
+<p>
+As I did
+<a href="http://tech.groups.yahoo.com/group/fc-solve-discuss/message/1351">some
+work</a> on
+<a href="http://fc-solve.shlomifish.org/">Freecell Solver</a>, I was annoyed
+by the fact that the valgrind.t test script, which ran several tests for
+checking the programs for
+<a href="https://en.wikipedia.org/wiki/Valgrind">valgrind</a>
+sanity, was too time consuming, despite the fact that I ran it first and ran
+the other test scripts in parallel to it using prove’s “-j” flag.
+</p>
+
+<p>
+Then it occurred to me that I can parallelise these tests inidividually. I
+decided to split them into an array of tests, each one with an ID, and then
+have a program write several tests scripts, with each one running an individual
+ID, and then run all the files generated by the generation program.
+</p>
+
+<p>
+This seems to have improved performance, and I can now run the parallelised
+tests in 21 seconds.
+</p>
+
+<p>
+I've been thinking that this could be a useful CPAN distribution, and am
+contemplating writing something like that for CPAN.
+</p>
+
+<h2>Thanks</h2>
+
+<p>
+Thanks to Altreus for reviewing this entry.
+</p>
+
+</div>
+
+<div class="entry" id="I_have_over_a_100_distributions_on_CPAN">
+
+<ul class="info">
+<li><b>Date:</b> 25-10-2013</li>
+<li class="tags">cpan, perl, hacking, hacktivity, download manager, 100</li>
+</ul>
+
+<h2>I now have over a 100 Distributions on CPAN!</h2>
+
+<p>
+Some days ago I discovered that my CPAN distributions count had already gone
+above 100, only that my <a href="https://metacpan.org/author/SHLOMIF">MetaCPAN
+page</a> has misled me due to
+<a href="https://github.com/CPAN-API/metacpan-web/issues/973">a bug</a> (
+which I reported since). I now have 103 distributions on CPAN and you can
+find <a href="http://perl.org.il/israeli-projects.html">a list
+of them</a> on the Israeli Perl Mongers site, with whatever is missing from
+the MetaCPAN page.
+</p>
+
+<p>
+So now I'm in the CPAN 100 club, and now will also better focus on improving
+the quality of my existing distributions. According to GumbyPAN, the
+top ten authors are
+<code>SHARYANTO [265] RJBS [258] TOBYINK [239] ADAMK [236] ZOFFIX [222]
+MIYAGAWA [216] BINGOS [197] INGY [177] TOKUHIROM [170] SMUELLER [156]</code>,
+so no one has gone up to 300 distributions yet (also see
+<a href="http://stats.cpantesters.org/leadercpan.html#top20current">the
+top 20 current in the leadercpan page.</a>).
+</p>
+
+<h2>Maniac Downloader</h2>
+
+<p>
+One of the distributions on my road to the 100 distributions was
+<a href="http://www.shlomifish.org/open-source/projects/maniac-downloader/">Maniac
+Downloader</a>, which is a download accelerator written in Perl using
+<a href="https://metacpan.org/release/AnyEvent">AnyEvent</a> and other
+CPAN distributions. It was written as a way for me to scratch an itch where
+I noticed that I could get better download throughput from many
+sites by opening more than one connection. I tried several download managers,
+but most of them were GUI only and the only terminal one I found -
+<a href="https://sourceforge.net/projects/prozilla/">prozilla</a>, could not
+handle <code>https://</code> URLs and, furthermore, didn’t implement the
+“secret sauce” of Maniac downloader of splitting slow segments into multiple
+parts to speed up the acceleration, and finally - was very noisy. Since
+prozilla is written in C, it was not easy to hack on it, so I decided to
+write something myself using Perl.
+</p>
+
+<p>
+I wrote the first prototype of Maniac Downloader using POE, but didn’t get
+very far, and I also think performance left some things to be desired. Then,
+some weeks ago, I started working on the second version as a Dist-Zilla
+distribution and using AnyEvent, and made more progress. AnyEvent is easy
+to use, and works nicely and quickly, and I like it more than POE.
+</p>
+
+<p>
+I released App-ManiacDownloader-v0.0.3 to the CPAN today, and it now resumes
+interrupted downloads, so it's getting more usable for me. There are still
+some tasks left to be done there, but you can try using it already.
+</p>
+
+</div>
+
+<div class="entry" id="tech_tip_loop_labels_in_Perl_6">
+
+<ul class="info">
+<li><b>Date:</b> 13-01-2014</li>
+<li class="tags">perl, perl 6, tech, tip, tech tip, loops, labels</li>
+</ul>
+
+<h1>Tech Tip: Loop Labels in Perl 6</h1>
+
+<h2>The Tip</h2>
+
+<p>
+It is known that one can label loops (or arbitrary blocks) in Perl 5, using
+the syntax of <code>MYLABEL: while (COND()) { BLOCK }</code>
+or <code>MYLABEL: for my $x (@array) { BLOCK }</code> and then one can
+do <code>last MYLABEL;</code>, <code>next MYLABEL;</code>, or
+<code>redo MYLABEL;</code> (for more information see
+<a href="http://perldoc.perl.org/perlsyn.html">perldoc perlsyn</a>).
+However, I was unable to find how to do something
+like that in Perl 6, despite some amount of searching. Luckily, the people
+on the Perl 6 helped me.
+</p>
+
+<p>
+The answer is that in Perl 6, it’s essentially not different:
+</p>
+
+<pre>
+MYLABEL: for (1 .. 100) -&gt; $x
+{
+.
+.
+    last MYLABEL;
+.
+.
+}
+
+WHILE_LABEL: while $x &lt; 24
+{
+.
+.
+    next WHILE_LABEL;
+.
+.
+}
+</pre>
+
+<p>
+In Perl 6, one can also write <code>MYLABEL.last;</code> instead, but
+<code>last MYLABEL;</code> will still work. <b>Note</b> however that
+“last/redo/next” + label are not currently implemented in
+<a href="http://rakudo.org/">Rakudo Perl 6</a> (though you can still safely
+add labels to the loops).
+</p>
+
+<p>
+Cheers!
+</p>
+
+<h2>Meta</h2>
+
+<p>
+I haven’t blogged for a while in my blogs.perl.org blog, even though
+I’ve been meaning to. Anyway, I’m mostly fine, and have been working on some
+Project Euler challenges, some pull requests and patches to projects, and
+some activity on my own projects. Hopefully, I'll find the time to write
+something more substantial. Recently, I’ve contributed some extra examples to
+the Project Euler section of
+<a href="https://github.com/perl6/perl6-examples">the perl6-examples
+repository</a>. As a result, I was recently granted a perl6-GitHub-project-wide
+commit bit (by none other than
+<a href="https://en.wikipedia.org/wiki/Larry_Wall">TimToady</a>), so
+now I can do all the MAYHEM and DESTRUCTION I want there (Muahahahahahahah!).
+Just kidding about that: all I’m planning to do for now is add more Perl 6
+examples.
+</p>
+
+</div>
+
+<div class="entry" id="tech_tip_open_fh_for_rw_wo_clobbering">
+
+<ul class="info">
+<li><b>Date:</b> 19-01-2014</li>
+<li class="tags">perl, perl 5, tech, tip, tech tip, open, files, I/O</li>
+</ul>
+
+<h1>Tech Tip: Opening a file for read/write without clobbering it.</h1>
+
+<h2>The Tip</h2>
+
+<p>
+<a href="http://perldoc.perl.org/perlopentut.html">perlopentut</a>
+gives <a href="http://perldoc.perl.org/perlopentut.html#Mixing-Reads-and-Writes">several
+options</a> for opening a file for read and write, and I opted to use
+<code>'+&gt;'</code> for
+<a href="http://www.shlomifish.org/open-source/projects/maniac-downloader/">Maniac
+Downloader</a>, but as it turned out, it caused the existing file to be
+clobbered (= its length to be set to zero and all of its contents deleted).
+</p>
+
+<p>
+After asking on Freenode’s #perl channel, we reached this solution for
+opening a filehandle so that: <b>1)</b> it will be opened for read/write.
+<b>2)</b> it can open both an existing file or create a new file that does
+not exist. <b>3)</b> If the file exists, its contents will be retained,
+and it won't be clobbered. and <b>4)</b> it will overwrite existing contents,
+and not append everything at the end of the file.
+</p>
+
+<p>
+The code is as follows:
+</p>
+
+<pre>
+sub _open_fh_for_read_write_without_clobbering
+{
+    my ($path, $url_basename) = @_;
+
+    # open with '+&gt;:raw' will clobber the file.
+    # On the other hand, open with '+&lt;:raw' won't create a new file if it
+    # does not exist.
+    # So we have to restort to this.
+    #
+    # For more information, see: http://perldoc.perl.org/perlopentut.html
+    {
+        open my $fh_temp, '+&gt;&gt;:raw', $path
+            or die "Cannot open '$path' for temp-creation. $!";
+        close($fh_temp);
+    }
+    open my $fh, "+&lt;:raw", $path
+        or die "${url_basename}: $!";
+
+    return $fh;
+}
+</pre>
+
+<p>
+( You can freely reuse this code under your choice of
+<a href="https://en.wikipedia.org/wiki/MIT_License">the MIT/X11 License</a>
+or <a href="https://creativecommons.org/choose/zero/">the
+Public Domain/CC0</a>. )
+</p>
+
+<p>
+The <code>$url_basename</code> is a relic of the roots of Maniac Downloader.
+Using that file-handle I used
+<a href="http://perldoc.perl.org/functions/sysseek.html">sysseek</a>
+and <a href="http://perldoc.perl.org/functions/syswrite.html">syswrite</a>,
+and it worked nicely.
+</p>
+
+<p>
+I should note that <a href="https://metacpan.org/author/MAUKE">mauke</a>
+suggested using this instead:
+</p>
+
+<pre>
+use File::Open qw(fsysopen);
+my $fh = fsysopen($path, 'rw');
+binmode $fh;
+</pre>
+
+<h2>More about Maniac Downloader</h2>
+
+<p>
+I investigated why Maniac Downloader misdownloaded several “.iso” files
+after being interrupted and resumed, and it turned out to have been caused
+by the fact that it clobbered the temporary buffer files, due to the
+reason I mentioned above. This was fixed in version 0.0.5.
+</p>
+
+<p>
+Next I tried to benchmark it against
+<a href="http://aria2.sourceforge.net/">aria2</a> and GNU wget in trying
+to download a file from a local mirror. Using ten connections for both aria2
+and Maniac Downloader, I saw that aria2 and wget took about 30 minutes
+to download the file, while Maniac Downloader downloaded it in less than 13
+minutes. However, at one point the ManDown downloading completely stopped
+(displaying 0 KB/s), and I had to Ctrl+C it and run it again. I guess
+now I’ll need to investigate how to cancel the HTTP/HTTPS downloads and
+start them again if they stalled.
+</p>
+
+</div>
+
+<div class="entry" id="recent_hacktivity_log_01_may_2014">
+
+<ul class="info">
+<li><b>Date:</b> 29-03-2014</li>
+<li class="tags">perl, du, analyze, downloader, download, manager, disk usage, command line, khronos group, opengl</li>
+</ul>
+
+<h1>Recent Hacktivity Log</h1>
+
+<p>
+This is another “recent hacktivity log” of some of the open source
+work I’ve been up to lately.
+</p>
+
+<h2>New Command-Line App: App-Du-Analyze</h2>
+
+<p>
+<a href="https://metacpan.org/release/App-Du-Analyze">App-Du-Analyze</a>
+(with its command-line script of "analyze-du") is now available on CPAN. What
+it does is allow you to analyse the output of the UNIX
+<a href="https://en.wikipedia.org/wiki/Du_%28Unix%29">“du” command</a>,
+get results based on a prefix and a depth, and sort them. It is my preference
+for a disk usage analyser, with the benefit of being able to run several
+queries on the same data, by keeping the same <code>du.txt</code> file - a
+feature which I found is often lacking in GUI disk usage analysers.
+</p>
+
+<p>
+Here's an example of using it:
+</p>
+
+<pre>
+$ export ANALYZE_DU_INPUT_FN="$(pwd)/t/data/fc-solve-git-du-output.txt"
+$ analyze-du -p "fc-solve" -d 1
+16      fc-solve/tests
+120     fc-solve/docs
+172     fc-solve/scripts
+232     fc-solve/arch_doc
+276     fc-solve/rejects
+392     fc-solve/benchmarks
+2920    fc-solve/site
+4192    fc-solve/source
+44208   fc-solve/presets
+</pre>
+
+<p>
+You can find <a href="http://shlomif-tech.livejournal.com/40841.html">a
+report</a> about using an earlier incarnation of the same program to find
+the hotspots in a Windows XP disk.
+</p>
+
+<h2>New Versions of Maniac Downloader</h2>
+
+<p>
+I uploaded new versions of
+<a href="http://www.shlomifish.org/open-source/projects/maniac-downloader/">Maniac
+Downloader</a>, which is a CPAN module that implements a download accelerator.
+What they do is convert the file open to sysopen (per
+<a href="http://blogs.perl.org/users/shlomi_fish/2014/01/tech-tip-opening-a-file-for-readwrite-without-clobbering-it.html">Steven
+Haryanto’s tip</a> (thanks Steven!), and
+attempt to refresh stale connections after a timeout, which is a problem
+that bit me several times.
+</p>
+
+<h2>Working on my CPANTS Kwalitee Score</h2>
+
+<p>
+I worked on my <a href="http://cpants.cpanauthors.org/">CPANTS</a>
+(= a CPAN Testing Service) Kwalitee score. My
+<a href="http://cpants.cpanauthors.org/author/SHLOMIF">CPANTS page</a>
+currently says I have an Average Kwalitee of 134.88, a CPANTS Game
+Kwalitee of 99.79 and a Rank of 68 in the league of “5 or more”.
+</p>
+
+<p>
+I was looking for something to do and decided to revamp my CPAN distributions’
+Kwalitee as much as I could. This involved quite a lot of actions:
+</p>
+
+<ol>
+<li>
+<p>
+Converting distributions from “Makefile.PL” to “Build.PL” or to <a href="http://dzil.org/">Dist-Zilla</a>.
+</p>
+</li>
+
+<li>
+<p>
+Adding various test scripts for POD coverage, POD validity,
+<a href="https://metacpan.org/release/CPAN-Changes">CPAN changes</a>
+validity, and trailing whitespace (the latter are not required by CPANTS
+but they are something I like to have for good measure).
+</p>
+</li>
+
+<li>
+<p>
+Resurrecting or tracing the version control history of various modules, either
+using
+<a href="https://metacpan.org/release/App-cpangitify">App-cpangitify</a>,
+using the old repositories over at bitbucket.org, or the even older ones
+on my Subversion repository on <code>svn.berlios.de</code>.
+</p>
+</li>
+
+<li>
+<p>
+Adding "use strict;" and "use warnings;".
+</p>
+</li>
+
+<li>
+<p>
+Having a $VERSION in all the modules (“.pm” files).
+</p>
+</li>
+
+</ol>
+
+<p>
+Anyway, it was a good excuse to do a lot of clean ups, and doing all this work
+made me appreciate the utility of Dist-Zilla even more, but it kinda sucks
+that sometimes existing <code>dist.ini</code> checkouts break after an upgrade
+(like this
+<a href="https://github.com/jquelin/app-cpan2pkg/pull/3">App-CPAN2pkg
+pull request</a> indicates).
+</p>
+
+<p>
+Anyway, CPANTS still complains about some stuff in my modules, but a lot
+of them are false positives.
+</p>
+
+<h2>Khronos Group Kickoff Meetup</h2>
+
+<p>
+I went to the kickoff meetup of
+<a href="http://www.meetup.com/Khronos-Tel-Aviv-Chapter/">the Tel Aviv chapter</a>
+of the <a href="https://en.wikipedia.org/wiki/Khronos_Group">Khronos Group</a>.
+In case you do not know, the Khronos group is an industry consortium for
+maintaining some standards for hardware-assisted computing like OpenGL
+and OpenCL (whose specifications are open, but do not always have open
+source implementations). I got some free food and drinks there, and it was
+easy to travel to, and I caught a ride back home. The talks - one about
+OpenVX and the other about OpenCL 2.0 were enjoyable, but I think I would
+have liked more code and focus on “hands-on” development.
+</p>
+
+<p>
+The Khronos Group’s local chapters aim to reach out to the community
+of developers who use their APIs.
+</p>
+
+<p>
+Anyway, I met there a few people from some companies like Intel and
+AMD. I talked with the AMD representative and he was a bit shocked that
+I was using <a href="http://www.x.org/wiki/radeon/">the open source
+drivers</a> for Linux on my ATI Mobility HD laptop, saying that the proprietary
+drivers were more performant and featureful, and that the open source
+drivers were primarily provided for servers. I remember trying the
+proprietary drivers, but recall having had some problems with them, and
+I also <a href="http://www.shlomifish.org/philosophy/computers/open-source/trust-non-FOSS/">hesitate
+to use proprietary software</a>, especially as kernel drivers.
+</p>
+
+<p>
+On my way back, someone gave me a ride, and I talked with him about OpenCL and
+he gave me some ideas for a possible methods to still accelerate
+<a href="http://fc-solve.shlomifish.org/">Freecell Solver</a> using it. I'm
+not sure if they are practical, but they were still good food for thought.
+</p>
+
+<p>
+Anyway, I’d like to attend more of their meetups.
+</p>
+
+<h2>perl-begin.org Update and Revamp</h2>
+
+<p>
+I dedicated some time to go over the contents of
+<a href="http://perl-begin.org/">the Perl Beginners’ Site (perl-begin.org)</a> and update
+it to reflect the new knowledge and best practices. Now the site is in
+much better shape than it was before. I still want to write an item for it
+in <a href="http://perl-begin.org/news/">its news page</a>.
+</p>
+
+<!-- To Add:
+
+* http://perl-begin.org/ update/revamp.
+
+* Tel Aviv.pm meetup.
+
+* Emscripten - fastcomp/etc.
+
+* Freecell Solver AI-Pathfinding-OptimizeMultiple - convert away from MyInput.
+
+-->
+
+</div>
+
+</body>
+</html>

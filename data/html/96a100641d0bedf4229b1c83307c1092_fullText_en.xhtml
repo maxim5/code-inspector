@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" media="screen" href="../../../../library/css/editing.css" type="text/css" />
+  </head>
+  <body>
+    <ul class="noBullet">
+      <li><a href="#1">1. Installation</a></li>
+      <li><a href="#2">2. EditableImage</a></li>
+      <li style="list-style: none">
+        <ul class="noBullet">
+          <li><a href="#2.1">2.1. Loading an image</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#2.2">2.2. Creating an empty image</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#2.3">2.3. Creating an image out of a function</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#2.4">2.4. Properties</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#2.5">2.5. Metadata</a></li>
+        </ul>
+      </li>
+      <li><a href="#3">3. Quality</a></li>
+      <li><a href="#4">4. Rendering</a></li>
+      <li style="list-style: none">
+        <ul class="noBullet">
+          <li><a href="#4.1">4.1. Margin</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#4.2">4.2. ScaleController</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#4.3">4.3. AnimatedScaleController</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#4.4">4.4. MouseClickZoomingController</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#4.5">4.5. MouseWheelZoomingController</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#4.6">4.6. DragPanningController</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#4.7">4.7. RotationController</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#4.8">4.8. Events and Listeners</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#4.9">4.9. Performance</a></li>
+        </ul>
+      </li>
+      <li><a href="#5">5. Implementation providers</a></li>
+      <li style="list-style: none">
+        <ul class="noBullet">
+          <li><a href="#5.1">5.1. Disabling specific operations from a plugin</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#5.2">5.2. Extending Mistral with custom operations</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#5.3">5.3. Writing a Mistral plugin</a></li>
+        </ul>
+      </li>
+      <li><a href="#6">6. Core Operations</a></li>
+      <li style="list-style: none">
+        <ul class="noBullet">
+          <li><a href="#6.1">6.1. CaptureOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.2">6.2. ConvertToBufferedImageOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.3">6.3. ConvolveOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.4">6.4. CreateFunctionOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.5">6.5. CreateOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.6">6.6. CropOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.7">6.7. DrawOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.8">6.8. ForceRenderingOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.9">6.9. OptimizeOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.10">6.10. PaintOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.11">6.11. PrintOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.12">6.12. ReadOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.13">6.13. RotateOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.14">6.14. RotateQuadrantOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.15">6.15. ScaleOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.16">6.16. SizeOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#6.17">6.17. WriteOp</a></li>
+        </ul>
+      </li>
+      <li><a href="#7">7. Operations</a></li>
+      <li style="list-style: none">
+        <ul class="noBullet">
+          <li><a href="#7.1">7.1. AddOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#7.2">7.2. ApplyUnsharpMaskOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#7.3">7.3. AssignColorProfileOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#7.4">7.4. ConvertColorProfileOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#7.5">7.5. HistogramOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#7.6">7.6. MultiplyOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#7.7">7.7. TranslateOp</a></li>
+        </ul>
+      </li>
+      <li><a href="#8">8. Contributed Operations</a></li>
+      <li style="list-style: none">
+        <ul class="noBullet">
+          <li><a href="#8.1">8.1. BandMergeOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#8.2">8.2. CenterShiftOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#8.3">8.3. ChangeBufferTypeOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#8.4">8.4. ChangeFormatOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#8.5">8.5. ConjugateOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#8.6">8.6. DFTOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#8.7">8.7. DivideByConstOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#8.8">8.8. DivideComplexOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#8.9">8.9. IDFTOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#8.10">8.10. MagnitudeOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#8.11">8.11. MultiplyComplexOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#8.12">8.12. PadBlackOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#8.13">8.13. PadPeriodicOp</a></li>
+        </ul>
+        <ul class="noBullet">
+          <li><a href="#8.14">8.14. PadPeriodicPlanarOp</a></li>
+        </ul>
+      </li>
+      <li><a href="#9">9. The ImagingProcessor</a></li>
+    </ul>
+    <br clear="all" />
+    <a name="1"></a>
+    <h3>1. Installation</h3>
+    <p>Installing Mistral is quite easy: you just need to include Mistral jar files in the classpath. Instead of a
+      single, large jar file, several smaller files are available to avoid the need of including in the classpath
+      unneeded stuff.<br />
+    </p>
+    <ul>
+      <li><strong>EditableImage.jar</strong> contains all the base features of Mistral;</li>
+      <li><strong>Renderer.jar</strong> contains the classes used for displaying an image in a GUI;</li>
+      <li><strong>Metadata.jar</strong> contains the support for metadata extraction;</li>
+      <li><strong>Operations.jar</strong> contains the operation definitions, used for image manipulation;</li>
+      <li><strong>JAI-Adapter.jar</strong> must be added if you plan to use JAI together with Mistral</li>
+      <li><strong>ImageJ-Adapter.jar</strong> must be added if you plan to use ImageJ together with Mistral (not
+        functional yet)</li>
+      <li><strong>Processor.jar</strong> contains the classes for parallel and distributed processing;</li>
+      <li><strong>Contributions.jar</strong> contains classes whose API has not been finalized yet.</li>
+    </ul>
+    The following third-party product can be optionally used with Mistral:<br />
+    <ul>
+      <li>JAI<br />
+      </li>
+      <li>ImageJ</li>
+      <li>JAI-ImageIO</li>
+      <li>metadata-extractor by Drew Noakes</li>
+    </ul>
+    <br clear="all" />
+    <a name="2"></a>
+    <h3>2. EditableImage</h3>
+    <p>The core class of the Mistral project is <code>EditableImage</code>: it represents an image that can be loaded,
+      manipulated, saved and shown on a GUI. <code>EditableImage</code> is an <em>opaque holder</em>, as it hides from
+      the programmer's view the concrete implementation of the image itself. This approach allows to plug-in different
+      imaging engines, as each one could have its own way to represent an image.<br clear="all" />
+      <a name="2.1"></a></p>
+    <h4>2.1. Loading an image</h4>
+    <p>To load an <a href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/EditableImage.html"><code>EditableImage</code></a>
+      the <code>create()</code> method must be used in conjunction with the <a href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/op/ReadOp.html"><code>ReadOp</code></a>
+      operation:<br />
+    </p>
+    <pre class="prettyprint lang-java">
+File file = new File("MyImage.jpg");<br />EditableImage image = EditableImage.create(new ReadOp(file));
+</pre> <code>ReadOp</code> contains all the information required for the load operation and can contain the following
+    attributes:<br />
+    <br />
+    <table width="100%" cellspacing="0" cellpadding="3" border="1" align="" summary="">
+      <tbody>
+        <tr>
+          <td valign="top"><code>input</code></td>
+          <td valign="top">the source to load the image from</td>
+          <td valign="top" nowrap="nowrap">Mandatory</td>
+          <td valign="top">It can be:<br />
+            <ul>
+              <li>a <code>File</code> </li>
+              <li>a <code>java.io.InputStream</code></li>
+              <li>a <code>javax.imageio.ImageReader</code>;</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><code>type</code></td>
+          <td valign="top">the type of data that we want to read</td>
+          <td valign="top" nowrap="nowrap">Mandatory</td>
+          <td valign="top">It can be:<br />
+            <ul>
+              <li><code>IMAGE</code>, if we want to load both the raster and the metadata;</li>
+              <li><code>THUMBNAIL</code>, if only the thumbnail should be read;</li>
+              <li><code>METADATA</code> if only the metadata should be read.</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><code>imageIndex</code></td>
+          <td valign="top">the image index</td>
+          <td valign="top" nowrap="nowrap">Optional<br />
+            (defaults to 0)</td>
+          <td valign="top">If the source contains more than a single image, this parameter specifies which one should be
+            loaded.</td>
+        </tr>
+        <tr>
+          <td valign="top"><code>thumbnailIndex</code></td>
+          <td valign="top">the thumbnail index</td>
+          <td valign="top" nowrap="nowrap">Optional<br />
+            (defaults to 0)</td>
+          <td valign="top">If the image has more than a single related thumbnail, this parameter specifies which one
+            should be loaded.</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    The image is always loaded by means of the Image I/O API, which is the standard way to perform I/O on images with
+    Java. This facility is based on plug-ins for dealing with an expandable number of image format by just adding the
+    required code in the classpath. It is possible to query the currently supported file formats by calling:<br />
+    <pre class="prettyprint lang-java">
+Collection&lt;String&gt; extensions = EditableImage.getAvailableExtensions();
+</pre> <br clear="all" />
+    <a name="2.2"></a>
+    <h4>2.2. Creating an empty image</h4>
+    <p>Alternatively, an image can be created empty. Instead of using a <code>ReadOp</code>, a <a href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/op/CreateOp.html"><code>CreateOp</code></a>
+      specifies the required attributes. For instance:<br />
+    </p>
+    <pre class="prettyprint lang-java">
+EditableImage image = EditableImage.create(<br />                  new CreateOp(1024, 768, EditableImage.DataType.BYTE));
+</pre> creates a single-band image with the given size and data type.<br clear="all" />
+    <a name="2.3"></a>
+    <h4>2.3. Creating an image out of a function</h4>
+    <p>It is possible to create a new image whose raster data are set by an user specified function. See <code>CreateFunctionOp</code>.</p>
+    <br clear="all" />
+    <a name="2.4"></a>
+    <h4>2.4. Properties</h4>
+    <p>Once an <code>EditableImage</code> has been loaded, some generic properties can be retrieved by means of getter
+      methods. They are:<br />
+      <br />
+    </p>
+    <table width="100%" cellspacing="0" cellpadding="3" border="1" align="" summary="">
+      <tbody>
+        <tr>
+          <td valign="top"><code>width</code>, <code>height</code></td>
+          <td valign="top">the dimensions of the image in pixels</td>
+        </tr>
+        <tr>
+          <td valign="top"><code>bandCount</code></td>
+          <td valign="top">the number of channels of the image (e.g. 1 for monochrome images, 3 for RGB images)</td>
+        </tr>
+        <tr>
+          <td valign="top"><code>bitsPerBand</code></td>
+          <td valign="top">the number of bits used to represent a single channel (e.g. 8 for the most common image
+            formats; 10, 12 or 16 for some professional formats)</td>
+        </tr>
+        <tr>
+          <td valign="top"><code>bitsPerPixel</code></td>
+          <td valign="top">the product of <code>bitsPerBand</code> and <code>bandCount</code></td>
+        </tr>
+        <tr>
+          <td valign="top"><code>dataType</code></td>
+          <td valign="top">returns a value of the enumeration EditableImage.DataType, which tells about the primitive
+            type used to represent each sample (e.g. <code>BYTE</code>, <code>SHORT</code>, <code>UNSIGNED_SHORT</code>,
+            <code>FLOAT</code>, <code>DOUBLE</code>).</td>
+        </tr>
+        <tr>
+          <td valign="top"><code>colorModel</code></td>
+          <td valign="top"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <br clear="all" />
+    <a name="2.5"></a>
+    <h4>2.5. Metadata</h4>
+    <p><code>EditableImage</code> supports reading metadata from many different formats. While the primary source of
+      information is Image I/O, Mistral is able to extract information also from other sources, for instance Drew
+      Noakes' metadata-extractor. To enable this feature, it is just needed to put Drew's code in the classpath.<br />
+      <br />
+      The EXIF directory and the maker note are available by means of two specific methods:<br />
+      <code><br />
+      </code></p>
+    <pre class="prettyprint lang-java">
+<a href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/metadata/Directory.html" target="_blank">Directory</a> exifDirectory = image.getEXIFDirectory();<br /><a
+href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/metadata/Directory.html" target="_blank">Directory</a> makerNote = image.getMakerNote();
+</pre> <br clear="all" />
+    <a name="3"></a>
+    <h3>3. Quality</h3>
+    <p>As image processing can be CPU intensive, for many operations it is possible to apply a trade-off between the
+      result quality and the speed. This is done by setting a <code>quality</code> property with the following values:<br />
+    </p>
+    <ul>
+      <li><code>Quality.FASTEST:</code> the fastest algorithm is used, regardless of the final image quality;</li>
+      <li><code>Quality.BEST</code>: the algorithm delivering the highest quality is used, regardless of the speed;</li>
+      <li><code>Quality.INTERMEDIATE</code>: mid-way between <code>FASTEST</code> and <code>BEST</code></li>
+    </ul>
+    Each operation has its own way to accept the quality parameter, but usually it is passed in the constructor:<br />
+    <pre class="prettyprint lang-java">
+EditableImage image = ...;<br />image.execute(new ScaleOp(0.5, Quality.BEST));
+</pre> The quality attribute applies as following:<br />
+    <br />
+    <table width="200" cellspacing="0" cellpadding="2" border="1" align="" summary="">
+      <tbody>
+        <tr>
+          <td nowrap="nowrap" style="font-weight: bold;">Quality</td>
+          <td nowrap="nowrap" style="font-weight: bold;">Java2D  interpolation</td>
+          <td nowrap="nowrap" style="font-weight: bold;">Java2D  affine transform</td>
+          <td> </td>
+        </tr>
+        <tr>
+          <td nowrap="nowrap"><code>FASTEST</code></td>
+          <td nowrap="nowrap">Nearest Neighbor</td>
+          <td nowrap="nowrap">Nearest Neighbor</td>
+          <td> </td>
+        </tr>
+        <tr>
+          <td nowrap="nowrap"><code>INTERMEDIATE</code></td>
+          <td nowrap="nowrap">Bilinear</td>
+          <td nowrap="nowrap">Bilinear</td>
+          <td> </td>
+        </tr>
+        <tr>
+          <td nowrap="nowrap"><code>BEST</code></td>
+          <td nowrap="nowrap">Bicubic</td>
+          <td nowrap="nowrap">Bicubic</td>
+          <td> </td>
+        </tr>
+      </tbody>
+    </table>
+    <br clear="all" />
+    <a name="4"></a>
+    <h3>4. Rendering</h3>
+    <p>A specific component can be used for displaying an <code>EditableImage</code> on a GUI: <a href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/render/EditableImageRenderer.html"><code>EditableImageRenderer</code>.</a>
+      This class extends Swing <code>JComponent</code> and can be placed in every Swing-based GUI. Using it can be as
+      easy as:<br />
+    </p>
+    <pre class="prettyprint lang-java">
+JFrame frame = new JFrame("Test");<br />EditableImageRenderer imageRenderer = new EditableImageRenderer();<br />frame.getContentPane().add(imageRenderer);<br />frame.setSize(800, 600);<br />frame.setVisible();<br />imageRenderer.setImage(image);
+</pre> By default, the image renderer does not use any scroll bar. It is possible to control whether a pair of
+    functional scroll bars should be visible by setting a property:<br />
+    <pre class="prettyprint lang-java">
+imageRenderer.setScrollBarsVisible(true);
+</pre> Scroll bars can be added and removed at any time, and <code>EditableImageRenderer</code> will adjust as
+    required.<br />
+    <code>EditableImageRenderer</code> is capable of scaling and panning. The scale can be controlled by means of the
+    following methods:<br />
+    <pre class="prettyprint lang-java">
+double scale = imageRenderer.getScale(); // returns the current scale<br />imageRenderer.setScale(scale * 2);       // changes the current scale<br />imageRenderer.fitToDisplaySize();        // fits the image to show entirely in the renderer<br />imageRenderer.setFitToDisplaySize(true): // the image will always shows entirely <br />                                         // also after the component is resized
+</pre> A special way of controlling the scale makes use of a "pivot point":<br />
+    <pre class="prettyprint lang-java">
+Point pivot = new Point(30, 40);<br />imageRenderer.setScale(imageRenderer.getScale() * 2, pivot);
+</pre> This means that the scale is changed, but the renderer keeps the specified point "locked" (that is the
+    enlargement/reduction is centered on the pivot).<br />
+    <br />
+    Panning can be controlled by specifying which pixel of the image is shown in the upper left corner of the renderer
+    (the "image origin"):<br />
+    <pre class="prettyprint lang-java">
+imageRenderer.setOrigin(new Point(10, 20));<br />Point origin = imageRenderer.getOrigin();
+</pre> It's also possible to center the image on the renderer (keeping the current scale):<br />
+    <pre class="prettyprint lang-java">
+imageRenderer.centerImage()
+</pre> Even though everything can be done by directly operating on the <code>EditableImageRenderer</code>, it's more
+    advisable to use specialized controllers, described in the next paragraphs.<br clear="all" />
+    <a name="4.1"></a>
+    <h4>4.1. Margin</h4>
+    <p>When scroll bars are not visible, it's possible to specify a margin around the image. This means that you can pan
+      the image past its borders, as shown in the picture.<br />
+      <br />
+    </p>
+    <div style="text-align: center;"><img width="630" vspace="4" border="0" hspace="4" height="586" alt="" src="http://web.archive.org/web/20090201001225im_/http://mistral.tidalwave.it/infoglueDeliverLive/digitalAssets/1483_Margin.jpg" /><br />
+    </div>
+    <br />
+    For instance, the following code sets a margin around the image which is one quarter of the image size:<br />
+    <br />
+    <pre class="prettyprint lang-java">
+EditableImage image = ...;<br />int hMargin= image.getWidth() / 4;<br />int vMargin = image.getHeight() / 4;<br />imageRenderer.setMargin(new Insets(vMargin, hMargin, vMargin, hMargin));
+</pre> <br />
+    You can set independent values for the top, left, bottom and right margin.<br />
+    <br />
+    <span class="Tip">When the image scale factor is so small that the image is shown with the full margin in the
+      renderer, the image is always placed at the center of the renderer and panning is disabled.</span><br clear="all" />
+    <a name="4.2"></a>
+    <h4>4.2. ScaleController</h4>
+    <p>The <a href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/render/ScaleController.html"><code>ScaleController</code></a>
+      is a better way for changing the current scale on an <code>EditableImageRenderer</code>:<br />
+    </p>
+    <pre class="prettyprint lang-java">
+ScaleController scaleController = new ScaleController(imageRenderer);
+</pre> All the common scale operations are available on the <code>ScaleController</code>:<br />
+    <pre class="prettyprint lang-java">
+scaleController.setScale(1.5);<br />double scale = scaleController.getScale();<br />scaleController.setScale(2, new Point(30, 40)); // scale with a pivot point<br />scaleController.setZoomFactor(2); // zoom in/out will double/half the scale<br />scaleController.zoomIn();<br />scaleController.zoomOut();<br />scaleController.showActualPixels(); // equivalent to setScale(1);<br />scaleController.fitToView(); 
+</pre> <br clear="all" />
+    <a name="4.3"></a>
+    <h4>4.3. AnimatedScaleController</h4>
+    <p>The <code>AnimatedScaleController</code> is a specialization of <code>ScaleController</code> which applies a
+      smooth transition effect when the scale is changed.<br />
+    </p>
+    <pre class="prettyprint lang-java">
+ScaleController scaleController = new AnimatedScaleController(imageRenderer);
+</pre> <span class="Tip">If a high quality is specified for rendering the image (e.g. <code>Quality.BEST</code>),
+      during the transition effect the <code>AnimatedScaleController</code> might temporarily apply a lower quality for
+      keeping the transition smooth. The high quality is however applied at the end of the transition.</span><br clear="all" />
+    <a name="4.4"></a>
+    <h4>4.4. MouseClickZoomingController</h4>
+    <p>The <a href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/render/MouseClickZoomingController.html"><code>MouseClickZoomingController</code></a>
+      allows to toggle zooming between the 1:1 (actual pixels) and the "fit to window" scale by a simple mouse click.<br />
+    </p>
+    <pre class="prettyprint lang-java">
+ScaleController scaleController = new AnimatedScaleController(imageRenderer);<br />MouseClickZoomingController zoomingController = new MouseClickZoomingController(scaleController);<br />zoomingController.setClickCountToZoom(2); // a double-click is required to trigger<br />zoomingController.setEnabled(true);   
+</pre> The actual scale behaviour is delegated to a <code>ScaleController</code>; for example, in the above sketch of
+    code the animated effect is used. It is important to disable the controller when it's no more used, as this will
+    remove some listeners to the image renderer.<br clear="all" />
+    <a name="4.5"></a>
+    <h4>4.5. MouseWheelZoomingController</h4>
+    <p>The <a href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/render/MouseClickZoomingController.html"><code>MouseClickZoomingController</code></a>
+      allows to set the scale of the rendered image using the mouse wheel.<br />
+    </p>
+    <pre class="prettyprint lang-java">
+ScaleController scaleController = new AnimatedScaleController(imageRenderer);<br />MouseWheelZoomingController zoomingController = new MouseWheelZoomingController(scaleController);<br />zoomingController.setEnabled(true);   
+</pre> The actual scale behaviour is delegated to a <code>ScaleController</code>; for example, in the above sketch of
+    code the animated effect is used. It is important to disable the controller when it's no more used, as this will
+    remove some listeners to the image renderer.<br clear="all" />
+    <a name="4.6"></a>
+    <h4>4.6. DragPanningController</h4>
+    <p>The <a href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/render/DragPanningController.html"><code>DragPanningController</code></a>
+      enables the user to control the panning over the image by using the mouse drag gesture.<br />
+    </p>
+    <pre class="prettyprint lang-java">
+DragPanningController panningController = new DragPanningController(imageRenderer);<br />panningController.setEnabled(true);
+</pre> <br clear="all" />
+    <a name="4.7"></a>
+    <h4>4.7. RotationController</h4>
+    <p>The <a href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/render/RotationController.html"><code>RotationController</code></a>
+      can be used to rotate the image in the renderer. The only operation available is setAngle() which controls the
+      rotation applied to the image. Subclasses might implement animations (e.g. smoothly getting to the desired value).<br />
+    </p>
+    <pre class="prettyprint lang-java">
+EditableImagerRenderer imageRenderer = new EditableImageRenderer();<br />RotationController rotationController = new RotationController(imageRenderer);<br />...<br />rotationController.setAngle(44.3); // decimal, ccw
+</pre> <br clear="all" />
+    <a name="4.8"></a>
+    <h4>4.8. Events and Listeners</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="4.9"></a>
+    <h4>4.9. Performance</h4>
+    <p>Performance can be an issue when the rendered image is frequently moved, scaled or rotated. By default, <code>EditableImageRenderer</code>
+      performs all the needed scale operations on-the-fly, that is at each paint. This can be a severe performance
+      penalty for medium-sized and large images. There are two ways of trading speed for memory:<br />
+    </p>
+    <ul>
+      <li>calling <code>setOptimizedImageEnabled(true)</code>, the rendered image is a copy of the original one, but
+        with a data layout which is optimised for the current display;</li>
+      <li>calling <code>setScaledImageCachingEnabled(true)</code>, a further scaled-down copy of the image is kept in
+        memory, so it can be directly rendered at each paint</li>
+    </ul>
+    Please note that if you cal <code>setAngle(angle)</code> with an argument different than zero, a cached scaled copy
+    of the image is always kept.<br />
+    <pre class="prettyprint lang-java">
+EditableImageRenderer imageRenderer = new EditableImageRenderer();<br />imageRenderer.setOptimizedImageEnabled(true);<br />imageRenderer.setScaledImageCachingEnabled(true);
+</pre> A further way to control performance is by specifying the quality/speed trade off for the rendering operations,
+    with separate settings for scaling and rotating:<br />
+    <pre class="prettyprint lang-java">
+EditableImageRenderer imageRenderer = new EditableImageRenderer();<br />imageRenderer.setScaleQuality(Quality.BEST);<br />imageRenderer.setRotateQuality(Quality.FASTEST);
+</pre> <br clear="all" />
+    <a name="5"></a>
+    <h3>5. Implementation providers</h3>
+    <p>Mistral is based on a plug-in mechanism, by which each plug-in provides an implementation of operations. Not all
+      plugins are able to provide the implementation for all the operations, thus Mistral is able to switch provider if
+      needed.<br />
+      <br />
+    </p>
+    <div class="Tip">Tip: Since this operation can require a model change, plugin switches can be expensive and should
+      be performed only when needed.</div>
+    <br />
+    <div class="Tip">Tip: Switching between the Java2D implementation (the default) and the JAI implementation is not an
+      expensive operation.</div>
+    <br />
+    By default Mistral comes with a partial implementation of operations on top of Java2D (that is, the standard code in
+    the JRE runtime). Other plugins can be installed in Mistral by loading their <a href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/op/ImplementationFactory.html"><code>ImplementationFactory</code>.</a>
+    For instance, the following code installs the JAI plugin (the <code>JAI-Adapter.jar</code> file and the JAI stuff
+    must be in the classpath):<br />
+    <pre class="prettyprint lang-java">
+import it.tidalwave.image.jai.ImplementationFactoryJAI;<br />...<br />ImplementationFactoryJAI.getInstance();
+</pre> An alternate approach can be used that doesn't require dependencies at compile time:<br />
+    <pre class="prettyprint lang-java">
+try<br />  {<br />    Class.forName("it.tidalwave.image.jai.ImplementationFactoryJAI");<br />  }<br /><br />catch (Throwable t)<br />  { <br />    // ....<br />  }
+</pre> In this case you should always catch eventual errors from the operation, as it can fail if there are missing
+    libraries in the classpath.<br clear="all" />
+    <a name="5.1"></a>
+    <h4>5.1. Disabling specific operations from a plugin</h4>
+    <p>Usually the same implementation can be provided by more than a single plugin at the same time (for instance <code>HistogramOp</code>
+      is provided by both the default Java2D implementation and the JAI implementation). If in specific cases you want
+      to be sure that only one is used (for instance, JAI implementation of <code>HistogramOp</code> is much faster
+      than Java2D), you can disable it by operating on the <code>ImplementationFactory</code>. For instance, the
+      following code disables the Java2D implementation of <code>HistogramOp</code>:<br />
+    </p>
+    <pre class="prettyprint lang-java">
+ImplementationFactoryJ2D.getInstance().unregisterImplementation(HistogramOp.class);
+</pre> <br clear="all" />
+    <a name="5.2"></a>
+    <h4>5.2. Extending Mistral with custom operations</h4>
+    <p>Enhancing Mistral with custom operations is straightforward and can be accomplished in three steps:<br />
+    </p>
+    <ol>
+      <li>write the abstract <code>Operation</code></li>
+      <li>write the concrete implementation</li>
+      <li>bind them in the <code>ImplementationRegistry</code></li>
+    </ol>
+    For instance, let's suppose we want to create a custom operation that changes the buffer type of the image (for
+    instance from 8 bit to 16 bit, or to one of the many formats defined by the <code>BufferedImage.TYPE_XXX</code>
+    constants. The abstract <code>Operation</code> can be written as:<br />
+    <pre class="prettyprint lang-java">
+public class ChangeBufferTypeOp extends Operation<br /> {<br />   private final int bufferType;<br />  <br />   public ChangeBufferTypeOp (final int bufferType)   <br />     { <br />       if ((bufferType &lt;= 0) || (bufferType &gt; 13))<br />         {<br />           throw new IllegalArgumentException("bufferType: " + bufferType);<br />         } <br /><br />       this.bufferType = bufferType;   <br />     }         <br /><br />   public int getBufferType()<br />     {  <br />       return bufferType;   <br />     }<br /> }  
+</pre> The concrete implementation for Java2D is also simple:<br />
+    <pre class="prettyprint lang-java">
+public class ChangeBufferTypeJ2DOp extends OperationImplementation&lt;ChangeBufferTypeOp, BufferedImage&gt;<br />  {<br />    protected BufferedImage execute (final ChangeBufferTypeOp operation, <br />                                     final EditableImage image,<br />                                     final BufferedImage bufferedImage) <br />      {<br />        final int width = image.getWidth();<br />        final int height = image.getHeight();<br />        final BufferedImage result = new BufferedImage(width, height, operation.getBufferType());<br />        Graphics g = null;<br />        <br />        try <br />          {<br />            g = result.createGraphics();<br />            g.drawImage(bufferedImage, 0, 0, null);<br />          } <br />        finally <br />          {<br />            if (g != null)<br />              {<br />                g.dispose();<br />              }<br />          }<br />        <br />        return result;<br />      }<br />  }<br />
+</pre> The new operation and its implementation can be registered with the following code:<br />
+    <pre class="prettyprint lang-java">
+ImplementationFactoryJ2D.getInstance().<br />    registerImplementation(ChangeBufferTypeOp.class, ChangeBufferTypeJ2DOp.class); 
+</pre> At this point, the new operation is available to the application just as the standard ones. For instance, the
+    following code works:<br />
+    <pre class="prettyprint lang-java">
+File file = new File("photo.jpg");<br />EditableImage image = EditableImage.create(new ReadOp(file)); <br />image.execute(new ChangeBufferTypeOp(BufferedImage.TYPE_3BYTE_BGR)); <br />image.execute(new WriteOp("JPEG", new File("Result.tif"))); 
+</pre> <br clear="all" />
+    <a name="5.3"></a>
+    <h4>5.3. Writing a Mistral plugin</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="6"></a>
+    <h3>6. Core Operations</h3>
+    <p>Core Operations are the most common kind of image manipulation facilities and are available in the
+      "EditableImage" component.</p>
+    <table cellspacing="0" cellpadding="2" border="1" align="center" summary="">
+      <tbody>
+        <tr>
+          <td style="font-weight: bold;">Operation</td>
+          <td style="font-weight: bold;">Java 2D</td>
+          <td style="font-weight: bold;">     JAI   </td>
+          <td style="font-weight: bold;">ImageJ</td>
+        </tr>
+        <tr>
+          <td>ConvertToBufferedImageOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>ConvolveOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>CreateFunctionOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>CreateOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>CropOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>DrawOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>ForceRenderingOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>OptimizeOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>PaintOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>ReadOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>RotateOp</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>RotateQuadrantOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>ScaleOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>SizeOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>WriteOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <br clear="all" />
+    <a name="6.1"></a>
+    <h4>6.1. CaptureOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="6.2"></a>
+    <h4>6.2. ConvertToBufferedImageOp</h4>
+    <p>This operation converts the image into a <code>BufferedImage</code>.<br />
+    </p>
+    <pre class="prettyprint lang-java">
+EditableImage image = ...;<br />BufferedImage bufferedImage = image.execute(new ConvertToBufferedImageOp()).getBufferedImage();
+</pre> <br clear="all" />
+    <a name="6.3"></a>
+    <h4>6.3. ConvolveOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="6.4"></a>
+    <h4>6.4. CreateFunctionOp</h4>
+    <p>This operation creates a new image whose pixel values are computed from a function (at the moment only
+      monochromatic images are created).<br />
+      <br />
+      PENDING: add example<br />
+      <br />
+    </p>
+    <table width="100%" cellspacing="0" cellpadding="3" border="1" align="" summary="">
+      <tbody>
+        <tr>
+          <td valign="top"><strong>Parameter</strong></td>
+          <td valign="top"><strong>Meaning</strong></td>
+          <td valign="top" nowrap="nowrap"><br />
+          </td>
+          <td valign="top"> </td>
+        </tr>
+        <tr>
+          <td valign="top"><code>width</code></td>
+          <td valign="top">the width of the image to create</td>
+          <td valign="top" nowrap="nowrap">mandatory</td>
+          <td valign="top"> </td>
+        </tr>
+        <tr>
+          <td valign="top"><code>height<br />
+            </code></td>
+          <td valign="top">the height of the image to create</td>
+          <td valign="top" nowrap="nowrap">mandatory</td>
+          <td valign="top"><br />
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><code>function</code></td>
+          <td valign="top">the function to compute pixel values</td>
+          <td valign="top" nowrap="nowrap">mandatory</td>
+          <td valign="top"> </td>
+        </tr>
+        <tr>
+          <td valign="top"><code>dataType</code></td>
+          <td valign="top">the type for each sample </td>
+          <td valign="top" nowrap="nowrap">mandatory</td>
+          <td valign="top"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <br clear="all" />
+    <a name="6.5"></a>
+    <h4>6.5. CreateOp</h4>
+    <p>Creates a new image given the size and the data type.<br />
+    </p>
+    <pre class="prettyprint lang-java">
+EditableImage img;<br />int w = 1024;<br />int h = 768;<br />img = EditableImage.create(new CreateOp(w, h, DataType.BYTE));                  // 1-band,   8bpp<br />img = EditableImage.create(new CreateOp(w, h, DataType.UNSIGNED_SHORT));        // 1-band,  16bpp<br />img = EditableImage.create(new CreateOp(w, h, DataType.BYTE, 0, 0, 0));         // 3-bands, 24bpp<br />img = EditableImage.create(new CreateOp(w, h, DataType.BYTE, 255, 255, 255));   // 3-bands, 24bpp<br />img = EditableImage.create(new CreateOp(w, h, DataType.BYTE, Color.WHITE));     // 3-bands, 24bpp<br />img = EditableImage.create(new CreateOp(w, h, DataType.FLOAT, 1.0));            // 1-band,  24bpp<br />img = EditableImage.create(new CreateOp(w, h, DataType.DOUBLE, 1.0, 1.0, 0.5)); // 3-bands,192bpp
+</pre>
+    <table width="100%" cellspacing="0" cellpadding="3" border="1" align="" summary="">
+      <tbody>
+        <tr>
+          <td valign="top"><strong>Parameter</strong></td>
+          <td valign="top"><strong>Meaning</strong></td>
+          <td valign="top" nowrap="nowrap"> </td>
+        </tr>
+        <tr>
+          <td valign="top"><code>width</code></td>
+          <td valign="top">the width</td>
+          <td valign="top" nowrap="nowrap">mandatory</td>
+        </tr>
+        <tr>
+          <td valign="top"><code>height</code></td>
+          <td valign="top">the height</td>
+          <td valign="top" nowrap="nowrap">mandatory</td>
+        </tr>
+        <tr>
+          <td valign="top"><code>data type</code></td>
+          <td valign="top">the data type</td>
+          <td valign="top" nowrap="nowrap">mandatory</td>
+        </tr>
+        <tr>
+          <td valign="top"><code>filler</code></td>
+          <td valign="top">the initial value to fill the raster with</td>
+          <td valign="top" nowrap="nowrap">optional</td>
+        </tr>
+        <tr>
+          <td valign="top"><code>color</code></td>
+          <td valign="top">the initial value to fill the raster with, in form of <code>Color</code></td>
+          <td valign="top" nowrap="nowrap">optional</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    Not all the possible configurations are available with a given provider.<br />
+    <br />
+    <table width="75%" cellspacing="0" cellpadding="2" border="1" align="" summary="">
+      <tbody>
+        <tr>
+          <td style="font-weight: bold;">Data type</td>
+          <td style="font-weight: bold;">Java2D</td>
+          <td style="font-weight: bold;">JAI</td>
+        </tr>
+        <tr>
+          <td><code>BYTE</code></td>
+          <td>1 and 3 bands</td>
+          <td>any number of bands</td>
+        </tr>
+        <tr>
+          <td><code>SHORT</code></td>
+          <td>1 band</td>
+          <td>any number of bands</td>
+        </tr>
+        <tr>
+          <td><code>UNSIGNED_SHORT</code></td>
+          <td>1 band</td>
+          <td>any number of bands</td>
+        </tr>
+        <tr>
+          <td><code>INT</code></td>
+          <td>not available</td>
+          <td>any number of bands</td>
+        </tr>
+        <tr>
+          <td><code>FLOAT</code></td>
+          <td>not available</td>
+          <td>any number of bands</td>
+        </tr>
+        <tr>
+          <td><code>DOUBLE</code></td>
+          <td>not available</td>
+          <td>any number of bands</td>
+        </tr>
+      </tbody>
+    </table>
+    <br clear="all" />
+    <a name="6.6"></a>
+    <h4>6.6. CropOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="6.7"></a>
+    <h4>6.7. DrawOp</h4>
+    <p>The <code>DrawOp</code> allows to draw arbitrary contents in the image raster. This operation takes as a
+      mandatory argument an instance of <code>DrawOp.Executor</code>. You must implement the <code>draw()</code>
+      method that should contain the actual code that draws into the raster.</p>
+    <pre class="prettyprint lang-java">
+EditableImage image = ...;<br />image.execute(new DrawOp(new DrawOp.Executor()<br />  {<br />    public void draw (Graphics2D g, EditableImage image) <br />      {<br />        g.setColor(Color.BLACK);<br />        g.setFont(...);<br />        g.drawString("Hello world!", 5, 5);<br />      }<br />  }));<br />
+</pre> <br clear="all" />
+    <a name="6.8"></a>
+    <h4>6.8. ForceRenderingOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="6.9"></a>
+    <h4>6.9. OptimizeOp</h4>
+    <p>This operation converts the image raster into a format which is the most suitable one for the current platform
+      (the so-called "compatible image" in Swing jargon), while mantaining both the raster data and the color space.
+      Usually this operation must be performed just after an image has been loaded or created, as it usually allows for
+      dramatic performance improvements in other operations.<br />
+      <code>OptimizeOp</code> can optionally change the size of the image according to a scale factor - in this case, it
+      accepts a quality parameter to trade off speed for quality during resizing.<br />
+      <br />
+    </p>
+    <table width="" cellspacing="0" cellpadding="3" border="1" align="left" summary="">
+      <tbody>
+        <tr>
+          <td style="font-weight: bold;">Parameter</td>
+          <td style="font-weight: bold;">Meaning  </td>
+          <td style="font-weight: bold;"> </td>
+        </tr>
+        <tr>
+          <td><code>scale</code>  </td>
+          <td>the scale</td>
+          <td>mandatory</td>
+        </tr>
+        <tr>
+          <td><code>quality</code>  </td>
+          <td>the quality</td>
+          <td>optional (defaults to <code>Quality.FASTEST</code>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <br clear="all" />
+    <a name="6.10"></a>
+    <h4>6.10. PaintOp</h4>
+    <br clear="all" />
+    <a name="6.11"></a>
+    <h4>6.11. PrintOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="6.12"></a>
+    <h4>6.12. ReadOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="6.13"></a>
+    <h4>6.13. RotateOp</h4>
+    <p><code>RotateOp</code> rotates the image around its center point. The resulting image is eventually enlarged to
+      prevent clipping. The angle is in degrees and counterclockwise. This operation accepts a quality parameter to
+      trade off speed for quality.<br />
+      To rotate an image by a multiple of 90 degrees, it's advisable to use <code>RotateQuadrantOp</code><br />
+      <br />
+    </p>
+    <table width="" cellspacing="0" cellpadding="3" border="1" align="" summary="">
+      <tbody>
+        <tr>
+          <td style="font-weight: bold;">Parameter  </td>
+          <td style="font-weight: bold;">Meaning</td>
+          <td style="font-weight: bold;"> </td>
+        </tr>
+        <tr>
+          <td><code>angle</code>  </td>
+          <td>the angle</td>
+          <td>mandatory</td>
+        </tr>
+        <tr>
+          <td><code>quality</code>  </td>
+          <td>the quality</td>
+          <td>optional (defaults to <code>Quality.FASTEST</code>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <br clear="all" />
+    <a name="6.14"></a>
+    <h4>6.14. RotateQuadrantOp</h4>
+    <p><code>RotateQuadrantOp</code> rotates the image by a multiple of 90 degrees. If the angle is 90 or 270 degrees,
+      the resulting image dimensions are swapped. Since this operation just moves pixels, there's no degradation in the
+      image and there's no quality parameter.<br />
+      <br />
+    </p>
+    <table width="" cellspacing="0" cellpadding="3" border="1" align="left" summary="">
+      <tbody>
+        <tr>
+          <td style="font-weight: bold;">Parameter  </td>
+          <td style="font-weight: bold;">Meaning</td>
+          <td style="font-weight: bold;"> </td>
+        </tr>
+        <tr>
+          <td><code>angle</code>  </td>
+          <td>the angle</td>
+          <td>mandatory</td>
+        </tr>
+      </tbody>
+    </table>
+    <br clear="all" />
+    <a name="6.15"></a>
+    <h4>6.15. ScaleOp</h4>
+    <p><code>ScaleOp</code> changes the number of pixels in the image, reducing or enlarging it according to the scale
+      factor. Two different scale factors, one horizontal and one vertical, can be specified. This operation accepts a
+      quality parameter to trade off speed for quality.<br />
+      <br />
+      Please note that this operation does not guarantee the highest quality in results.<br />
+      <br />
+    </p>
+    <table width="" cellspacing="0" cellpadding="3" border="1" align="left" summary="">
+      <tbody>
+        <tr>
+          <td style="font-weight: bold;">Parameter</td>
+          <td style="font-weight: bold;">Meaning</td>
+          <td style="font-weight: bold;"> </td>
+        </tr>
+        <tr>
+          <td><code>xScale</code></td>
+          <td>the horizontal scale</td>
+          <td>mandatory</td>
+        </tr>
+        <tr>
+          <td><code>yScale</code></td>
+          <td>the vertical scale</td>
+          <td>optional (defaults to <code>xScale</code>)</td>
+        </tr>
+        <tr>
+          <td><code>quality</code></td>
+          <td>the quality </td>
+          <td>optional (defaults to <code>Quality.FASTEST</code>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <br clear="all" />
+    <a name="6.16"></a>
+    <h4>6.16. SizeOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="6.17"></a>
+    <h4>6.17. WriteOp</h4>
+    <p>To store an <a href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/EditableImage.html"><code>EditableImage</code></a>
+      the <a href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/op/WriteOp.html"><code>WriteOp</code></a>
+      operation must be used as in the example:<br />
+    </p>
+    <pre class="prettyprint lang-java">
+File file = new File("MyImage.jpg");<br />EditableImage image = ...;<br />image.execute(new WriteOp("JPEG", file));
+</pre> <code>WriteOp</code> contains all the information required for the write operation and contains the following
+    attributes:<br />
+    <br />
+    <table width="100%" cellspacing="0" cellpadding="3" border="1" align="" summary="">
+      <tbody>
+        <tr>
+          <td valign="top"><strong>Parameter</strong></td>
+          <td valign="top"><strong>Meaning</strong></td>
+          <td valign="top" nowrap="nowrap"><br />
+          </td>
+          <td valign="top"> </td>
+        </tr>
+        <tr>
+          <td valign="top"><code>format</code></td>
+          <td valign="top">the file format</td>
+          <td valign="top" nowrap="nowrap">mandatory</td>
+          <td valign="top"> </td>
+        </tr>
+        <tr>
+          <td valign="top"><code>output</code></td>
+          <td valign="top">the destination to store the image to</td>
+          <td valign="top" nowrap="nowrap">mandatory</td>
+          <td valign="top">It can be:<br />
+            <ul>
+              <li>a <code>String</code></li>
+              <li>a <code>java.io.File</code> </li>
+              <li>a <code>java.io.OutputStream</code></li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><code>imageWriteParam</code></td>
+          <td valign="top">type-specific format parameters</td>
+          <td valign="top" nowrap="nowrap">optional</td>
+          <td valign="top">See the <a target="_blank" href="http://java.sun.com/j2se/1.5.0/docs/api/javax/imageio/ImageWriteParam.html"><code>ImageWriteParam</code>
+              javadoc</a> for more information.</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    The image is always written by means of the Image I/O API, which is the standard way to perform I/O on images with
+    Java. This facility is based on plug-ins for dealing with an expandable number of image format by just adding the
+    required code in the classpath. It is possible to query the currently supported file formats by calling:<br />
+    <pre class="prettyprint lang-java">
+Collection&lt;String&gt; extensions = EditableImage.getAvailableExtensions();
+</pre> <br clear="all" />
+    <a name="7"></a>
+    <h3>7. Operations</h3>
+    <p>The operations described in this chapter are advanced functions available in the "Operations" component. They are
+      an official part of the Mistral API and relatively stable.<br />
+    </p>
+    <table cellspacing="0" cellpadding="2" border="1" align="center" summary="">
+      <tbody>
+        <tr>
+          <td style="font-weight: bold;">Operation</td>
+          <td style="font-weight: bold;">Java 2D</td>
+          <td style="font-weight: bold;">     JAI   </td>
+          <td style="font-weight: bold;">ImageJ</td>
+        </tr>
+        <tr>
+          <td>AddOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>ApplyUnsharpMaskOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>AssignColorProfileOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>ConvertColorProfileOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>HistogramOp</td>
+          <td align="center">y</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>MultiplyOp</td>
+          <td align="center"> </td>
+          <td align="center">y </td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>TranslateOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <br clear="all" />
+    <a name="7.1"></a>
+    <h4>7.1. AddOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="7.2"></a>
+    <h4>7.2. ApplyUnsharpMaskOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="7.3"></a>
+    <h4>7.3. AssignColorProfileOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="7.4"></a>
+    <h4>7.4. ConvertColorProfileOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="7.5"></a>
+    <h4>7.5. HistogramOp</h4>
+    <p><code>HistogramOp</code> omputes an histogram of the given image. The result is stored in an instance of the <a
+        href="https://mistral.dev.java.net/javadoc/EditableImage/it/tidalwave/image/Histogram.html"><code>Histogram</code></a>
+      class.<br />
+      This operation can be used as in the following example:<br />
+    </p>
+    <pre class="prettyprint lang-java">
+EditableImage image = ...;<br />Histogram histogram = image.execute(new HistogramOp()).getHistogram();
+</pre> As this operation can be rather long, you should not call it from a thread that can't be blocked (such as the AWT
+    thread).<br />
+    The <code>Histogram</code> can be queried about the minimum and maximum values of each band:<br />
+    <pre class="prettyprint lang-java">
+int bandCount = histogram.getBandCount(); // 3 for RGB, 1 for monochromatic<br /><br />for (int i = 0; i &lt; bandCount; i++)<br />  {<br />     int min = histogram.getMin(i);<br />     int max = histogram.getMax(i);<br />     System.err.println("Band #" + i + ": min=" + min + ", max=" + max);<br />  }<br />
+</pre> It is also possible to retrieve all the frequencies of a given band:<br />
+    <pre class="prettyprint lang-java">
+int[] frequencies = histogram.getFrequencies(2);
+</pre>
+    <div class="Tip">Tip: Please consider that the JAI implementation is about 20x faster than the default
+      implementation.</div>
+    <br clear="all" />
+    <a name="7.6"></a>
+    <h4>7.6. MultiplyOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="7.7"></a>
+    <h4>7.7. TranslateOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8"></a>
+    <h3>8. Contributed Operations</h3>
+    <p>Contributed operations are third party, project-specific or experimental code that is not yet an official part of
+      the Mistral API. This means that classes in this component can be dropped, added, changed, merged and so on. This
+      component acts as a sort of "incubator": after some time, operations that get consolidated will be moved in the
+      "Operations" component.<br />
+    </p>
+    <table cellspacing="0" cellpadding="2" border="1" align="center" summary="">
+      <tbody>
+        <tr>
+          <td style="font-weight: bold;">Operation</td>
+          <td style="font-weight: bold;">Java 2D</td>
+          <td style="font-weight: bold;">     JAI   </td>
+          <td style="font-weight: bold;">ImageJ</td>
+        </tr>
+        <tr>
+          <td>BandMergeOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>CenterShiftOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>ChangeBufferTypeOp</td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>ChangeFormatOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>ConjugateOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>DFTOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>DivideByConstOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>DivideComplexOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>IDFTOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>MagnitudeOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>MultiplyComplexOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>PadBlackOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>PadPeriodicOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+        <tr>
+          <td>PadPeriodicPlanarOp</td>
+          <td align="center"> </td>
+          <td align="center">y</td>
+          <td align="center"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <br clear="all" />
+    <a name="8.1"></a>
+    <h4>8.1. BandMergeOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8.2"></a>
+    <h4>8.2. CenterShiftOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8.3"></a>
+    <h4>8.3. ChangeBufferTypeOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8.4"></a>
+    <h4>8.4. ChangeFormatOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8.5"></a>
+    <h4>8.5. ConjugateOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8.6"></a>
+    <h4>8.6. DFTOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8.7"></a>
+    <h4>8.7. DivideByConstOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8.8"></a>
+    <h4>8.8. DivideComplexOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8.9"></a>
+    <h4>8.9. IDFTOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8.10"></a>
+    <h4>8.10. MagnitudeOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8.11"></a>
+    <h4>8.11. MultiplyComplexOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8.12"></a>
+    <h4>8.12. PadBlackOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8.13"></a>
+    <h4>8.13. PadPeriodicOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="8.14"></a>
+    <h4>8.14. PadPeriodicPlanarOp</h4>
+    <p>TBD</p>
+    <br clear="all" />
+    <a name="9"></a>
+    <h3>9. The ImagingProcessor</h3>
+    <p>TBD</p>
+  </body>
+</html>

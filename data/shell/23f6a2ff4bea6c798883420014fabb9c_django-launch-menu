@@ -1,0 +1,42 @@
+#!/usr/bin/env zsh
+
+if [[ -n "${TMUX}" ]] tmux rename-window "Django"
+print -Pn "\e]0;Django Launcher\a"
+
+local manage menu answer
+
+typeset -A menu
+menu=(
+	d	dbshell
+	r	runserver
+	s	shell
+)
+
+print "\t Launch:"
+for key in ${(k)menu}; do
+	print "\t${key}   ${menu[$key]}"
+done
+print "\t?"
+
+read -q answer
+print
+
+# Post setup
+case "${answer}" in
+	'r' )
+		if [[ -n "${TMUX}" ]] tmux set-window-option monitor-activity on
+		;;
+esac
+
+if [[ -n "${TMUX}" ]] tmux rename-window "${menu[$answer]}"
+print -Pn "\e]0;Django ${menu[$answer]}\a"
+
+manage=$(find . -name manage.py -type f)
+
+if [[ ${(w)#manage} != 1 ]]; then
+	print "Several manage-scripts was found:"
+	print "${manage}"
+	exit 1
+fi
+"${manage}" "${menu[$answer]}"
+

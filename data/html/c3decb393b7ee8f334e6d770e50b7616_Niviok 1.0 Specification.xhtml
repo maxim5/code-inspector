@@ -1,0 +1,3851 @@
+<?xml version="1.0" encoding="utf-8"?><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Niviok 1.0 Specification</title><link href="styling.css" rel="stylesheet" type="text/css"/><script>
+		/* hack around Gecko bug */
+		function checkHash() {
+			if( oldHash != document.location.hash ) {
+				oldHash = document.location.hash;
+				causeReflow();
+			}
+		}
+		function causeReflow() {
+			var s = document.documentElement.style;
+			s.position = 'relative';
+			setTimeout( function(){ s.position = ''; }, 10 );
+		}
+		var oldHash = document.location.hash;
+		setInterval( checkHash, 100 );
+	</script></head><body>
+	
+	<h1>Niviok 1.0 Specification</h1>
+	<h2>Edition 1 Draft 2008-07-20</h2>
+	
+	
+		<p>Copyright © 
+			2008
+			James Justin Harrell
+		</p>
+		
+		<p>Permission is granted to use, copy, display, modify, sell, and distribute this document. This document is provided &quot;as is&quot; without warranty of any kind. In no event shall anyone be liable for any damages or other liability arising from use of this document.</p>
+	
+	
+	<ol class="toc"><li><a href="#Overview">1. Overview</a></li><li><a href="#versioning">2. Versioning</a><ol><li><a href="#niviok-version">2.1. Niviok version</a></li><li><a href="#specification-version">2.2. Specification version</a></li><li><a href="#version-notation">2.3. Version notation</a></li></ol></li><li><a href="#Glossary">3. Glossary</a></li><li><a href="#executing-nodes">4. Executing nodes</a></li><li><a href="#overview-part-2">5. Overview part 2</a><ol><li><a href="#identifiers">5.1. Identifiers</a></li><li><a href="#scidentres">5.2. Scidentres</a></li><li><a href="#builtin-numbers">5.3. Built-in numbers</a></li></ol></li><li><a href="#values">6. Values</a></li><li><a href="#functions">7. Functions</a><ol><li><a href="#function-interfaces">7.1. Function interfaces</a></li></ol></li><li><a href="#interfaces">8. Interfaces</a><ol><li><a href="#interface-operations">8.1. Adding and subtracting interfaces</a></li></ol></li><li><a href="#scopes">9. Scopes</a></li><li><a href="#handling-declare-first">10. Handling declare-first nodes</a></li><li><a href="#nodes">11. Nodes</a><ol><li><a href="#node-terminology">11.1. Node terminology</a></li><li><a href="#tree-node-layout">11.2. Tree node layout</a></li><li><a href="#node-supertypes">11.3. Node supertypes</a></li></ol></li><li><a href="#node-types">12. Node types</a><ol><li><a href="#terminal-node-types">12.1. Terminal nodes</a></li><li><a href="#family-node-types">12.2. Family node types</a><ol><li><a href="#node.expression">12.2.1. expression</a></li><li><a href="#node.statement-declaration">12.2.2. statement-declaration</a></li><li><a href="#node.interface-member">12.2.3. interface-member</a></li></ol></li><li><a href="#tree-node-layout-key">12.3. Tree node layout key</a></li><li><a href="#non-executable">12.4. Non-executable</a><ol><li><a href="#node.argument">12.4.1. argument</a></li><li><a href="#node.boolean">12.4.2. boolean</a></li><li><a href="#node.direction">12.4.3. direction</a></li><li><a href="#node.import">12.4.4. import</a></li><li><a href="#node.import-attempt">12.4.5. import-attempt</a></li><li><a href="#node.member-implementation">12.4.6. member-implementation</a></li><li><a href="#node.member-type">12.4.7. member-type</a></li><li><a href="#node.parameter-impl">12.4.8. parameter-impl</a></li><li><a href="#node.parameter-info">12.4.9. parameter-info</a></li><li><a href="#node.worker">12.4.10. worker</a></li></ol></li><li><a href="#statements">12.5. Statements</a><ol><li><a href="#node.declare-first">12.5.1. declare-first</a></li><li><a href="#node.hidable">12.5.2. hidable</a></li><li><a href="#node.module">12.5.3. module</a></li><li><a href="#node.sieve">12.5.4. sieve</a></li></ol></li><li><a href="#non-producing-expressions">12.6. Non-producing expressions</a><ol><li><a href="#node.declare-empty">12.6.1. declare-empty</a></li><li><a href="#node.raise">12.6.2. raise</a></li></ol></li><li><a href="#sometimes-producing-expressions">12.7. Sometimes producing expressions</a><ol><li><a href="#node.assign">12.7.1. assign</a></li><li><a href="#node.call">12.7.2. call</a></li><li><a href="#node.compound">12.7.3. compound</a></li><li><a href="#node.conditional">12.7.4. conditional</a></li><li><a href="#node.curry">12.7.5. curry</a></li><li><a href="#node.declare-assign">12.7.6. declare-assign</a></li><li><a href="#node.identifier">12.7.7. identifier</a></li><li><a href="#node.select">12.7.8. select</a><ol><li><a href="#node.case">12.7.8.1. case</a></li></ol></li><li><a href="#node.set-property">12.7.9. set-property</a></li><li><a href="#node.try-catch">12.7.10. try-catch</a><ol><li><a href="#node.catcher">12.7.10.1. catcher</a></li></ol></li><li><a href="#node.type-select">12.7.11. type-select</a><ol><li><a href="#node.type-case">12.7.11.1. type-case</a></li></ol></li></ol></li><li><a href="#always-producing-expressions">12.8. Always producing expressions</a><ol><li><a href="#boolean-logic">12.8.1. Boolean logic</a><ol><li><a href="#node.and">12.8.1.1. and</a></li><li><a href="#node.nand">12.8.1.2. nand</a></li><li><a href="#node.or">12.8.1.3. or</a></li><li><a href="#node.nor">12.8.1.4. nor</a></li><li><a href="#node.xor">12.8.1.5. xor</a></li><li><a href="#node.xnor">12.8.1.6. xnor</a></li></ol></li><li><a href="#node.breed">12.8.2. breed</a></li><li><a href="#node.caller">12.8.3. caller</a></li><li><a href="#node.object">12.8.4. object</a></li><li><a href="#node.dictionary">12.8.5. dictionary</a><ol><li><a href="#node.dictionary-entry">12.8.5.1. dictionary-entry</a></li></ol></li><li><a href="#node.enum">12.8.6. enum</a><ol><li><a href="#node.enum-entry">12.8.6.1. enum-entry</a></li></ol></li><li><a href="#node.extract-member">12.8.7. extract-member</a></li><li><a href="#node.function">12.8.8. function</a></li><li><a href="#node.function-interface">12.8.9. function-interface</a></li><li><a href="#node.generator">12.8.10. generator</a></li><li><a href="#node.generic-function">12.8.11. generic-function</a></li><li><a href="#node.generic-interface">12.8.12. generic-interface</a></li><li><a href="#node.instantiate-generic">12.8.13. instantiate-generic</a></li><li><a href="#node.integer">12.8.14. integer</a></li><li><a href="#node.interface">12.8.15. interface</a><ol><li><a href="#node.statused-member">12.8.15.1. statused-member</a></li><li><a href="#node.member-status">12.8.15.2. member-status</a></li><li><a href="#node.breeder">12.8.15.3. breeder</a></li><li><a href="#node.callee">12.8.15.4. callee</a></li><li><a href="#node.method">12.8.15.5. method</a></li><li><a href="#node.property">12.8.15.6. property</a></li></ol></li><li><a href="#node.rational">12.8.16. rational</a></li><li><a href="#node.string">12.8.17. string</a></li></ol></li></ol></li><li><a href="#reserved-identikey-names">13. Reserved identikey names</a></li><li><a href="#standard-library">14. Standard library</a><ol><li><a href="#object.println">14.1. println</a></li><li><a href="#object.activeInterface">14.2. activeInterface</a></li><li><a href="#object.String">14.3. String</a></li><li><a href="#object.cast">14.4. func{I}(dyn)I cast</a></li><li><a href="#object.ceil">14.5. ceil</a></li><li><a href="#object.floor">14.6. floor</a></li><li><a href="#object.modulo">14.7. modulo</a></li><li><a href="#object.round">14.8. round</a></li><li><a href="#object.generator">14.9. interface generator</a></li><li><a href="#object.id">14.10. func id</a></li><li><a href="#object.sameObject_q">14.11. func sameObject?</a></li><li><a href="#object.implements_q">14.12. func(obj, interface)bool implements?</a></li><li><a href="#ident.Int">14.13. interface Int</a></li><li><a href="#object.BigInt">14.14. interface BigInt</a></li><li><a href="#object.BigRat">14.15. interface BigRat</a></li><li><a href="#ident.Interface">14.16. interface Interface</a></li><li><a href="#object.Object">14.17. interface Object</a></li><li><a href="#interface.rat">14.18. interface rat</a></li><li><a href="#Generator">14.19. Generator</a></li><li><a href="#InterfaceBuilder">14.20. InterfaceBuilder</a></li><li><a href="#Iterator">14.21. Iterator</a></li><li><a href="#CInterfaceBuilder">14.22. CInterfaceBuilder</a></li><li><a href="#getFuncInterface">14.23. getFuncInterface</a></li></ol></li><li><a href="#warnings-list">15. Warnings</a></li><li><a href="#error-handling-processing">16. Error handling during processing</a></li><li><a href="#rationales">17. Rationales</a><ol><li><a href="#rationale.dynamic-static-typing">17.1. Dynamic static typing</a></li><li><a href="#rationale.terms">17.2. Terms</a><ol><li><a href="#rationale.get-set">17.2.1. get/set</a></li></ol></li><li><a href="#rationale.executing-boolean-logic">17.3. Executing boolean logic nodes</a></li><li><a href="#executing-declaration-first">17.4. Disallowing executing declaration-first</a></li></ol></li><li><a href="#unsorted-outdated-stuff">18. Unsorted/outdated stuff</a><ol><li><a href="#closures">18.1. Closures</a></li><li><a href="#tree-examples">18.2. Tree examples</a><ol><li><a href="#tree-example-1">18.2.1. Example 1</a></li><li><a href="#tree-example-2">18.2.2. Example 2</a></li><li><a href="#tree-example-3">18.2.3. Example 3</a></li></ol></li><li><a href="#get-interface">18.3. get interface</a></li><li><a href="#obj-interface">18.4. obj interface</a></li><li><a href="#identifier-binding">18.5. Binding to identifiers</a></li><li><a href="#print-println-return-interfaces">18.6. Return interfaces of print and println</a></li><li><a href="#adjuncts">18.7. Adjuncts</a></li><li><a href="#runtime-inteface">18.8. runtime interface implementation</a></li><li><a href="#runtime-interface-creation">18.9. Runtime interface creation</a></li><li><a href="#self-return-type">18.10. &quot;self&quot; return type</a></li><li><a href="#bind">18.11. Bind</a></li><li><a href="#classes">18.12. Classes</a></li><li><a href="#noninstantiated-interface-templates">18.13. Noninstantiated interface templates</a></li><li><a href="#dynamic-library-loading">18.14. Dynamic library loading</a></li><li><a href="#static-typing">18.15. Static typing</a></li></ol></li></ol><div id="Overview">
+		<h1>Chapter 1. Overview</h1>
+		
+		<p>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as &quot;Niviok 1.0 Edition 1 Draft 2008-07-20&quot;.</p>
+	
+		<p>This document is a draft of the first edition of the specification describing the 1.0 version of Niviok.</p>
+		
+		<p>Niviok is an abstract programming language. This document defines several node types which are used to represent Niviok source code. How Niviok nodes are represented is outside the scope of this standard. While syntax and semantics are not completetly separate, Niviok does contain much less syntax-influenced semantics than most programming languages.</p>
+		
+		<p>Nodes that can be executed are statements or expressions. Statements are greatly restricted in where they can appear, while expressions are more relaxed and can be interchanged for on another. An expression may produce a value when executed.</p>
+
+		<p>Niviok contains some dynamic aspects, but in several ways is very static. For example, the tree of <a href="#def.scope">scopes</a> and <a href="#def.scidentre">scidentres</a> can be entirely known before runtime; scidentres cannot be declared conditionally like in highly dynamic languages such as JavaScript.</p>
+	</div>
+	
+	<div id="versioning">
+		<h1>Chapter 2. Versioning</h1>
+		
+		<p>Each version of Niviok is described by a specification with one or more editions.</p>
+		
+		<div id="niviok-version">
+			<h2>2.1. Niviok version</h2>
+		
+			<p>Each version of Niviok is identified by a major version number and a minor version number, both integers. Each new version that is mostly backwards compatible with the previous version increments the minor version number by one. Each new version that is significantly backwards incompatible increments the major version number by one and resets the minor version number to 0.</p>
+		</div>
+		
+		<div id="specification-version">
+			<h2>2.2. Specification version</h2>
+			
+			<p>Each version of Niviok is described by a specification that can have multiple editions. Each edition of a specification describing a particular version of Niviok is identified by an integer which starts at one and is incremented by one for each new edition.</p>
+			
+			<p>A document that is intended to become an edition is a draft. A finalized edition is no longer in the draft stage. Each draft is identified by the date on which it was published.</p>
+			
+			<p>Newer editions should serve only to better describe a particular version of Niviok, not to modify that version of Niviok. Newer editions should not attempt to correct problems with Niviok, only errors in describing that version of Niviok.</p>
+		</div>
+		
+		<div id="version-notation">
+			<h2>2.3. Version notation</h2>
+			
+			<p>A version of Niviok may be represented as &quot;Niviok X.Y&quot; where X is the major version number and Y is the minor version number.</p>
+			
+			<p>A finalized specification for Niviok may be represented as &quot;Niviok X.Y Edition A&quot; where A is the edition number.</p>
+			
+			<p>A draft of a specification edition may be represented as &quot;Niviok X.Y Edition A Draft YYYY-MM-DD&quot; where YYYY-MM-DD is the date on which the draft was published.</p>
+			
+			<p>Example: Niviok 2.3 Edition 4 Draft 2008-01-20</p>
+		</div>
+	</div>
+	
+	<div id="Glossary">
+		<h1>Chapter 3. Glossary</h1>
+
+		<dl>
+			
+				<dt id="def.Niviok-agent">Niviok agent</dt>
+				<dt id="def.agent">agent</dt>
+				<dd>An implementation of the Niviok language. Could be a source interpreter, a bytecode intepreter, a bytecode compiler, a machine code compiler, etc. If it recognizes the semantics of what it's running, and follows the rules of this document, it could be called a Niviok agent. Each agent should define what representations it supports.</dd>
+			
+			
+			
+				<dt id="def.object">object</dt>
+				<dd>A collection of data that holds state. Created by a class. Only the class that created it can access an object's state. Values are associated with objects.</dd>
+			
+			
+			
+				<dt id="def.scidentre">scidentre</dt>
+				<dd>bound to one or more values. An identifier in a certain scope is associated with an identikey. In other programming languages, the terms &quot;variable&quot; or &quot;constant&quot; may refer to a similar concept. (Previously called &quot;identikey&quot; by this draft. Transition has only barely begun.)</dd>
+			
+		
+			
+				<dt id="def.value">value</dt>
+				<dd>Associated with an object and an interface implementation, except for the null value, which is associated with nothing or associated with an interface</dd>
+			
+			
+			
+				<dt id="def.active-interface-implementation">active interface implementation</dt>
+				<dd>the interface implementation a value is directly associated with</dd>
+			
+			
+			
+				<dt id="def.active-interface">active interface</dt>
+				<dd>the interface that the active interface implementation is associated with</dd>
+			
+			
+			
+				<dt id="def.global-scope">global scope</dt>
+				<dd>the scope of the bundle node. a bundle node has one and only one scope each time the bundle is executed</dd>
+			
+			
+			
+				<dt id="def.element">element</dt>
+				<dd>A value stored in a container.</dd>
+			
+			
+			
+				<dt id="def.member">member</dt>
+				<dd>A callee, property, method, or conversion of an interface.</dd>
+			
+			
+			
+				<dt id="def.method">method</dt>
+				<dd>A member function of an interface.</dd>
+			
+			
+			
+				<dt id="def.scope">scope</dt>
+				<dd>&quot;Environment&quot; in some languages.</dd>
+			
+		</dl>
+	</div>
+	
+	<div id="executing-nodes">
+		<h1>Chapter 4. Executing nodes</h1>
+		
+		<p>No node besides the bundle node can be executed directly. All other nodes must only be executed when required by the execution instructions of another node, or as required to call a callee/method (such as when calling a value created by a function node). ((XXX clarify execution through calling)) Because values can only be created, directly or indirectly, by executing the bundle node, and because all node execution instructions only every instruct to execute child nodes, all node execution occurs as a result of executing the root bundle node.  All Niviok nodes that are executed in any way must be part of a complete Niviok node tree, which means having an bundle node as the root node.</p>
+		
+		<p>Note: A bundle might not have a main function. It might just expose its members, such as for scripting or a library.</p>
+		
+		<p>interpreted:</p>
+		<ol>
+			<li>a bundle representation is parsed to extract a tree of Niviok nodes</li>
+			<li>libraries are loaded and linked</li>
+			<li>tree is processed</li>
+			<li>optimization</li>
+			<li>execution of the planes' declaration-first nodes</li>
+			<li>execution of the function bound to &quot;main&quot; attached to the bundle node's scope, which may return an exit status</li>
+			<li>returning exit status, or 0 if none specified</li>
+		</ol>
+		
+		<p>runtime compilation:</p>
+		<ol>
+			<li>a bundle representation is parsed to extract a tree of Niviok nodes</li>
+			<li>libraries are loaded and linked</li>
+			<li>tree is processed</li>
+			<li>optimization</li>
+			<li>tree translated to bytecode and/or machine code</li>
+			<li>execution of bytecode and/or machine code, which produces an exit status</li>
+		</ol>
+		
+		<p>beforehand compilation:</p>
+		<ol>
+			<li>a bundle representation is parsed to extract a tree of Niviok nodes</li>
+			<li>static libaries are loaded</li>
+			<li>information about shared libraries is obtained</li>
+			<li>tree is processed</li>
+			<li>optimization</li>
+			<li>tree translated to bytecode and/or machine code and stored</li>
+			<li>code is loaded</li>
+			<li>shared libraries are loaded and linked</li>
+			<li>processing</li>
+			<li>execution of bytecode and/or machine code, which produces an exit status</li>
+		</ol>
+		
+		<p>This spec should define how to:</p>
+		<ul>
+			<li>process a bundle (a valid tree of Niviok nodes with a bundle node as the root node)</li>
+			<li>execute nodes of a processed tree</li>
+			<li>execute a bundle</li>
+		</ul>
+		
+		<p>Implementations that aren't interpreters should produce equivalent behavior when being executed.</p>
+	</div>
+	
+	<div id="overview-part-2">
+		<h1>Chapter 5. Overview part 2</h1>
+		
+		<p>Niviok is represented by a node tree. The way this node tree is represented is not covered in this specification. This specification explains what kind of node tree a representation can represent, the meaning of the nodes in a Niviok node tree, and how to execute the node tree.</p>
+		
+		<p>This node tree has scopes attached at various places. These scopes contain identikeys that are bound to namespaces and values.</p>
+		
+		<div id="identifiers">
+			<h2>5.1. Identifiers</h2>
+			
+			<dl>
+				
+					<dt id="def.identifier">identifier</dt>
+					<dd>sequence of words, with an optional ending exclamation mark or question mark</dd>
+				
+				
+					<dt id="def.word">word</dt>
+					<dd>sequence of Unicode characters, where each Unicode character is a letter or an Arabic numerical digit</dd>
+				
+				
+					<dt id="def.letter">letter</dt>
+					<dd>member of an alphabet, abjad, abugida, syllabary, or logogram</dd>
+				
+			</dl>
+		
+			<p>Because identifiers are defined in terms of Unicode characters, letters are case sensitive wherever Unicode defines an uppercase and lowercase character for the same letter. Control characters, surrogates, whitespace characters, punctuation marks, and combining characters are not letters. This specification does not specify all characters that do or do not qualify as letters, but it does list some characters that must be recognized a certain way.</p>
+			
+			<p>Arabic numerical digits: (complete)</p>
+			<pre>0 1 2 3 4 5 6 7 8 9</pre>
+			
+			<p>letters: (incomplete)</p>
+			<pre>a b c d e f g h i j k l m n o p q r s t u v w x y z
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</pre>
+			
+			<p>not letters: (incomplete)</p>
+			<pre>0 1 2 3 4 5 6 7 8 9 ` ~ ! @ # $ % ^ &amp; * ( ) { } [ ] / ? = + \ | - _ ' &quot; , &lt; &gt; .</pre>
+			
+			<p>Examples of how identifiers might be represented:</p>
+			<code xml:space="preserve">
+do some stuff
+XML_HTTP_request
+we\are\finished?
+mutate`this`thing!
+			</code>
+		</div>
+			
+		<div id="scidentres">
+			<h2>5.2. Scidentres</h2>
+			
+			<p class="xxx">Need to replace &quot;identikey&quot; with &quot;scidentre&quot;.</p>
+			
+			<p>An identikey is associated with a scope and an identifier. It may be associated with a nullable-type, a worker, multiple workers, and/or a namespace. Some identikeys can be mutated.</p>
+
+			<p>Every scope is assocciated with zero or more identikeys. Identikeys associated with the same scope must each be associated with a different identifier.</p>
+
+			<p>When an identifier node is executed, every identikey in the scope the identifier node resides in is checked to see if the identikey is associated with an equivalent identifier. If it is, the value produce by executing the identifier node is obtained from the identikey. The identifier node execution process moves up through the scope tree (not to be confused with the scope formula tree) looking for an identikey associated with an equivalent identifier.</p>
+			
+			<dl>
+				
+					<dt id="def.namespace">namespace</dt>
+					<dd>associated with a namespace when created. immutable. multiple declarations of the same scidentre can be made in the same scope.</dd>
+				
+				
+				
+					<dt id="def.constant">constant</dt>
+					<dd>associated with a worker when created. immutable.</dd>
+				
+				
+				
+					<dt id="def.overload">overload</dt>
+					<dd>associated with a worker when created. immutable. multiple declarations of the same scidentre can be made in the same scope.</dd>
+				
+				
+				
+					<dt id="def.variable">variable</dt>
+					<dd>can be mutated to point to different workers. only workers that match the type can be assigned to the identikey (note that the type could be e.g. any or Nullable&lt;any&gt;)</dd>
+				
+			</dl>
+			
+			<p>A function identikey can be bound to multiple functions (objects that implement a function interface; xxx link) at the same time. A function identikey can never be bound to multiple functions with the same interface.</p>
+			
+			<p>If a value has multiple callees, the active interface is not a function interface, and thus it cannot be bound to a function identikey. The value must be cast to each function interface, and each resulting value bound individually to the function identikey.</p>
+
+			<code xml:space="preserve">
+var foo 123
+foo = &quot;bar&quot;
+foo = getSomething()
+
+var Int num
+num = 2
+num = 89
+
+var ?auto bar getSomething()
+bar = getSomethingWithSameTypeAsBefore()
+
+interface Foo
+	func fooMeth()
+
+interface Bar
+	func barMeth()
+
+var obj getFoo()
+obj.fooMeth()
+obj = getBar()
+obj.barMeth()
+
+var foo
+foo = getBar()
+foo.barProp
+foo = 3
+foo.minus(5)
+foo = &quot;test&quot;
+foo.toUpperCase()
+foo = CMyClass()
+foo.myClassProp
+foo = cast&lt;BazInterface&gt;(alpha)
+foo.bazProp
+foo = (alpha as MazInterface)
+foo.mazProp
+foo = alpha as GazInterface
+foo.gazProp
+(BazInterface foo).bazProp
+(MazInterface foo).mazProp
+			</code>
+		</div>
+		
+		<div id="builtin-numbers">
+			<h2>5.3. Built-in numbers</h2>
+			
+			<p>The built-in implementations of the Int and Rat interfaces must be able to handle numbers of an arbitrary complexity. Built-in libraries should handle numbers of an arbitrary complexity. Niviok implementations must not ever introduce rounding errors or otherwise introduce numerical errors without being explicitly told that such errors may occur.</p>
+			
+			<p>For example, pow(10, pow(10,100)), must correctly return an Int object reference that accurately represents a googolplex, and must be able to perform operations on this number with perfect accuracy.</p>
+			
+			<p>Implementations may throw errors when they are unable to perfectly represent a number. Implementations must not silently introduce errors. This is the only alternative to perfectly representing the number.</p>
+			
+			<p>For example, if the implementation was directed by user code to print a googolplex without using scientific notation (i.e. a &quot;1&quot; followed by a googol &quot;0&quot;), the implementation may throw an error specifying that it is unable to create such a representation.</p>
+		</div>
+	</div>
+	
+	<div id="values">
+		<h1>Chapter 6. Values</h1>
+		
+		<p>Values are associated with an object and an interface implementation.</p>
+		
+		<p>Objects hold which is used by the interface implementation. This state can only be accessed or modified by interface implementations that they object was intented to hold state for. Objects have an ID that never changes. Each interface implementation consists of the implementation of the members of that interface.</p>
+		
+		<p>This specification may speak of values implementing interfaces. In these cases, what is actually refered to is whether the interface implementation the value is associtiated with is in a tree where one of the interface implementations is an implementation of that interface. The value itself does not actually implement any interfaces.</p>
+		
+		<p>Interface implementations form a tree. Multiple interface implementations in the same tree can implement the same iterface. When a value has an active interface that has multiple implementations, the interface implementation that is used when the value is accessed is the interface implementation that the vaule is associated with.</p>
+	</div>
+	
+	<div id="functions">
+		<h1>Chapter 7. Functions</h1>
+		
+		<p>Functions are just values with an active interface that defines callees. Functions can be &quot;called&quot;. Functions can have a return interface and parameters. Parameters have an interface and an optional default value.</p>
+		
+		<div id="function-interfaces">
+			<h2>7.1. Function interfaces</h2>
+			
+			<p>XXX this needs a lot of work</p>
+			
+			<p>Function interfaces implement FunctionInterface instead of Interface and inherit from Function. FunctionInterface simply inherits from Interface and defines no new members. Function interfaces declare a callee and an &quot;apply&quot; method that hides the members of the Function interface.</p>
+			
+			<pre>interface Function
+	callee(dyn[] params) dyn
+	func apply(dyn[] arguments) dyn //actually takes an array
+	func bind(dyn[] params) dyn
+	func call(dyn[] params) dyn
+	func curry(dyn[] params) dyn
+	get List&gt;Parameter&gt; parameters
+	get Bool return?
+	get nullable Interface returnInterface
+
+all function interfaces
+	inherit Function
+	callee(...) ...
+	func apply(dyn[] params) ...
+	func call(...) ...
+
+For example, for func(Int a, Rat b, String c) Bool :
+
+interface (func(Int a, Rat b, String c) Bool)
+	inherit Function
+	callee(Int a, Rat b, String C) Bool
+	func apply(dyn[] params) Bool
+	func call(Int a, Rat b, String C) Bool
+	get parameters returns List {
+		Parameter { &quot;a&quot;, Int },
+		Parameter { &quot;b&quot;, Rat },
+		Parameter { &quot;c&quot;, String } }
+	get return? returns true
+	get returnInterface returns Bool</pre>
+		</div>
+	</div>
+	
+	<div id="interfaces">
+		<h1>Chapter 8. Interfaces</h1>
+		
+		<p>Interfaces define a means of interacting with an object's state. Interfaces declare that implementations will be able to provide object references with specified interfaces when asked for the object reference bound to identifiers specified by the interface and/or that implementations will be able to bind object references with specified interfaces to specified identifiers. Methods are a type of property. Methods are callable and cannot be assigned, only retrieved.</p>
+		
+		<p>Interfaces cannot inherit in a circle. (E.g., interface A cannot inherit interface B if interface B inherits interface A.) Interfaces cannot inherit from themselves. (However, interfaces created by instantiating values created from generic-interface nodes should not throw errors if the interface tries to inherit itself. Instead, the error should be silently ignored. This is to allow generic interfaces to inherit other forms of themselves.) Interfaces that do not explicitly inherit any interfaces, should implicitly inherit Object. Therefore, all interfaces inherit from Object, either directly or indirectly.</p>
+		
+		<p>Interfaces can declare that properties are &quot;get only&quot;, &quot;set only&quot;, or &quot;get and set&quot;.</p>
+		
+		<p>Interface member functions can have default values. This differs from a class with abstract members because interfaces cannot have any private members, so these default functions can not store or extract state in the object. These functions are only intended to call other member functions or throw errors.</p>
+		
+		<p>There are two kinds of interfaces: object interfaces (Interface) and function interfaces (FuncInterface). Object interfaces define properties and methods. Function interfaces define parameters and a return type. An interface cannot be a function interface and an object interface, though an object interface can have call methods that allow implementations to be used like functions. A function interface can be wrapped to an object interface with a single call method.</p>
+		
+		<p>Interface callees and members may refer to the interface. This is useful when an interface wants to define a method that returns an object reference with itself as the active interface. For generic interfaces, it is also possible to refer to the generic template.</p>
+		
+		<code xml:space="preserve">
+
+interface Int
+	func power(Self) Self
+	r Self timesTwo
+
+//some representations may be able to translate the below example as well
+
+iterface Int
+	func power(Int) Int
+	r Int timesTwo
+
+//note that the interface node will have no knowledge of the identifier it is being bound to
+
+//generics:
+
+interface&lt;T&gt; Print
+	callee(T) Self
+
+Print&lt;Int&gt; print = getIntPrinter()
+print(3)(5)(8) //the print callee returns a Print&lt;Int&gt; object reference
+
+//refering to Generic interface
+
+interface&lt;T&gt; Print
+	callee(T) GenericSelf
+
+Print print = getGenericPrinter()
+print &lt;Int&gt;(3) &lt;String&gt;(&quot;foo&quot;) &lt;Rat&gt;(1.23)
+
+//some representations may also allow:
+print 3 &quot;foo&quot; 1.23
+
+		</code>
+		
+		<div id="interface-operations">
+			<h2>8.1. Adding and subtracting interfaces</h2>
+			
+			<p>Interfaces can be added together to produce other interfaces. How this addition occurs depends on whether the operands were produce through addition, and the inherited interfaces of the operands.</p>
+			
+			<p>If an interface is &quot;fromAddition&quot;, it was produced through addition and/or subtract. The <a href="#ident.Interface">Interface interface</a> exposes this information as a property.</p>
+			
+			<p>Interfaces produced from addition don't define any members themeselves; they only inherit from other interfaces.</p>
+			
+			<p>No interface can inherit from an interface that is fromAddition. When a fromAddition interface is an operand of interface addition, the inheritees of the fromAddition interface are copied into the produced interface, but the produced interface does not inherit from the fromAddition operands.</p>
+			
+			<p>No interface that is fromAddition can inherit from a single interface. When subtracting from a fromAddition interface, and the produced interface would have otherwise only inherited from a single interface, the produced interface is actually that single interface that it would have inherited from.</p>
+			
+			<pre>interface A
+	fromAddition = false
+
+interface B
+	fromAddition = false
+
+interface C
+	fromAddition = true
+
+interface D
+	fromAddition = true
+
+interface A+B
+	inherit A
+	inherit B
+
+interface A+C
+	inherit A
+	C's inheritees (doesn't inherit from C)
+
+interface A+D
+	inherit A
+	D's inheritees (doesn't inherit from D)
+
+interface B+C
+	inherit B
+	C's inheritees (doesn't inherit from C)
+
+interface B+D
+	inherit B
+	D's inheritees (doesn't inherit from D)
+
+interface C+D
+	C's inheritees (doesn't inherit from C)
+	D's inheritees (doesn't inherit from D)
+
+(A+B)-B must be A, not a fromAddition interface that inherits only from A.
+
+consider this expression:
+	(A+B+C)-(B+C)
+if:
+	* C is fromAddition
+	* A and B are not fromAddition
+	* C inherits from C1, C2, and C3
+then the expresison is equal to:
+	(A+B+C1+C2+C3)-(B+C1+C2+C3)
+	(A+B+C1+C2+C3)-B-C1-C2-C3
+	A</pre>
+
+			<p>xxx ENSURE ORDER DOESN'T MATTER</p>
+			
+			<p>Addition with operands A and B:</p>
+			<ol>
+				<li>Create an interface, PRODUCT, where fromAddition is true.</li>
+				<li>If A is fromAddition, copy the inheritees of A to PRODUCT. If A is not fromAddition, add A as an inheritee to PRODUCT.</li>
+				<li>If B is fromAddition, copy the inheritees of B to PRODUCT. If B is not fromAddition, add B as an inheritee to PRODUCT.</li>
+				<li>If PRODUCT has only one inheritee, produce that inheritee. Otherwise, produce PRODUCT.</li>
+			</ol>
+			
+			<p>Note: An example of when PRODUCT would only have one inheritee from addition is when an interface that is not fromAddition is added to itself. i.e. A + A = A</p>
+			
+			<p>Subtraction with operands A and B:</p>
+			<ol>
+				<li>If A is not fromAddition, throw an error.</li>
+				<li>Copy A as PRODUCT. (i.e. Copy A. We'll refer to this copy as PRODUCT.)</li>
+				<li>If B is fromAddition, remove every inheritee of B from the inheritees of PRODUCT. If any of the inheritees of B is not an inheritee of PRODUCT, throw an error.</li>
+				<li>If B is not fromAddition, remove B from the inheritees of PRODUCT. If B is an inheritee of PRODUCT, throw an error.</li>
+				<li>If PRODUCT has only one inheritee, produce that inheritee. If PRODUCT does not have any inheritees, throw an error. Otherwise, produce PRODUCT.</li>
+			</ol>
+		</div>
+	</div>
+
+	<div id="scopes">
+		<h1>Chapter 9. Scopes</h1>
+		
+		<p>Scopes consist of a collection of identikeys, and unless it is the scope of the bundle node, an association with a parent scope. Scopes form a hierarchy. When identifier nodes are executed, the current scope is searched for an identikey that is associated with that identifier. If one is not found, that scope's parent scope is searched, and so on, until a matching identikey is found. If such an identikey cannot be found, an error results.</p>
+		
+		<p>When execution enters a node that &quot;has scope&quot;, before executing that node, all contained declare-first descendant nodes that do not have a closer &quot;with scope&quot; ancestor node, are handled according to <a href="#handling-declare-first">this section</a>.</p> 
+	</div>
+	
+	<div id="handling-declare-first">
+		<h1>Chapter 10. Handling declare-first nodes</h1>
+		
+		<p class="xxx">Rename this section to something like &quot;entering node that has scope&quot; or &quot;creating new scope&quot;?</p>
+		
+		<p>This section specifies the actions that must take place when execution first reaches a node that &quot;has scope&quot;.</p>
+		
+		<ol class="exec">
+			<li>Let scopeNode be the node that &quot;has scope&quot; that execution just reached, i.e., the node that lead to this process being performed.</li>
+			<li>Let nodeList be an ordered list of all declare-first nodes that:
+				<ul>
+					<li>are descendants of scopeNode, and</li>
+					<li>do not have an ancestor node that:
+						<ul>
+							<li>&quot;has scope&quot; or &quot;has closure&quot;, and</li>
+							<li>is a descendant of scopeNode</li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+			<li>Let listCount be the number of elements in nodeList.</li>
+			<li>Let thisScope be a new scope.</li>
+			<li>Add the identikeys specified by the nodes in nodeList to thisScope.</li>
+			<li>Let currentNode be the first node in nodeList. If nodeList is empty, end this process and begin execution of scopeNode with thisScope as the associated scope.</li>
+			<li>Begin executing the [value] member of currentNode.
+				<ul>
+					<li>If execution needs to evaluate an identikey created by this process, and the [value] member of the declare-first node associated with that identikey has not yet been evaluated and the product assigned to that identikey, pause the execution of this [value] member.</li>
+					<li>If execution completes successfully, assign the product to the associated identikey, and remove currentNode from nodeList.</li>
+				</ul>
+			</li>
+			<li>Set currentNode to the next node in nodeList and go to step 6. (If currentNode was removed, the next node would be the node that followed currentNode when currentNode was in the list.) If there is no next node, continue to the next step.</li>
+			<li>If the number of elements in nodeList is equal to listCount, a cyclical dependency likely exists, where two or more expressions rely on the result of each other to execute. In this case, throw an error. If the number of elements in nodeList is not equal to listCount, set listCount to the number of elements in nodeList and go to step 5.</li>
+		</ol>
+		
+		<pre>Example 1 of a cyclical dependency:
+
+declfirst a = b + 2
+declfirst b = a + 3
+
+Example 2 of a cyclical dependency:
+
+declfirst a = b + 2
+declfirst b = c + 3
+declfirst c = d + 4
+declfirst d = e + 5
+declfirst e = a + 6
+
+Example 1 of a non-cyclical dependency:
+
+declfirst a = b + 2
+declfirst b = c + 3
+declfirst c = d + 4
+declfirst d = e + 5
+declfirst e = 6
+
+Example 2 of a non-cyclical dependency:
+
+declfirst func foo = func() {
+	bar()
+}
+
+declfirst func bar = func() {
+	foo()
+}</pre>
+	
+	<p>Concerning the last example: When one of these functions is called, infinite recursion occurs (negating intervention by the agent), but no such cycle is involved in just executing the function nodes. This is because the calls to foo and bar are not executed when the function nodes are executed.</p>
+	</div>
+	
+	<div id="nodes">
+		<h1>Chapter 11. Nodes</h1>
+	
+		<p>Niviok defines 63 nodes.</p>
+		
+		<p>Niviok code is represented by a tree of nodes. How this tree and its nodes are represented is outside the scope of this specification. Many means may exist of representing a Niviok tree.</p>
+
+		<p>Nodes are either base nodes or tree nodes. Tree nodes only contain other nodes, and their entire meaning is derived from their child nodes. Base nodes do not contain any other child nodes, and must is some way encode their meaning themselves.</p>
+		
+		<p>When a node has multiple child nodes with equivalent meaning, the order of those child nodes is significant, so their order must be specified by some means. The order of nodes of different meaning in relation to each other is not significant, and must not have any observable side effects.</p>
+		
+		<p>The child nodes of tree nodes are sometimes executed in order, such as expressions in blocks and arguments in function calls. This means the order of the child nodes is sometimes significant and thus should always be preserved.</p>
+			
+		<p>How ordering is represented has no effect on the semantics (left-to-right, numbered, linked list, etc) as long as there is a specified order. Each representation should specify how nodes are ordered.</p>
+		
+		<p>Node type names are nouns or noun phrases. XXX find correct English terminology</p>
+			
+		<div id="node-terminology">
+			<h2>11.1. Node terminology</h2>
+			
+			<p>If a node can contain other nodes, it is a tree node. If a node is contained directly inside another node, the inner node is the child of the outer node, and the outer node is the parent of the inner node. If a node is contained inside another node, but not directly, the inner node is the descendant of the outer node, and the outer node is the ancestor of the inner node.</p>
+			
+			<p>Expressions can be executed. When executed, they may perform some kind of action; e.g. they can have side effects. Expressions may produce a value when executed.</p>
+		</div>
+		
+		<div id="tree-node-layout">
+			<h2>11.2. Tree node layout</h2>
+			
+			<p>The number, type, and order of a tree nodes children is determined by the tree node's layout.</p>
+		</div>
+	
+		<div id="node-supertypes">
+			<h2>11.3. Node supertypes</h2>
+		
+			<p>Where the layout for a tree node specifies that a child node is an expression, that child node can be any expression.</p>
+		</div>
+	</div>
+	
+	<div id="node-types">
+	<h1>Chapter 12. Node types</h1>
+
+	<p>This chapter describes the various types of nodes. A node type is either a family, tree, or terminal node type. A family node type is a collection of node types. A tree node is a node that is composed of other nodes. Tree nodes do not directly encode any data themselves. The nodes a tree node type contains is specified by the tree node's layout. When the a layout specifies the type of a child node is that of a family node type, the type of the child that takes that place must be in the collection of that family node type. A terminal node encodes data directly and does not contain other nodes.</p>
+	
+	<div id="terminal-node-types">
+		<h2>12.1. Terminal nodes</h2>
+		
+		<p>These node types do not contain child nodes, and are thus the only nodes that must encode information themselves (as opposed to containing child nodes which together provide information).</p>
+
+		
+		<ul id="terminal-node-types-list"><li><a href="#node.boolean">boolean</a></li><li><a href="#node.direction">direction</a></li><li><a href="#node.identifier">identifier</a></li><li><a href="#node.integer">integer</a></li><li><a href="#node.member-status">member-status</a></li><li><a href="#node.member-type">member-type</a></li><li><a href="#node.rational">rational</a></li><li><a href="#node.string">string</a></li></ul>
+	</div>
+	
+	<div id="family-node-types">
+		<h2>12.2. Family node types</h2>
+		
+		<div id="node.expression">
+			<h3>12.2.1. expression</h3>
+			
+			<p>Any node type specified directly in one the following listed sections is an expression node.  (Excludes node types specified in the sections of other node types.) Expression nodes can be executed, and may produce values.</p>
+			
+			<ul class="family-members">
+				<li><a href="#non-producing-expressions">Non-producing Expressions</a></li>
+				<li><a href="#sometimes-producing-expressions">Sometimes producing expressions</a></li>
+				<li><a href="#always-producing-expressions">Always producing expressions</a></li>
+			</ul>
+		</div>
+		
+		<div id="node.statement-declaration">
+			<h3>12.2.2. statement-declaration</h3>
+			
+			<p>Declares new local identikeys and assigns new stuff to them.</p>
+			
+			<p>This family node type includes these types:</p>
+			
+			<ul class="family-members">
+				<li><a href="#node.declare-first">declare-first</a> </li>
+				<li><a href="#node.sieve">sieve</a> </li>
+			</ul>
+		</div>
+		
+		<div id="node.interface-member">
+			<h3>12.2.3. interface-member</h3>
+			
+			<p>This family node type includes these types:</p>
+			
+			<ul class="family-members">
+				<li><a href="#node.breeder">breeder</a> </li>
+				<li><a href="#node.callee">callee</a> </li>
+				<li><a href="#node.property">property</a> </li>
+				<li><a href="#node.method">method</a> </li>
+			</ul>
+		</div>
+	</div>
+	
+	<div id="tree-node-layout-key">
+		<h2>12.3. Tree node layout key</h2>
+		
+		<p>This section describes how the layout of a node type is represented in this specification.</p>
+		
+		<p>The layout for a node type is represented in this specification as a list of items. Each item represents a child node, or multiple child nodes with the same meaning.</p>
+		
+		<p>Each item in these lists first specifies how many child nodes with that meaning may appear, or it says nothing about the number, which means there must be one (and no more). The ways of representing these amounts is described below.</p>
+		
+		<dl>
+			
+				<dt>?</dt>
+				<dd>0 or 1</dd>
+			
+			
+				<dt>*</dt>
+				<dd>0 or more</dd>
+			
+			
+				<dt>+</dt>
+				<dd>1 or more</dd>
+			
+		</dl>
+		
+		<p>Next comes the name of a node type. The child node represented by that list item must be of that type.</p>
+		
+		<p>Lastly comes a optional label for refering to the child nodes represented by that item, when the type alone isn't enough to disambiguate which item is being referred to. These labels carry no semantic information, and are merely used by this specification to refer to specific child nodes. (Note this label is always singular, even for collections.)</p>
+		
+		<p>Example layout:</p>
+		
+		<pre>alpha
+? beta gamma
+? beta delta
+* epsilon
++ expression zeta</pre>
+		
+		<p>The first item represents a single required child node of type &quot;alpha&quot;. The second item represents an optional child node of type &quot;beta&quot;, which can be referred to using the label &quot;gamma&quot;. The third item represents an optional child node of type &quot;beta&quot;, which can be referred to using the label &quot;delta&quot;. The fourth item refers to a collection of child nodes of type &quot;epsilon&quot;; the collection can be empty. The fifth item refers to a collection of expression child nodes; the collection must contain at least one node; nodes in this collection can be refered to using the label &quot;zeta&quot;.</p>
+	</div>
+	
+	<div id="non-executable">
+		<h2>12.4. Non-executable</h2>
+		
+		<p>Nodes that cannot be executed. Most serve only to group other nodes together.</p>
+		
+		<div id="node.argument">
+			<h3>12.4.1. argument</h3>
+			
+			<ul class="layout">
+				<li>? <a href="#node.identifier">identifier</a> parameter name</li>
+				<li>? <a href="#node.expression">expression</a> value</li>
+			</ul>
+			
+			<code xml:space="preserve">
+func doSomething(Int a = 1, Int b = 2, Int c = 3, Int d) {...}
+doSomething(7, default, default, 8)
+doSomething(7, c = default, 8)
+			</code>
+		</div>
+		
+		<div id="node.boolean">
+			<h3>12.4.2. boolean</h3>
+			
+			<p>Terminal node. Specifies one of:</p>
+			
+			<ul class="enum">
+				<li>true</li>
+				<li>false</li>
+			</ul>
+			
+			<p>Cannot be evaluated because that would conflict with the &quot;true&quot; and &quot;false&quot; members of the Bool enum. Boolean values in the node tree use a boolean node, and boolean values in code use the &quot;true&quot; and &quot;false&quot; identikeys.</p>
+		</div>
+		
+		<div id="node.direction">
+			<h3>12.4.3. direction</h3>
+			
+			<p>Specifies the direction of a function parameter.</p>
+			
+			<p>Terminal node. Specifies one of:</p>
+			
+			<ul class="enum">
+				<li>in</li>
+				<li>out</li>
+				<li>inout</li>
+			</ul>
+			
+			<p class="xxx">At one time also included &quot;in-mutable&quot; and &quot;in-mutable-out&quot;. The nun-mutable version would create copies. It is not clear whether these should be kept. Parameter direction is currently ignored.</p>
+			
+			<p>A value passed to a function as an &quot;in&quot; parameter will not be mutated by the function. This means if the function uses the value in ways that may mutate the value, the value will be copied. If an action in the function may mutate the value, and the value does not declare a copy converter, an error results.</p>
+			
+			<p>Instances where the value may be mutated include when the interface of the value does not provide opacity information and the function calls a method, or if the interface does provide opacity information but the function calls a mutator method, or if the value is passed to another function as an in-mutable or in-mutable-out parameter.</p>
+			
+			<code xml:space="preserve">
+func alpha(in Int num) {
+println num
+}
+
+func beta(in-mutable Int num) {
+num += 567
+}
+
+func gamma(out Int num) {
+//num not currently assigned to anything
+num = 987
+}
+
+func delta(in-out Int num) {
+println num
+num = 1001
+}
+
+func epsilon(in-mutable-out Int num) {
+num += 55555
+num = 19591
+}
+
+Int num = 123
+alpha(num)
+beta(num) //value mutated
+gamma(num) //num assigned to different value
+delta(num) //num assigned to different value
+epsilon(num) //value mutated and num assigned to different value
+			</code>
+		</div>
+		
+		<div id="node.import">
+			<h3>12.4.4. import</h3>
+			
+			<p>Binds a library to a namespace identikey.</p>
+			
+			<ul class="layout">
+				<li><a href="#node.identifier">identifier</a> alias</li>
+				<li>+ <a href="#node.import-attempt">import-attempt</a> </li>
+			</ul>
+			
+			<p>Each import-attempt node attempts to refer to a library. The agent should try each import-attempt node in order until it is able to find one with a scheme that it recognizes and leads to a library the agent is able to load. If the agent is not able to load a library after trying all import-attempt nodes, it must output an error message and end execution immediately.</p>
+				
+			<code xml:space="preserve">
+import Xml
+	&quot;name&quot; : &quot;XmlLib&quot;
+	&quot;UUID&quot; : &quot;9d0d5fdc-5a23-4375-892a-8cbfd80f0927&quot;
+	&quot;local absolute path&quot; : &quot;/usr/bin/xmllib/niviok/xmllib.niviok.so&quot;
+	&quot;local absolute path&quot; : &quot;C:\Program Files\XmlLib\bin\Niviok\xmllib.niviok.so&quot;
+	&quot;local relative path&quot; : &quot;bin/xmllib.niviok.so&quot;
+	&quot;URL&quot; : &quot;https://www.xmllib.org/repository/xmllib.niviok.so&quot;
+
+def doc = Xml:Document()
+doc.appendChild(doc.createElement(&quot;foo&quot;))
+def Xml:Element root = doc.documentElement
+			</code>
+			
+			<p>Note that this specification does not define any schemes. Which schemes are supported by an agent is agent-specific.</p>
+			
+			<p class="xxx">Need versioning information. Could just include versioning information in the body of each import-attempt, but then the version information would have to be repeated for every import-attempt. Even if going with that, example should be updated to inclue versioning information. But what if different schemes wanted to denote versioning information in different ways? For example, shared libraries on Unix have their own versioning system, with version numbers different from the public version number associated with a piece of software.</p>
+		</div>
+			
+		<div id="node.import-attempt">
+			<h3>12.4.5. import-attempt</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.string">string</a> scheme</li>
+				<li><a href="#node.string">string</a> body</li>
+			</ul>
+			
+			<p>Used by the <a href="#node.import">import</a> node.</p>
+		</div>
+		
+		<div id="node.member-implementation">
+			<h3>12.4.6. member-implementation</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.member-type">member-type</a> </li>
+				<li>? <a href="#node.identifier">identifier</a> name</li>
+				<li>? <a href="#node.expression">expression</a> interface</li>
+				<li><a href="#node.expression">expression</a> function</li>
+			</ul>
+		</div>
+		
+		<div id="node.member-type">
+			<h3>12.4.7. member-type</h3>
+			
+			<p>Terminal node. Specifies one of:</p>
+			
+			<ul class="enum">
+				<li>breeder</li>
+				<li>callee</li>
+				<li>getter</li>
+				<li>setter</li>
+				<li>method</li>
+			</ul>
+		</div>
+
+		<div id="node.parameter-impl">
+			<h3>12.4.8. parameter-impl</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.direction">direction</a> </li>
+				<li><a href="#node.expression">expression</a> type</li>
+				<li><a href="#node.identifier">identifier</a> name</li>
+				<li>? <a href="#node.expression">expression</a> default value</li>
+			</ul>
+			
+			<p>When a [default value] is given, [default value] is executed for every call to the function. It is not executed when the function node is executed.</p>
+		</div>
+
+		<div id="node.parameter-info">
+			<h3>12.4.9. parameter-info</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.direction">direction</a> </li>
+				<li><a href="#node.expression">expression</a> type</li>
+				<li><a href="#node.identifier">identifier</a> name</li>
+				<li><a href="#node.boolean">boolean</a> has default value</li>
+			</ul>
+		</div>
+
+		<div id="node.worker">
+			<h3>12.4.10. worker</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> face</li>
+				<li>* <a href="#node.worker">worker</a> child worker</li>
+				<li>* <a href="#node.member-implementation">member-implementation</a> </li>
+			</ul>
+			
+			<p>Note: May actually correspond to multiple workers, since some of the member-implementation nodes may implement members of inherited interfaces.</p>
+		</div>
+	</div>
+	
+	<div id="statements">
+		<h2>12.5. Statements</h2>
+		
+		<p>Statements can be executed. Statements do not produce when executed. Statements differ from non-producing expressions in that statements have special execution rules that greatly restrict where they can appear.</p>
+		
+		<div id="node.declare-first">
+			<h3>12.5.1. declare-first</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.identifier">identifier</a> name</li>
+				<li><a href="#node.boolean">boolean</a> overload</li>
+				<li><a href="#node.expression">expression</a> type</li>
+				<li><a href="#node.boolean">boolean</a> breed</li>
+				<li><a href="#node.expression">expression</a> value</li>
+			</ul>
+			
+			<p class="xxx">Should [breed] be required to be false if [wo-scidentre-category] is &quot;function&quot;?</p>
+			
+			<p>Creates an scidentre in the parent scope ash assigns the specified value to it. If [overload] is true, creates on overload scidentre; otherwise creates a constant scidentre.</p>
+			
+			<p>The value expressions of declare-first nodes may depend on the values of other declare-first nodes that appear before or after it. Some types of expressions are allowed to reference the scidentres of each other. For example, two interfaces could reference each other.</p>
+			
+			<p>For more (xxx outdated) information, see <a href="#handling-declare-first">this section</a>.</p>
+			
+			<code xml:space="preserve">
+func b {3}
+
+!declfirst !functionworef b = !function(-&gt;Int) { 3 }
+
+declfirst Foo = interface {
+	get Bar bar
+	get Int number
+}
+
+declfirst Bar = interface {
+	get Foo foo
+}
+
+const Foo foo = getFoo()
+println( foo.bar.foo.bar.foo.bar.foo.number )
+			</code>
+		</div>
+		
+		<div id="node.hidable">
+			<h3>12.5.2. hidable</h3>
+
+			<ul class="layout">
+				<li><a href="#node.boolean">boolean</a> hidden</li>
+				<li><a href="#node.statement-declaration">statement-declaration</a> declaration</li>
+			</ul>
+		</div>
+		
+		<div id="node.module">
+			<h3>12.5.3. module</h3>
+			
+			<p>A grouping of identikey declarations, for use as a library or a standalone program.</p>
+			
+			<ul class="layout">
+				<li><a href="#node.integer">integer</a> niviok major version number</li>
+				<li><a href="#node.integer">integer</a> niviok minor version number</li>
+				<li>* <a href="#node.import">import</a> </li>
+				<li><a href="#node.sieve">sieve</a> </li>
+			</ul>
+			
+			<p>No node can contain a module node. Module nodes are the only nodes which can ever be parentless. All nodes that are ever executed in any way must be part of a complete tree, with a module node as the rootmost node.</p>
+			
+			<p class="xxx">Following stuff needs to be moved. Also, see &quot;executing module.txt&quot;.</p>
+			
+			<p>Implementations must not pass any arguments to the main function when executing a bundle as a standalone executable. Implementations should instead provide program arguments through a library which can be imported with the import node. Note that the program arguments are not required by this specification to be a sequence of strings.</p>
+			
+			<p>The result produced by executing a bundle node as a standalone executable may be converted as necesary to suit the containing environment. How this conversion is performed depends on the containing environment and the Desal implementation, and is not covered by this specification.</p>
+			
+			<p>When treating a bundle as a standalone executable:</p>
+			
+			<ol class="exec">
+				<li>Let globalScope be a new scope.</li>
+				<li>Create the identikeys required by <a href="#reserved-identikey-names">Reserved identikey names</a>.</li>
+				<li>For each <a href="#node.import">import</a> and expose child node, add the identikeys to globalScope specified by that node.</li>
+				<li>Execute all declaration-first children of each plane together as required by <a href="#handling-declare-first">Handling declare-first nodes</a>.</li>
+				<li>Let mainKey be the identikey in globalScope that is associated with identifier &quot;main&quot;. If such an identikey does not exist, throw an error.</li>
+				<li>Let mainVal be the result of evaluating mainKey. If mainVal is null, throw an error.</li>
+				<li>Call mainVal with no arguments and let rv be the result. If mainVal is not callable, throw an error. If mainVal does not have a callee that takes no arguments, throw an error.</li>
+				<li>If rv is null, produce a value, with Int as the active interface, that encodes the number zero. Else if rv has an active interface that inherits from Int, downcast rv to Int and produce the result. Else if rv, with it's current active interface, can breed an Int, have rv breed an Int, and produce the result. Else throw an error.</li>
+			</ol>
+			
+			<p>When treating a bundle as a library:</p>
+			
+			<ol class="exec">
+				<li>Let globalScope be a new scope.</li>
+				<li>Create the identikeys required by <a href="#reserved-identikey-names">Reserved identikey names</a>.</li>
+				<li>For each <a href="#node.import">import</a> and expose child node, add the identikeys to globalScope specified by that node.</li>
+				<li>Execute all declaration-first children of each plane together as required by <a href="#handling-declare-first">Handling declare-first nodes</a>.</li>
+				<li>Expose globalScope, in an immutable form, to the containing environment. How this is done depends on the containing enviornment and the Desal implementation, and is not covered by this specification.</li>
+			</ol>
+			
+			<p class="xxx">When acting as a standalone executable, need to specify what happens to exceptions that bubble all the way up to the bundle node. They are caught, an error message is output, and the bundle node returns some value, like 1. The bundle may expose to the containing environment additional information, depending on the enclosing environment and Desal implementation.</p>
+			
+			<p class="xxx">When acting as a standalone executable, what kind of errors should bundle by throwing? This is a problem that applies to many other nodes as well.</p>
+			
+			<p class="xxx">For when acting as a library, need a means of hiding/showing certain child namespaces/identikeys of the global namespace. For example, a bundle may have declarations in the global namespace and in a &quot;private&quot; namespace. The bundle should expose the declarations in the global namespace but hide the declarations in the private namespace. There has also been consideration of an &quot;export&quot; attribute/node that would expose specified identikeys, and all other identikeys would not be exposed.</p>
+			
+			<p class="xxx">The identikeys added to globalScope by import, using, and expose nodes should not be exposed to the containing environment when the bundle is acting as a library.</p>
+		</div>
+		
+		<div id="node.sieve">
+			<h3>12.5.4. sieve</h3>
+			
+			<p>Limits reach of expose and using nodes. Can hide child scidentres.</p>
+			
+			<p>Like some other special expressions, screen nodes add identikeys to their parent scope, as well as creating their own scope and adding identikeys to it.</p>
+			
+			<ul class="layout">
+				<li>* <a href="#node.expression">expression</a> expose</li>
+				<li>* <a href="#node.hidable">hidable</a> </li>
+			</ul>
+			
+			<p>Example of sieve nodes used to contain the effects of &quot;using&quot; nodes:</p>
+			
+			<code xml:space="preserve">
+--- file A
+module
+	import as Foo [...]
+	sieve
+		include B
+		include C
+
+--- file B
+using Foo as Bar
+
+--- file C
+func main {
+	println(Bar:something)
+}
+
+--- all together
+module
+	import as Foo
+	sieve
+		sieve
+			using Foo as Bar
+		sieve
+			func main {
+				Bar:do_something() #error - Bar namespace not defined
+			}
+			</code>
+		</div>
+	</div>
+	
+	<div id="non-producing-expressions">
+		<h2>12.6. Non-producing expressions</h2>
+		
+		<p>Expression nodes that never produce.</p>
+		
+		<div id="node.declare-empty">
+			<h3>12.6.1. declare-empty</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.identifier">identifier</a> name</li>
+				<li><a href="#node.expression">expression</a> type</li>
+			</ul>
+			
+			<p>Creates a variable scidentre in the parent scope. After this node executes, the produced scidentre does not yet point to a value.</p>
+
+			<code xml:space="preserve">
+var foo
+var any foo
+var ? foo
+var ?any foo
+var Int foo
+var ?Int foo
+			</code>
+			
+			<code xml:space="preserve">
+var bar
+bar = 123
+println bar
+bar = 456
+println bar
+			</code>
+		</div>
+
+		<div id="node.raise">
+			<h3>12.6.2. raise</h3>
+		
+			<p>This node alters the control flow when executed. For example, if present in a sequence of statements that are executed in order, executing a node of this type alters control flow in such a way that the following statements in the sequence are not executed.</p>
+			
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> value</li>
+			</ul>
+			
+			<p>If the worker produced by the expression doesn't implement an interface that is or inherits from Signal, throw a NonSignalRaiseAttempt signal with the value from [value] as the wrapped value.</p>
+		</div>
+	</div>
+
+	<div id="sometimes-producing-expressions">
+		<h2>12.7. Sometimes producing expressions</h2>
+		
+		<p>Nodes that can be executed, and sometimes produce.</p>
+
+		<div id="node.assign">
+			<h3>12.7.1. assign</h3>
+			
+			<p>Assigns a value to an identikey.</p>
+			
+			<ul class="layout">
+				<li><a href="#node.identifier">identifier</a> name</li>
+				<li><a href="#node.boolean">boolean</a> breed</li>
+				<li><a href="#node.expression">expression</a> value</li>
+			</ul>
+			
+			<p class="process">The identikey's type must be dynamic, automatic, or strict. If the identikey's type is automatic or strict, the identifier must be variable (not constant).</p>
+			
+			<p>If bree is false:</p>
+			
+			<ol>
+				<li>Let key by the identikey that [name] refers to.</li>
+				<li>Execute [value] and let value be the product.</li>
+				<li>Associate key with value so that key now refers (only) to value.</li>
+			</ol>
+			
+			<p>If breed is true:</p>
+			
+			<ol>
+				<li>Let key be the identikey that [name] refers to.</li>
+				<li>Execute [value] and let parentValue be the product.</li>
+				<li>Let faceValue be the required interface for key. If key does not require a particular interface, let faceValue be the active interface of parentValue.</li>
+				<li>Find parentValue's breeder that produces values with an active interface of faceValue. If such a breeder is not found, throw an error.</li>
+				<li>Activate the found breeder and let value be the product.</li>
+				<li>Associate key with value so that key now refers (only) to value.</li>
+			</ol>
+			
+			<p>Example of difference between breeding and not breeding:</p>
+			
+			<code xml:space="preserve">
+decl Person person1
+decl Person person2
+
+person1 = Person()
+person1.name = &quot;John&quot;
+person2 = person1 //not breeding - person1 and person2 refer to same object
+person2.name = &quot;Suzy&quot;
+println( person1.name ) //Suzy
+
+person1 = Person()
+person1.name = &quot;Michael&quot;
+person2 := person1 //breeding - person1 and person2 refer to different objects
+person2.name = &quot;Kim&quot;
+println( person1.name ) //Michael
+			</code>
+		</div>
+		
+		<div id="node.call">
+			<h3>12.7.2. call</h3>
+
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> receiver</li>
+				<li>* <a href="#node.argument">argument</a> </li>
+			</ul>
+			
+			<ol class="exec">
+				<li>Execute [receiver], and let receiver be the result.</li>
+				<li>If result is not callable, throw an error.</li>
+				<li>Execute the argument values in order.</li>
+				<li>Send argument values to receiver for execution.</li>
+				<li>Produce the result on the previous step.</li>
+			</ol>
+		</div>
+		
+		<div id="node.compound">
+			<h3>12.7.3. compound</h3>
+			
+			<ul class="layout">
+				<li>* <a href="#node.expression">expression</a> expose</li>
+				<li>* <a href="#node.statement-declaration">statement-declaration</a> declaration</li>
+				<li>+ <a href="#node.expression">expression</a> member</li>
+			</ul>
+			
+			<p>Has scope.</p>
+			
+			<ol class="exec">
+				<li>Execute each expression in order. Produce the result of the last expression. (Produce nothing if the instance contained no expressions or the last expression didn't produce.)</li>
+			</ol>
+			
+			<code xml:space="preserve">
+compound {
+	using System:Console
+	using System:Collections as Boxes
+	const numbers = Boxes:List&lt;MyFace&gt;()
+	Console.WriteLine(numbers.Count.ToString())
+}
+			</code>
+		</div>
+			
+		<div id="node.conditional">
+			<h3>12.7.4. conditional</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> test</li>
+				<li><a href="#node.expression">expression</a> result</li>
+				<li>? <a href="#node.expression">expression</a> else</li>
+			</ul>
+			
+			<ol class="exec">
+				<li>Execute [test] and let test1 be the result.</li>
+				<li>Downcast test2 to Bool and let test2 be the result.</li>
+				<li>If test2 is true, execute [result] and produce it's result, ending execution.</li>
+				<li>If [else] is not present, produce null, ending execution.</li>
+				<li>Execute [else] and produce it's result.</li>
+			</ol>
+			
+			<code xml:space="preserve">
+decl Int a = (x ? 0 : 1)
+
+if foo == 1
+	doStuff1()
+elif foo == 2
+	doStuff2()
+else
+	doDefault()
+
+decl bar =
+	(foo == 1) ? getOne() :
+	(foo == 2) ? getTwo() :
+	getDefault()
+
+decl bar =
+	if foo == 1 : getOne()
+	elif foo == 2 : getTwo()
+	else : getDefault()
+
+if not foo.isSetup?
+	foo.setup()
+
+unless prefs.dont_do_it
+	do_it()
+			</code>
+		</div>
+		
+		<div id="node.curry">
+			<h3>12.7.5. curry</h3>
+			
+			<p>Provides a built-in means of partial application. (Note that Desal provides no built-in support for the original type of currying, where a multi-argument function is converted into a chain of single-argument functions.)</p>
+			
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> function</li>
+				<li>* <a href="#node.argument">argument</a> </li>
+				<li><a href="#node.boolean">boolean</a> call</li>
+			</ul>
+
+			<p>If [call] is true, and this node results in the function receiving enough arguments to be called, the function will be called.</p>
+			
+			<code xml:space="preserve">
+func foo(Int a, Rat b, String c, Bool d) Int {
+	...
+}
+
+//partial application
+func(String,Bool)Int foo2 = foo(1, 2.34)
+print foo2(&quot;text&quot;, true)
+
+//other type of currying
+func(Int)(
+	func(Rat)(
+		func(String)(
+			func(Bool)Int ))) foo3 = curry(foo)
+print foo3(1)(2.34)(&quot;text&quot;)(true)
+
+//The above two are equivalent to:
+print foo(1, 2.34, &quot;text&quot;, true)
+			</code>
+			
+			<p>Assuming the function is not called: If the arguments match only one of the callees/methods of [value], this node produces a value with a function interface as the active interface. If the arguments match more than one of the callees/methods on [value], this node produces a value with an active interface that is made by adding the function interfaces of the callees/methods together.</p>
+			
+			<p>After execution, the specified parameters have values, so they do not appear on the resultant function.</p>
+			
+			<p>Once the function has all its arguments supplied, it is called if [call] is true, and the result of that call is produced.</p>
+			
+			<code xml:space="preserve">
+func doStuff1(Int a, String b, Bool alpha) {...}
+func doStuff1(Int a, Rat b, Bool alpha) {...}
+func doStuff2 = doStuff1~(3, alpha=false)
+doStuff2(&quot;test&quot;)
+doStuff2(123.456)
+			</code>
+			
+			<p>The middle line perhaps might also be represented this way:</p>
+			<code xml:space="preserve">
+(declare-first
+	(identifier.name &quot;doStuff2&quot;)
+	(curry
+		(identifier.value &quot;doStuff1&quot;)
+		(argument
+			(integer.value 3))
+		(argument
+			(identifier.name &quot;alpha&quot;)
+			(identifier.value &quot;false&quot;))))
+			</code>
+
+			<code xml:space="preserve">
+interface Alpha
+func bar(Int a, Rat b, String c)
+
+Alpha alpha = AlphaClass()
+
+alpha.bar(0, 0.0, &quot;0&quot;)
+
+func()void bar1 = alpha.bar~()
+bar(1, 2.3, &quot;4&quot;)
+
+func()void bar2 = alpha.bar~(c=&quot;text&quot;)
+bar2(7, 9.8)
+
+func()void bar3 = alpha.bar~(-9, 0.001, &quot;stuff&quot;)
+bar3()
+			</code>
+		</div>
+		
+		<div id="node.declare-assign">
+			<h3>12.7.6. declare-assign</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.identifier">identifier</a> name</li>
+				<li><a href="#node.boolean">boolean</a> constant</li>
+				<li><a href="#node.expression">expression</a> type</li>
+				<li><a href="#node.boolean">boolean</a> breed</li>
+				<li><a href="#node.expression">expression</a> value</li>
+			</ul>
+
+			<p>Creates a scidentre in the parent scope and assigns the specified value to it. If [constant] is false, creates a constant scidentre; otherwise, creates a variable scidentre.</p>
+			
+			<code xml:space="preserve">
+var any foo = 123
+var Nullable&lt;any&gt; foo = 123
+var ?any foo = 123
+var Int foo = 123
+var Nullable&lt;Int&gt; foo = 123
+var ?Int foo = 123
+			</code>
+		</div>
+		
+		<div id="node.identifier">
+			<h3>12.7.7. identifier</h3>
+			
+			<p>Base/terminal node.</p>
+			
+			<ol class="exec">
+				<li>Let ident be the identifier specified by this node.</li>
+				<li>Let scope be the current scope.</li>
+				<li>If scope has an identikey that is associated with ident, let scope be the parent scope of scope. If scope has no parent scope, throw an error. Continue moving through parent scopes until an identikey associated with ident is found. Let key be this identikey.</li>
+				<li>If key is a function identikey, find parent function identikeys with that name, but with different types, and merge all the functions together. (XXX elaborate)</li>
+				<li>If key is bound to a value, produce the value that key is bound to. If key has been declared that it can be bound to values, but it is currently not bound to anything, return null.</li>
+				<li>If key is bound to a namespace, throw an error.</li>
+			</ol>
+			
+			<code xml:space="preserve">
+println( foo )
+			</code>
+			
+			<code xml:space="preserve">
+(println foo)
+			</code>
+		</div>
+	
+		<div id="node.select">
+			<h3>12.7.8. select</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> input value</li>
+				<li>* <a href="#node.case">case</a> </li>
+				<li>? <a href="#node.expression">expression</a> else</li>
+			</ul>
+			
+			<p class="exec">Execute [value]. Execute each [values] child of each [case] and compare them to the [value] value (with the .equals? method of the [value] value) until finding a match. Then, execute the [result] of that case and produce the result. If no match is found, and [else] is given, execute [else] and produce its result.</p>
+			
+			<div id="node.case">
+				<h4>12.7.8.1. case</h4>
+				
+				<ul class="layout">
+					<li>+ <a href="#node.expression">expression</a> test value</li>
+					<li><a href="#node.expression">expression</a> result</li>
+				</ul>
+			</div>
+			
+			<code xml:space="preserve">
+select event.type
+case Events.QUIT {
+	return
+}
+case Events.FOO, Events.BAR, Events.MAZ {
+	//no action
+}
+else {
+	throw ErrorClass(&quot;unknown event type&quot;)
+}
+
+select foo
+case 1
+	doStuff1()
+case 2
+	doStuff2()
+else
+	doDefault()
+
+decl bar = select foo
+	case 1 : getOne()
+	case 2 : getTwo()
+	else getDefault()
+			</code>
+		</div>
+		
+		<div id="node.set-property">
+			<h3>12.7.9. set-property</h3>
+
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> source</li>
+				<li><a href="#node.identifier">identifier</a> property name</li>
+				<li><a href="#node.expression">expression</a> value</li>
+			</ul>
+			
+			<p>Sets the value of a property. If the active interface of the value does not have a property with the specified name, or the property cannot be set, an error results. Evaluates to the value given by [value].</p>
+			
+			<code xml:space="preserve">
+alpha.beta = &quot;gamma&quot;
+			</code>
+			
+			<code xml:space="preserve">
+(= alpha.beta &quot;gamma&quot;)
+			</code>
+		</div>
+		
+		<div id="node.try-catch">
+			<h3>12.7.10. try-catch</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> try</li>
+				<li>* <a href="#node.catcher">catcher</a> </li>
+				<li>? <a href="#node.expression">expression</a> on success</li>
+				<li>? <a href="#node.expression">expression</a> finally</li>
+			</ul>
+			
+			<p class="process">Must contain more than just [try].</p>
+			
+			<div id="node.catcher">
+				<h4>12.7.10.1. catcher</h4>
+
+				<ul class="layout">
+					<li><a href="#node.expression">expression</a> type</li>
+					<li>? <a href="#node.identifier">identifier</a> name</li>
+					<li>? <a href="#node.expression">expression</a> test</li>
+					<li><a href="#node.expression">expression</a> result</li>
+				</ul>
+				
+				<p class="allowance">The [result] node adds a REMIT allowance.</p>
+			</div>
+			
+			<pre>function execute ( Node_TryCatch node, IScope parentScope ) -&gt; IWorker {
+	IScope tryCatchScope = new Scope(parentScope)
+	IWorker result
+	try {
+		result = execute(node.try, tryCatchScope)
+	}
+	catch( ClientException exception ) {
+		for(Node_Catch c in node.catchs) {
+			try {
+				Type type = Type.wrap(execute(c.type, tryCatchScope))
+				if (can_downcast(exception.worker, type)) {
+					IScope catchScope = new Scope(parentScope)
+					if (c.name != null) {
+						G.declareAssign(
+							c.name.value
+							WoScidentreCategory.CONSTANT,
+							type,
+							exception.worker,
+							catchScope)
+					}
+					if (c.test != null) {
+						if (unwrapBoolean(execute(c.test, catchScope)) == false) {
+							continue
+						}
+					}
+					try {
+						result = execute(c.result, catchScope)
+					}
+					catch( ClientRemit remit ) {
+						continue
+					}
+				}
+			}
+			catch( ClientException exception2 ) {
+				if (node.finally != null) {
+					execute(node.finally, tryCatchScope)
+					throw exception2
+				}
+			}
+		}
+		if (node.finally != null) {
+			execute(node.finally, tryCatchScope)
+			throw exception
+		}
+	}
+	if (node.onSuccess != null) {
+		try {
+			result = execute(node.onSuccess, tryCatchScope)
+		}
+		catch( ClientException exception ) {
+			if (node.finally != null) {
+				execute(node.finally, tryCatchScope)
+				throw exception
+			}
+		}
+	}
+	if (node.finally != null) {
+		execute(node.finally, tryCatchScope)
+	}
+	return result
+}
+
+Execute [try] and let result be the result.
+If an exeception raised up through [try] as it was being executed:
+	Let exception be the exception.
+	For each [catch] child:
+		Execute the type expression and let type be the result.
+		If the [type] of catch does not match exception, continue to the next catch.
+		If the catch specifies a name, bind the exception to that name as a constant.
+		If tha catch specifies a test, execute the test, and continue to the next catch if the result is false.
+		Execute the [result] of catch and set result to be the product, then stop looking for a catch.
+		If a remit signal raises out of the catch while executing it, continue the search for a catch.
+		If an exception raises out of the type, test, or result expressions, execute [finally] if present, and then allow the exception to rise out.
+	If no matching catch nodes were found, execute [finally] if present, and then allow the exception to rise out.
+Otherwise, execute [on success] if present and set [result] to be the result. If an exception raises out of [on success] while executing it, execute [finally] and allow the exception to rise out.
+Execute [finally] if present.
+Produce result.</pre>
+			
+			<code xml:space="preserve">
+try
+	decl foo = getSomething()
+observe( OutOfMemoryError )
+	println &quot;I'm not catching that!&quot;
+	//exception is noticed by this try-catch node, but not caught
+	//the exception continues to rise out
+catch( NullError )
+	println &quot;null error&quot;
+catch( FooError e )
+	println &quot;FooError: (e.message)&quot;
+catch( Error )
+	println &quot;unknown error&quot;
+catch( Exception )
+	println &quot;unknown exception&quot;
+observe
+	println &quot;how execution reach here? am not good with computer&quot;
+else
+	println &quot;no errors!&quot;
+	doSomeStuff() //don't catch errors from this in this node
+finally
+	cleanup(foo)
+
+decl Status stat =
+try
+	doSomething()
+	Statuses.SUCCESS
+catch( NotSoBadError ) {
+	Statuses.ERROR
+observe
+	println &quot;something horrible not caught when trying to doSomething()&quot;
+			</code>
+			
+			<p class="xxx">This node is too complicated. Try to simplify it. In particular, see about removing remit node and reintroducing catch/observe distinction.</p>
+		</div>
+		
+		<div id="node.type-select">
+			<h3>12.7.11. type-select</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> input value</li>
+				<li>? <a href="#node.identifier">identifier</a> casted name</li>
+				<li>? <a href="#node.boolean">boolean</a> require match</li>
+				<li>* <a href="#node.type-case">type-case</a> </li>
+				<li>? <a href="#node.expression">expression</a> else</li>
+			</ul>
+			
+			<p class="process">[require match] must be present if and only if an [else] is not given.</p>
+			
+			<p>If [require match] is true (which means an [else] was not given) and no match was found, an exception is thrown.</p>
+			
+			<div id="node.type-case">
+				<h4>12.7.11.1. type-case</h4>
+				
+				<ul class="layout">
+					<li>+ <a href="#node.expression">expression</a> test type</li>
+					<li><a href="#node.expression">expression</a> result</li>
+				</ul>
+			</div>
+			
+			<pre>if e is declare-assign
+	e2 = e as declare-assign
+	sb.reserveWoScidentre( e2.name, e2.category )
+elif e is declare-empty
+	e2 = e as declare-empty
+	sb.reserveWoScidentre( e2.name, e2.category )
+
+typeselect e as e2
+case declare-assign
+	sb.reserveWoScidentre( e2.name, e2.category )
+case declare-empty
+	sb.reserveWoScidentre( e2.name, e2.category )
+
+typeselect e as e2
+case declare-assign, declare-empty
+	sb.reserveWoScidentre( e2.name, e2.category )</pre>
+		</div>
+	</div>
+	
+	<div id="always-producing-expressions">
+		<h2>12.8. Always producing expressions</h2>
+		
+		<p>Expressions that, aside from e.g. exceptions, always produce when executed. These nodes, other than the and, nand, or, and nor nodes, are not intended to have side effects.</p>
+		
+		<div id="boolean-logic">
+			<h3>12.8.1. Boolean logic</h3>
+			
+			<div id="node.and">
+				<h4>12.8.1.1. and</h4>
+				
+				<p>Evaluates to false if either child expression evaluates to false.</p>
+				
+				<ul class="layout">
+					<li><a href="#node.expression">expression</a> first</li>
+					<li><a href="#node.expression">expression</a> second</li>
+				</ul>
+				
+				<ol class="exec">
+					<li>Evaluate the first [expression] node.</li>
+					<li>Downcast [1] to Bool.</li>
+					<li>If [2] is false, evaluate this node to false.</li>
+					<li>Evaluate the second [expression] node.</li>
+					<li>Downcast [4] to Bool.</li>
+					<li>Evaluate this node to [5].</li>
+				</ol>
+			</div>
+			
+			<div id="node.nand">
+				<h4>12.8.1.2. nand</h4>
+				
+				<p>Evaluates to true if either child expression evaluates to false.</p>
+				
+				<ul class="layout">
+					<li><a href="#node.expression">expression</a> first</li>
+					<li><a href="#node.expression">expression</a> second</li>
+				</ul>
+				
+				<ol class="exec">
+					<li>Evaluate the first [expression] node.</li>
+					<li>Downcast [1] to Bool.</li>
+					<li>If [2] is false, evaluate this node to true.</li>
+					<li>Evaluate the second [expression] node.</li>
+					<li>Downcast [4] to Bool.</li>
+					<li>Evaluate this node to the inverse of [5].</li>
+				</ol>
+			</div>
+			
+			<div id="node.or">
+				<h4>12.8.1.3. or</h4>
+				
+				<p>Evaluates to true if either child expression evaluates to true.</p>
+				
+				<ul class="layout">
+					<li><a href="#node.expression">expression</a> first</li>
+					<li><a href="#node.expression">expression</a> second</li>
+				</ul>
+				
+				<ol class="exec">
+					<li>Evaluate the first [expression] node.</li>
+					<li>Downcast [1] to Bool.</li>
+					<li>If [2] is true, evaluate this node to true.</li>
+					<li>Evaluate the second [expression] node.</li>
+					<li>Downcast [4] to Bool.</li>
+					<li>Evaluate this node to [5].</li>
+				</ol>
+			</div>
+			
+			<div id="node.nor">
+				<h4>12.8.1.4. nor</h4>
+				
+				<p>Evaluates to false if either child expression evaluates to true.</p>
+				
+				<ul class="layout">
+					<li><a href="#node.expression">expression</a> first</li>
+					<li><a href="#node.expression">expression</a> second</li>
+				</ul>
+				
+				<ol class="exec">
+					<li>Evaluate the first [expression] node.</li>
+					<li>Downcast [1] to Bool.</li>
+					<li>If [2] is true, evaluate this node to false.</li>
+					<li>Evaluate the second [expression] node.</li>
+					<li>Downcast [4] to Bool.</li>
+					<li>Evaluate this node to the inverse of [5].</li>
+				</ol>
+			</div>
+			
+			<div id="node.xor">
+				<h4>12.8.1.5. xor</h4>
+				
+				<p>Evaluates to true if the child expressions evaluate to different values.</p>
+				
+				<ul class="layout">
+					<li><a href="#node.expression">expression</a> first</li>
+					<li><a href="#node.expression">expression</a> second</li>
+				</ul>
+				
+				<ol class="exec">
+					<li>Evaluate the first [expression] node.</li>
+					<li>Downcast [1] to Bool.</li>
+					<li>Evaluate the second [expression] node.</li>
+					<li>Downcast [3] to Bool.</li>
+					<li>If [2] and [4] are different, evaluate to true. Otherwise, evaluate to false.</li>
+				</ol>
+			</div>
+			
+			<div id="node.xnor">
+				<h4>12.8.1.6. xnor</h4>
+				
+				<p>Evaluates to true if the child expressions evaluate to the same value.</p>
+				
+				<ul class="layout">
+					<li><a href="#node.expression">expression</a> first</li>
+					<li><a href="#node.expression">expression</a> second</li>
+				</ul>
+				
+				<ol class="exec">
+					<li>Evaluate the first [expression] node.</li>
+					<li>Downcast [1] to Bool.</li>
+					<li>Evaluate the second [expression] node.</li>
+					<li>Downcast [3] to Bool.</li>
+					<li>If [2] and [4] are the same, evaluate to true. Otherwise, evaluate to false.</li>
+				</ol>
+			</div>
+			
+			<code xml:space="preserve">
+true and false
+true xnor false
+			</code>
+			
+			<code xml:space="preserve">
+(and true false)
+(xnor true false)
+			</code>
+		</div>
+		
+		<div id="node.breed">
+			<h3>12.8.2. breed</h3>
+			
+			<p>Creates a new object (&quot;offspring&quot;) that encodes some or all of the information from the parent, and exposes that information through the specified interface. If an interface is not specified, the new object has same type as the parent, and should encode most or all of the information from the parent. If an interface is specified, the new object may be an exact copy of the parent object, or it may be of a completetly different form that encodes very little information from the parent object.</p>
+			
+			<p>This node can be used to copy a value, or to convert a value into a different type.</p>
+			
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> parent</li>
+				<li>? <a href="#node.expression">expression</a> interface</li>
+			</ul>
+			
+			<ol class="exec">
+				<li>Execute [parent] and let parentValue be the product.</li>
+				<li>Execute [interface] and let faceValue be the product. If [interface] is not given, let faceValue be the active interface of parentValue.</li>
+				<li>Find parentValue's breeder that produces values with faceValue as the active interface. If such a breeder is not found, throw an error.</li>
+				<li>Activate the found breeder.</li>
+				<li>Produce the new value produced by the breeder.</li>
+			</ol>
+			
+			<code xml:space="preserve">
+decl Int num1 = 987
+decl Int num2 = copy(num)
+decl Rat num3 = (num to Rat)
+			</code>
+			
+			<code xml:space="preserve">
+(decl Int num1 987)
+(decl Int num2 (copy num))
+(decl Rat num3 (breed num Rat))
+			</code>
+		</div>
+		
+		<div id="node.caller">
+			<h3>12.8.3. caller</h3>
+			
+			<ul class="layout">
+				<li>? <a href="#node.expression">expression</a> interface</li>
+				<li><a href="#node.identifier">identifier</a> method name</li>
+			</ul>
+			
+			<p>Creates a function that, when passed the type specified by [interface], calls the method named [method name] on the first argument with the rest of the arguments sent to it. It's purpose is to help with functional programming.</p>
+			
+			<code xml:space="preserve">
+interface Foo {
+	func doStuff(Int, Int) Rat
+}
+
+decl Foo foo = getFoo()
+decl func(Foo,Int,Int)Rat doStuffer = Foo::doStuff
+println doStuffer(foo,3,7)
+
+decl doStuffer2 = dyn::doStuff
+println doStuffer2(foo,3,7)
+
+//below all equilavent:
+println Foo::doStuff(foo,3,7)
+println dyn::doStuff(foo,3,7)
+println foo.doStuff(3,7)
+			</code>
+			
+			<code xml:space="preserve">
+(decl Foo foo
+	(getFoo))
+(decl auto doStuffer
+	(caller Foo doStuff))
+(println (doStuffer foo 3 7))
+
+(decl const doStuffer2
+	(caller dyn doStuff))
+(println (doStuffer2 foo 3 7))
+			</code>
+		</div>
+		
+		<div id="node.object">
+			<h3>12.8.4. object</h3>
+			
+			<ul class="layout">
+				<li>+ <a href="#node.worker">worker</a> </li>
+			</ul>
+		</div>
+		
+		<div id="node.dictionary">
+			<h3>12.8.5. dictionary</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> key type</li>
+				<li><a href="#node.expression">expression</a> value type</li>
+				<li>* <a href="#node.dictionary-entry">dictionary-entry</a> </li>
+			</ul>
+			
+			<div id="node.dictionary-entry">
+				<h4>12.8.5.1. dictionary-entry</h4>
+				
+				<ul class="layout">
+					<li><a href="#node.expression">expression</a> key</li>
+					<li><a href="#node.expression">expression</a> value</li>
+				</ul>
+			</div>
+			
+			<code xml:space="preserve">
+decl ages = dict (String, Int) {
+	&quot;Saray&quot; : 12,
+	&quot;John&quot; : 70,
+	&quot;Mike&quot; : 23
+}
+
+for pair name, age in ages
+	println name &quot; &quot; age
+			</code>
+			
+			<code xml:space="preserve">
+(decl const ages
+	(dict String Int
+		((&quot;Saray&quot; 12) (&quot;John&quot; 70) (&quot;Mike&quot; 23))))
+
+(forpair name age ages
+	(println name &quot; &quot; age))
+			</code>
+		</div>
+		
+		<div id="node.enum">
+			<h3>12.8.6. enum</h3>
+			
+			<p>An enum is similar to an immutable dict.</p>
+			
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> type</li>
+				<li>+ <a href="#node.enum-entry">enum-entry</a> </li>
+			</ul>
+			
+			<p class="process">If [type] is not given, no enum entries can have a value. If [type] is given, all enum entries must have a value. Note that every enum entry has have a unique value. (XXX include restriction in execution instructions)</p>
+			
+			<div id="node.enum-entry">
+				<h4>12.8.6.1. enum-entry</h4>
+				
+				<ul class="layout">
+					<li><a href="#node.identifier">identifier</a> name</li>
+					<li>? <a href="#node.expression">expression</a> value</li>
+				</ul>
+			</div>
+			
+			<p>If [type] is given:</p>
+			<ol class="exec">
+				<li>Let EntryFace be a new interface that inherits from EnumDictEntry&lt;T&gt; where T is specified by [type].</li>
+				<li>For every [enum-entry], create a value with EntryFace as the active interface, where the &quot;value&quot; and &quot;name&quot; properties are those specified by the [enum-entry].</li>
+				<li>Let ListFace be a new interface. For every [enum-entry], add a readonly property to ListFace with the type of EntryFace and a name specified by the [enum-entry].</li>
+				<li>Let EnumFace be a new interface that inherits from Interface, EnumDict&lt;T, U&gt;, and ListFace, where T is EntryFace and U is specified by [type].</li>
+				<li>Let EnumInstance be a value with EnumFace as the active interface such that:
+					<ul>
+						<li>the value given from getting a property of ListFace is the value created in step 2 that is associated with the same [enum-entry] as the property</li>
+						<li>the Interface implementation is EntryFace, i.e. EnumInstance cast to Interface is EnumFace</li>
+					</ul>
+				</li>
+				<li>Produce EnumInstance.</li>
+			</ol>
+			
+			<p>If [type] is not given:</p>
+			<ol class="exec">
+				<li>Let EntryFace be a new interface that inherits from EnumEntry.</li>
+				<li>For every [enum-entry], create a value with EntryFace as the active interface, where the &quot;name&quot; property is that specified by the [enum-entry].</li>
+				<li>Let ListFace be a new interface. For every [enum-entry], add a readonly property to ListFace with the type of EntryFace and a name specified by the [enum-entry].</li>
+				<li>Let EnumFace be a new interface that inherits from Interface, Enum&lt;T&gt;, and ListFace, where T is EntryFace.</li>
+				<li>Let EnumInstance be a value with EnumFace as the active interface such that:
+					<ul>
+						<li>the value given from getting a property of ListFace is the value created in step 2 that is associated with the same [enum-entry] as the property</li>
+						<li>the Interface implementation is EntryFace, i.e. EnumInstance cast to Interface is EnumFace</li>
+					</ul>
+				</li>
+				<li>Produce EnumInstance.</li>
+			</ol>
+			
+			<p>Note that the sections specifying Enum, EnumDict, EnumEntry, and EnumDictEntry have additional requirements on the behavior of instances of these interfaces.</p>
+			
+			<pre>enum Animal {
+	dog, cat, fish, parrot, ferret, gerbil, hamster
+}
+
+interface EntryFace
+	inherit EnumEntry
+
+interface ListFace
+	get EntryFace dog
+	get EntryFace cat
+	get EntryFace fish
+	get EntryFace parrot
+	get EntryFace ferret
+	get EntryFace gerbil
+	get EntryFace hamster
+
+interface EnumFace
+	inherit Interface
+	inherit Enum&lt;EntryFace&gt;
+	inherit EnumList
+
+Animal a = Animal.dog
+Animal b = Animal.fromName(&quot;cat&quot;)
+println Animal.size //assuming size is specified by Collection&lt;T&gt;
+
+for animal in Animal
+	println animal.name
+
+activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
+(Animal as Interface) == EntryFace</pre>
+			
+			<code xml:space="preserve">
+(enum Animal
+	(dog cat fish parrot ferret gerbil hamster)
+
+(for animal Animal
+	(println animal.name))
+			</code>
+		</div>
+		
+		<div id="node.extract-member">
+			<h3>12.8.7. extract-member</h3>
+			
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> source</li>
+				<li><a href="#node.identifier">identifier</a> member name</li>
+			</ul>
+			
+			<p>Retrieves the a method or the value of a property from the value specified by [source]. If the active interface of the value specified by [source] does not have a property or method with the specified name, throw an exception.</p>
+			
+			<code xml:space="preserve">
+println( alpha.beta )
+alpha.doStuff()
+			</code>
+			
+			<code xml:space="preserve">
+(println alpha.beta)
+(alpha.doStuff)
+			</code>
+		</div>
+
+		<div id="node.function">
+			<h3>12.8.8. function</h3>
+			
+			<ul class="layout">
+				<li>* <a href="#node.parameter-impl">parameter-impl</a> </li>
+				<li><a href="#node.expression">expression</a> return type</li>
+				<li><a href="#node.expression">expression</a> body</li>
+			</ul>
+
+			<p class="allowance">The [body] node adds a RETURN allowance and removes REMIT and YIELD allowances.</p>
+			
+			<p>If [return info] is not present, the function does not return anything, meaning it does not produce a value when called.</p>
+			
+			<p>When this node is executed, it produces a value with a function interface as the active interface. Only the [parameter] node and [return info]'s [interface] nodes are executed at this time. When the resultant value is called, the [body] node is executed in the scope of this function node.</p>
+			
+			<code xml:space="preserve">
+func square = { n | n * n }
+
+println( square(3) )
+=&gt; 9
+			</code>
+			
+			<code xml:space="preserve">
+(decl const square
+	(function (a) void
+		(* a a)))
+
+(println (square 2))
+			</code>
+			
+			<code xml:space="preserve">
+decl square = {a|a*a}
+println( square(2) )
+			</code>
+			
+			<code xml:space="preserve">
+println( {a|a*a} 2 )
+			</code>
+		</div>
+		
+		<div id="node.function-interface">
+			<h3>12.8.9. function-interface</h3>
+			
+			<ul class="layout">
+				<li>? <a href="#node.expression">expression</a> template-argument-count</li>
+				<li>* <a href="#node.parameter-info">parameter-info</a> </li>
+				<li><a href="#node.expression">expression</a> return type</li>
+			</ul>
+			
+			<code xml:space="preserve">
+println( func(Int,Int)Rat )
+			</code>
+			
+			<code xml:space="preserve">
+(println (funcface (Int Int) Rat))
+			</code>
+		</div>
+		
+		<div id="node.generator">
+			<h3>12.8.10. generator</h3>
+
+			<p>Produces a value that implements an instantiation of the Generator generic interface.</p>
+			
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> type</li>
+				<li><a href="#node.expression">expression</a> body</li>
+			</ul>
+			
+			<p class="allowance">The [body] adds a YIELD allowance and removes REMIT and RETURN allowances.</p>
+			
+			<p>If [type] is not given, the generator does not produce. (The generator could still be useful for producing side effects.)</p>
+			
+			<code xml:space="preserve">
+decl foo = generator {
+	decl Int i = 2
+	while i lt 5 {
+		yield i
+		i++
+	}
+}
+
+for i in foo {
+	print i &quot; &quot;
+}
+
+prints: '2 3 4 '
+
+interface of foo == Generator&lt;Int&gt;
+			</code>
+			
+			<code xml:space="preserve">
+(decl const foo
+	(generator
+		(decl Int i 2)
+		(while (lt i 5)
+			(compound
+				(yield i)
+				(++ i)))))
+
+(forin i foo
+	(print i &quot; &quot;))
+			</code>
+
+			<code xml:space="preserve">
+decl foo = func(Int a, Int b) Generator&lt;Int&gt; {
+	return generator {
+		decl Int i = a
+		while i lt b {
+			yield i
+			i++
+		}
+	}
+}
+
+for i in foo(2, 5) {
+	print i &quot; &quot;
+}
+
+prints: '2 3 4 '
+			</code>
+			
+			<code xml:space="preserve">
+decl foo = genfunc(Int a, Int b) Int {
+	decl Int i = a
+	while i &lt; b {
+		yield i
+		i++
+	}
+}
+
+for i in foo(2, 5) {
+	print i &quot; &quot;
+}
+
+prints: '2 3 4 '
+			</code>
+			
+			<code xml:space="preserve">
+decl foo = [2*x for x in L if x^2 &gt; 3]
+decl foo = [x in L if x^2 &gt; 3]
+decl foo = [x in L]
+for o in [2*x for x in L if x^2 &gt; 3] {
+	println o
+}
+
+//convert to Array
+Array&lt;Int&gt;([2*x for x in L if x^2 &gt; 3])
+
+//insert into existing collection
+collection.insert([2*x for x in L if x^2 &gt; 3])
+			</code>
+		</div>
+
+		<div id="node.generic-function">
+			<h3>12.8.11. generic-function</h3>
+			
+			<ul class="layout">
+				<li>+ <a href="#node.parameter-info">parameter-info</a> parameter</li>
+				<li><a href="#node.function">function</a> </li>
+			</ul>
+			
+			<p class="process">The direction of the [parameter-info] must be &quot;in&quot;.</p>
+			
+			<p>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the function node.</p>
+			
+			<code xml:space="preserve">
+func larger&lt;T&gt;(T a, T b) T {
+	if a lt b
+		return b
+	return a
+}
+
+println larger(2, 7) //prints &quot;7&quot;
+			</code>
+			
+			<code xml:space="preserve">
+(declfirst auto larger
+	(genericfunction (T) ((T a) (T b)) T
+		(if (lt a b)
+			(return b))
+		(return a)))
+
+(println (larger 2 7))
+			</code>
+		</div>
+		
+		<div id="node.generic-interface">
+			<h3>12.8.12. generic-interface</h3>
+			
+			<ul class="layout">
+				<li>+ <a href="#node.parameter-info">parameter-info</a> parameter</li>
+				<li><a href="#node.interface">interface</a> </li>
+			</ul>
+			
+			<p class="process">The direction of the [parameter-info] must be &quot;in&quot;.</p>
+			
+			<p>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the interface node.</p>
+			
+			<code xml:space="preserve">
+interface List&lt;T&gt; {
+	func addFront(T)
+	func addBack(T)
+	func removeFront() T
+	func removeBack() T
+}
+
+decl List&lt;Int&gt; list = getNumbers()
+list.addFront(2)
+list.addBack(3)
+list.addFront(1)
+println list.removeFront() //prints &quot;1&quot;
+println list.removeBack() //prints &quot;3&quot;
+			</code>
+			
+			<code xml:space="preserve">
+(declfirst auto List
+	(genericinterface (T)
+		(func addFront (T) void)
+		(func addBack (T) void)
+		(func removeFront () T)
+		(func removeBack () T)))
+
+(decl List&lt;Int&gt; list
+	(getNumbers))
+(list.addFront 2)
+(list.addBack 3)
+(list.addFront 1)
+(println (list.removeFront))
+(println (list.removeBack))
+			</code>
+		</div>
+		
+		<div id="node.instantiate-generic">
+			<h3>12.8.13. instantiate-generic</h3>
+			
+			<p class="xxx">Need to decide how to include type information. Type value, or type node? Write down and compare pros and cons. (Some related info in &quot;type occurrence.txt&quot;)</p>
+			
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> generic</li>
+				<li>+ <a href="#node.argument">argument</a> </li>
+			</ul>
+			
+			<code xml:space="preserve">
+decl List&lt;Int&gt; numbers
+			</code>
+			
+			<code xml:space="preserve">
+(decl List&lt;Int&gt; numbers)
+			</code>
+		</div>
+		
+		<div id="node.integer">
+			<h3>12.8.14. integer</h3>
+			
+			<p>Base node. Evaluates to an object reference with BigInt as the active interface. The object may implement other interfaces if they do not conflict with the BigInt interface. Must not implement the LimInt interface.</p>
+			
+			<code xml:space="preserve">
+println( 789 )
+			</code>
+			
+			<code xml:space="preserve">
+(println 789)
+			</code>
+		</div>
+		
+		<div id="node.interface">
+			<h3>12.8.15. interface</h3>
+			
+			<ul class="layout">
+				<li>* <a href="#node.expression">expression</a> inheritee</li>
+				<li>* <a href="#node.statused-member">statused-member</a> member</li>
+			</ul>
+			
+			<div id="node.statused-member">
+				<h4>12.8.15.1. statused-member</h4>
+				
+				<ul class="layout">
+					<li><a href="#node.member-status">member-status</a> </li>
+					<li><a href="#node.interface-member">interface-member</a> member</li>
+				</ul>
+			</div>
+			
+			<div id="node.member-status">
+				<h4>12.8.15.2. member-status</h4>
+			
+				<p>Terminal node. Specifies one of:</p>
+				
+				<ul class="enum">
+					<li>new</li>
+					<li>normal</li>
+					<li>deprecated</li>
+				</ul>
+			</div>
+			
+			<div id="node.breeder">
+				<h4>12.8.15.3. breeder</h4>
+				
+				<ul class="layout">
+					<li>? <a href="#node.expression">expression</a> type</li>
+				</ul>
+				
+				<p>Specifies that implementations of that interface can be converted into the specified type. Or, if [interface] isn't given, that the value can be copied.</p>
+				
+				<p class="xxx">What is rationale for not just having an &quot;* expression breedable interface&quot; layout entry of interface nodes?</p>
+			</div>
+			
+			<div id="node.callee">
+				<h4>12.8.15.4. callee</h4>
+				
+				<ul class="layout">
+					<li>* <a href="#node.parameter-info">parameter-info</a> </li>
+					<li><a href="#node.expression">expression</a> return type</li>
+				</ul>
+			</div>
+			
+			<div id="node.method">
+				<h4>12.8.15.5. method</h4>
+				
+				<ul class="layout">
+					<li><a href="#node.identifier">identifier</a> name</li>
+					<li><a href="#node.expression">expression</a> interface</li>
+				</ul>
+			</div>
+			
+			<div id="node.property">
+				<h4>12.8.15.6. property</h4>
+				
+				<ul class="layout">
+					<li><a href="#node.identifier">identifier</a> name</li>
+					<li><a href="#node.boolean">boolean</a> writable</li>
+					<li><a href="#node.expression">expression</a> type</li>
+				</ul>
+			</div>
+		</div>
+		
+		<div id="node.rational">
+			<h3>12.8.16. rational</h3>
+			
+			<p>Base node. Evaluates to an object with BigRat as the active interface. The object may implement other interfaces if they do not conflict with the BigRat interface. Must not implement the LimRat interface.</p>
+			
+			<code xml:space="preserve">
+println( 123.456 )
+			</code>
+			
+			<code xml:space="preserve">
+(println 123.456)
+			</code>
+		</div>
+
+		<div id="node.string">
+			<h3>12.8.17. string</h3>
+			
+			<p>string nodes consist of text</p>
+			
+			<p>strings are expressions</p>
+			
+			<p>Base node. Evaluates to an object with interface string as the active interface. The object may implement other interfaces if they do not conflict with the string interface.</p>
+			
+			<code xml:space="preserve">
+println( &quot;this is a string&quot; )
+			</code>
+			
+			<code xml:space="preserve">
+(println &quot;this is a string&quot;)
+			</code>
+		</div>
+	</div>
+</div>
+	
+	<div id="reserved-identikey-names">
+		<h1>Chapter 13. Reserved identikey names</h1>
+
+		<p>No user-defined identikeys can be associated with these identifiers.</p>
+
+		<ul>
+			<li>global - Namespace identikey that refers to the scope associated with the bundle node. Defined in the global scope.</li>
+			<li>std - Namespace identikey for the standard library. Defined in the global scope.</li>
+			<li>true - Constant strict identikey bound to the Bool enum true member. Defined in the global scope.</li>
+			<li>false - Constant strict identikey bound to the Bool enum false member. Defined in the global scope.</li>
+			<li>outer - Namespace identikey that refers to the outer scope. Defined in all scopes except the global scope. Note that outer::outer may be valid, depending on which scope it appers in.</li>
+			<li>inst - Namespace identikey that exposes private fields of objects created by the class node. Defined in child scopes of class nodes.</li>
+			<li>std - The <a href="#standard-library">Niviok standard library</a>. Defined in the global scope.</li>
+		</ul>
+		
+		<p class="xxx">Other possibilites for the standard library: standard, system, language, and various capitalizations (Standard, System, Language) and abbreviations (std, stand, sys, lang).</p>
+		
+		<p class="xxx">Need to clarify somewhere (probably multiple places) that namespaces are not scopes, and that scidentres like global and std are not defined in those scopes. But note that this causes problems with e.g. outer:outer:outer. This hasn't been thought out enough yet.</p>
+	</div>
+
+	<div id="standard-library">
+
+	<h1>Chapter 14. Standard library</h1>
+
+	<p>Some new ideas the standard library might not reflect yet: Every object has 1 or more workers. Every worker implements an interface. An interface is a set of interface members. A type places restrictions on what kind of values can appear at a certain location. A cast is an explicit operation that takes a worker and a type, and returns a worker, or throws an exception. How the cast works depends on the type. A downcast is similar to a cast, but it is (or can be) an implicit operation.</p>
+	
+	<pre>interface Signal (formerly &quot;Exception&quot;)
+	get stack Sequence&lt;String&gt;
+	func push (String -&gt;)
+
+interface Error
+	inherit Signal
+
+interface Break
+	inherit Signal
+
+interface Continue
+	inherit Signal
+
+interface Return
+	inherit Signal
+
+
+
+
+def ManualType any = ...
+def Nullable nany = Nullable&lt;any&gt;
+(same_object? nany Nullable&lt;any&gt;) =&gt; true
+
+
+func if { test_val, true_callback |
+	if test_val true_callback {}
+}
+
+func if { test_val, true_callback, false_callback |
+	let dict = dictionary
+		true : true_callback
+		false : false_callback
+	(dict test_val)()
+}
+
+
+
+interface Object
+	#empty
+	#Interfaces that don't inherit from anything else inherit from Object.
+
+func Object() Object
+	Returns a new wo-ref implementing the Object interface.
+	Here, &quot;new&quot; means same_object?(Object(), any_expression_here) must always be false.
+
+union Type
+	Interface
+	Nullable
+	Union
+	Subset
+	ManualType
+
+declfirst ManualType any = ...
+	#worker is any non-null value (but note the existence of Nullable&lt;any&gt;)
+
+declfirst ManualType void = ...
+	#worker is unfaced null (can downcast from faced null)
+	#Only untyped null values are allowed.
+	#downcast: Returns unfaced null if worker is null. Throws if worker is not null.
+	#cast: Returns unfaced null.
+
+declfirst ManualType callable = ...
+	#worker is callable (i.e. a function)
+
+interface Interface
+	get Set&lt;Interface&gt; inheritees
+	get ?FunctionInfo callee
+	get Dict&lt;Identifier,PropertyInfo&gt; properties
+	get Dict&lt;Identifier,Set&lt;MethodInfo&gt;&gt; methods
+	get Set&lt;BreederInfo&gt; breeders
+
+interface Nullable
+	get Type type
+/*
+	check: The worker must either: 1) be an unfaced null, or 2) be a faced null with an interface that the , or 3) match the rules of the specified type.
+	can downcast: Yes if unfaced null, otherwise dependent on wrapped type.
+	can cast: Yes if null, otherwise dependent on wrapped type.
+	downcast/cast: If unfaced null and type is interface, returns faced null with interface as face. If unfaced null and type is not interface, returns unfaced null. If faced null, return a faced null with an interface returned by the downcast/cast specified by the type. If not null, follow rules of type.
+*/
+
+#The interface must be one of the interfaces in the members set.
+interface Union
+	get Set&lt;Interface&gt; members
+
+
+
+
+
+func is?(?any worker, Type type) Bool
+func can_downcast&lt;Type type&gt;(?any worker) Bool
+func downcast&lt;Type type&gt;(?any worker) type
+func can_cast&lt;Type type&gt;(?any worker) Bool
+func cast&lt;Type type&gt;(?any worker) type
+	''foo as Bar'' could be syntactic sugar for ''cast&amp;lt;Bar&gt;(foo)''
+	
+	#value
+	123 as Int
+	123 as ?Int
+	123 as void #error
+	
+	#null
+	null as Int #error
+	null as ?Int
+	null as void
+	
+	const Int o = getIntAndString()
+	print( (o as String).length )
+
+#note that these also work for Types besides ManualType
+func interface_is?(Interface, Type) Bool
+func determine_downcast(Interface, Type) ?Interface
+func null_allowed?(Type) Bool
+
+interface ManualType
+	func interface_is?(Interface) Bool
+	func determine_downcast(Interface) ?Interface
+	get Bool null_allowed?
+
+--- descriptions
+
+-- is?
+Tells whether the null or worker complies with the type.
+
+pseudocode:
+	if isNull?(worker)
+		null_allowed?(type)
+	else
+		interface_is?(getInterface(worker), type)
+
+-- can_downcast?
+
+pseudocode:
+	if isNull?(worker)
+		null_allowed?(type)
+	else
+		determine_downcast(getInterface(worker), type) != null
+
+-- downcast
+If @worker is null and the type allows null, returns null. If @worker is null and the type does not allow null, throws an exception. If @worker is not null, returns @worker or a worker inherited by @worker that complies with the type. If there is no such worker, throws an exception.
+
+pseudocode:
+	if isNull?(worker)
+		if not null_allowed?(type)
+			throw NullException()
+		null
+	else
+		const ?Interface face = determine_downcast(getInterface(worker), type)
+		if isNull?(face)
+			throw CastException()
+		interface_downcast&lt;face&gt;(worker)
+
+-- can_cast?
+
+pseudocode:
+	if isNull?(worker)
+		null_allowed?(type)
+	else
+		determine_downcast(getRootInterface(worker), type) != null
+
+-- cast
+If @worker is null and the type allows null, returns null. If @worker is null and the type does not allow null, throws an exception. If @worker is not null, returns @worker or a worker implemented by the object associated with @worker that complies with the type. If there is no such worker, throws an exception.
+
+pseudocode:
+	if isNull?(worker)
+		if not null_allowed?(type)
+			throw NullException()
+		null
+	else
+		const ?Interface face1 = determine_downcast(getInterface(worker), type)
+		if not isNull?(face)
+			interface_downcast&lt;face1&gt;(worker)
+		else
+			const ?Interface face2 = determine_downcast(getRootInterface(worker), type)
+			if isNull?(face)
+				throw CastException()
+			interface_downcast&lt;face2&gt;(rootCast(worker))
+
+-- interface_is?
+Tells whether a worker implementing the specified interface would meet the requirements of this type.
+
+-- determine_downcast
+Of the specified interface and the interfaces inherited by it, determines which interface would meet the requirments of the type. If no such interface exists, returns null.
+
+-- null_allowed?
+Whether null is allowed by the type.
+
+
+
+
+
+func all_false? = &lt;T&gt;{ Iterable&lt;T&gt; collection, (T -&gt; Bool) callback |
+	for T t in collection
+		if callback(t)
+			return false
+	return true
+}
+
+func all_true? = &lt;T&gt;{ Iterable&lt;T&gt; collection, (T -&gt; Bool) callback |
+	for T t in collection
+		if ! callback(t)
+			return false
+	return true
+}
+
+func any_false? = &lt;T&gt;{ Iterable&lt;T&gt; collection, (T -&gt; Bool) callback |
+	! all_true?(collection, callback)
+}
+
+func any_true? = &lt;T&gt;{ Iterable&lt;T&gt; collection, (T -&gt; Bool) callback |
+	! all_false?(collection, callback)
+}
+
+
+
+
+union FunctionInfo
+	NamedFunctionInfo
+	UnnamedFunctionInfo
+
+interface NamedFunctionInfo
+	get Sequence&lt;NamedParameterInfo&gt; parameters
+	get Type return_type
+
+interface UnnamedFunctionInfo
+	get Sequence&lt;UnnamedParameterInfo&gt; parameters
+	get Type return_type
+
+func&lt;T&gt; each { Iterable&lt;T&gt; iter, (T -&gt; void) callback |
+	for T v in iter
+		callback(v)
+}
+
+func&lt;TI, TO&gt; map { Iterable&lt;TI&gt; iter, (TI -&gt; TO) callback -&gt; Sequence&lt;TO&gt; |
+	const Sequence&lt;TO&gt; s()
+	for TI v in iter
+		s &lt;&lt; callback(v)
+	s
+}
+
+func&lt;T&gt; filter { Iterable&lt;T&gt; iter, (T -&gt; Bool) callback -&gt; Sequence&lt;T&gt; |
+	const Sequence&lt;T&gt; s()
+	for T v in iter
+		if callback(v)
+			s &lt;&lt; v
+	s
+}</pre>
+	
+	<pre>def null = compound[
+	var foo #declare-empty
+	foo #evaluating wo-scidentre not associated with any worker
+]</pre>
+	
+	<p class="xxx">Below is old.</p>
+	
+	<ul>
+		
+		<li>interface Object</li>
+		<li>interface Interface</li>
+		<li>... Bool</li>
+		<li>interface String</li>
+		<li>interface Int</li>
+		<li>interface Rat</li>
+		<li>interface BigInt</li>
+		<li>interface BigRat</li>
+		<li>interface&lt;I&gt; Generator</li>
+		<li>interface Octet</li>
+		<li>interface Blob</li>
+
+		
+		<li>interface&lt;I&gt; Ref</li>
+		<li>interface&lt;I&gt; WeakRef</li>
+		<li>interface&lt;I&gt; Array</li>
+		<li>... Deque</li>
+		<li>func toDeque&lt;I&gt;(Collection&lt;I&gt;) Deque&lt;I&gt;</li>
+		<li>... Chain</li> 
+		
+		
+		<li>func&lt;I&gt;(val)I cast</li>
+		<li>func(val, Interface face)Bool implements?</li>
+
+		
+		<li>Bool true</li>
+		<li>Bool false</li>
+	</ul>
+	
+	<pre>decl Deque numbers = Deque(3, 4, 5, 9)
+numbers.pushFront(2)
+numbers.pushFront(1)
+numbers.popBack()
+println(join(numbers, &quot; &quot;)) //prints &quot;1 2 3 4 5&quot;
+
+decl Array&lt;Int&gt; numbers2 = Array&lt;Int&gt;(10, 11, 12, 13)
+decl Deque&lt;Int&gt; numbers3 = toDeque&lt;Int&gt;(numbers2)</pre>
+
+	<pre>possible additions:
+
+interface&lt;I&gt; Collection
+interface&lt;I&gt; List
+	indexed
+	elements can be added to beginning and end
+	dynamic array
+interface&lt;I&gt; FwdChain
+	forward chain, a singly-linked list
+interface&lt;I&gt; Deck
+	a deque with an easier name
+interface Complex
+	a complex number where both parts are limited to rational numbers
+interface&lt;I&gt; Grid
+	a 2-dimensional array
+interface&lt;I&gt; Vector
+	a resizable list
+interface&lt;I&gt; Queue
+interface&lt;I&gt; Stack
+interface&lt;I&gt; Dict, SortedDict, MultDict, SortedMultDict, BiDict, SortedBiDict, MiltBiDict, SortedMultiBiDict
+interface&lt;I&gt; Set, OrderdSet, MultiSet, OrderdMultiSect
+
+func getProperty(dyn value, String propertyName) dyn
+func setProperty(dyn value, String propertyName, dyn propertyValue) dyn
+
+fixed-width/fixed-precision numbers
+fixed-point integers
+&quot;limited&quot; namespace
+interface LimInt
+interface LimRat</pre>
+	
+	<p class="xxx">How to differentiate between mutable and immmutable versions?</p>
+	
+	<pre>//T is the type of an entry in this enum
+interface&lt;T : EnumEntry&gt; Enum
+	inherit Collection&lt;T&gt;
+	func fromName(String str) T
+
+//an Enum where every entry has an associated value
+//T is the type of an entry in this enum
+//U is the type of a value of an enum entry
+interface&lt;T : EnumDictEntry, U&gt; EnumDict
+	inherit Enum&lt;T&gt;
+	func fromValue(U val) T
+
+interface EnumEntry
+	get String name
+	func equals?( EnumEntry ) Bool
+
+//U is the type of value each entry is associated with
+interface&lt;U&gt; EnumDictEntry
+	inherit EnumEntry
+	get U value</pre>
+
+	<div id="object.println">
+		<h2>14.1. println</h2>
+		
+		<pre>interface PrintLnFace {
+	call( param Stringable objs[] ) PrintLnFace
+}
+declfirst PrintLnFace println = ...</pre>
+		
+		<p class="xxx">Need some way for client code to obtain function interfaces that return themselves. For example, &quot;func(...)Self&quot; and &quot;getRecursiveFuncFace(...)&quot;. Then, the interface of println could be defined as something like &quot;func(param Stringable objs[]) Self&quot;.</p>
+		
+		<p class="xxx">Need to define varargs (variadic functions).</p>
+		
+		<p>Takes in multiple Stringable values, prints each to standard output, and returns itself.</p>
+		
+		<code xml:space="preserve">
+println( 1, &quot; &quot;, 2, &quot; &quot;, 3 ) /* call once with multiple arguments */
+println(1)(&quot; &quot;)(2)(&quot; &quot;)(3) /* call several times with one argument each time */
+println 1 &quot; &quot; 2 &quot; &quot; 3 /* call several times with one argument each time */
+		</code>
+		
+		<code xml:space="preserve">
+(println 1 &quot; &quot; 2 &quot; &quot; 3) /* call once with multiple arguments */
+(((((println 1) &quot; &quot;) 2) &quot; &quot;) 3) /* call several times with one argument each time */
+		</code>
+	</div>
+	
+	<div id="object.activeInterface">
+		<h2>14.2. activeInterface</h2>
+		
+		<pre>func activeInterface(dyn) Interface
+
+println( activeInterface(false) == Bool ) //true</pre>
+		
+		<p>Returns the interface that is the active interafce of the specified value.</p>
+	</div>
+	
+	<div id="object.String">
+		<h2>14.3. String</h2>
+		
+		<p>Besides downcasting to an Interface, String can also be called to produce a String.</p>
+		
+		<pre>func String( Collection&lt;Int&gt; unicodeCodePoints ) String</pre>
+	</div>
+	
+	<div id="object.cast">
+		<h2>14.4. func{I}(dyn)I cast</h2>
+		
+		<p>The cast function returns an object cast to the specified interface, or throws a cast error. The returned object must be the same object that was passed in.</p>
+		
+		<code xml:space="preserve">
+if (foo is Bar)
+	cast&lt;Bar&gt;(foo).propOfBar()
+		</code>
+	</div>
+	
+	<div id="object.ceil">
+		<h2>14.5. ceil</h2>
+		
+		<pre>func ceil(Rat) Int</pre>
+		
+		<p>Finds the ceiling of the specified rational number.</p>
+	</div>
+	
+	<div id="object.floor">
+		<h2>14.6. floor</h2>
+		
+		<pre>func floor(Rat) Int</pre>
+	</div>
+	
+	<div id="object.modulo">
+		<h2>14.7. modulo</h2>
+		
+		<p>Finds the remainder of dividing two integers.</p>
+		
+		<pre>func modulo( Int dividend, Int divisor, ModuloMethod method = ModuloMethod.divisor ) Int
+
+enum ModuloMethod {
+	dividend,
+	divisor,
+	positive,
+	negative
+}</pre>
+		
+		<p>When one or both of dividend and divisor are negative, there could be two possible remainders, one positive and one negative. In such a case, the ModuloMethod determines which of these to return. When there is only one possible remainder, the ModuloMethod is ignored.</p>
+		
+		<p>The &quot;dividend&quot; option returns the remainder with the same sign as the dividend. The &quot;divisor&quot; option returns the remainder with the same sign as the divisor. The &quot;positive&quot; option returns the positive remainder. The &quot;negative&quot; option returns the negative remainder.</p>
+		
+		<p>This function should throw an error if divisor is 0.</p>
+			
+
+		
+		<pre>modulo(15, 4, dividend) -&gt; 3
+modulo(15, 4, divisor) -&gt; 3
+modulo(15, 4, positive) -&gt; 3
+modulo(15, 4, negative) -&gt; 3
+
+modulo(15, -4, dividend) -&gt; 3
+modulo(15, -4, divisor) -&gt; -1
+modulo(15, -4, positive) -&gt; 3
+modulo(15, -4, negative) -&gt; -1
+
+modulo(-15, 4, dividend) -&gt; -3
+modulo(-15, 4, divisor) -&gt; 1
+modulo(-15, 4, positive) -&gt; 1
+modulo(-15, 4, negative) -&gt; -3
+
+modulo(-15, -4, dividend) -&gt; -3
+modulo(-15, -4, divisor) -&gt; -3
+modulo(-15, -4, positive) -&gt; 1
+modulo(-15, -4, negative) -&gt; -3</pre>
+	</div>
+	
+	<div id="object.round">
+		<h2>14.8. round</h2>
+		
+		<pre>func round(Rat, RoundMethod = nearest_away) Int
+
+enum RoundMethod {
+	up, //ceiling
+	down, //floor
+	awayFromZero,
+	towardsZero, //truncation
+	nearest_up,
+	nearest_down,
+	nearest_away, //common rounding
+	nearest_towards,
+	nearest_unbiased //unbiased rounding, bankers rounding
+}</pre>
+		
+		<p>Rounds a rational number to an integer using the specified method. The nearest_* method comes in various forms to determine what to do when the rational number is exactly halfway between two integers. For all rational numbers that are not exactly halfway between two rational numbers, the nearest_* methods behave the same. The nearest_unbiased method rounds to the nearest even integer when the number is exactly halfway between two integers. (This is most commonly called bankers rounding.)</p>
+		
+		<pre>round(3.1) -&gt; 3
+round(3.1, up) -&gt; 4
+
+round(3.5) -&gt; 4
+round(3.5, nearest_towards) -&gt; 3
+
+round(3.9) -&gt; 4
+round(3.9, nearest_towards) -&gt; 4
+
+round(-3.1) -&gt; -3
+round(-3.1, up) -&gt; -3
+
+round(-3.5) -&gt; -4
+round(-3.5, nearest_towards) -&gt; -3
+
+round(-3.9) -&gt; -4
+round(-3.9, nearest_towards) -&gt; -4
+
+round(3.4, nearest_unbiased) -&gt; 3
+round(3.5, nearest_unbiased) -&gt; 4
+round(3.6, nearest_unbiased) -&gt; 4
+
+round(8.4, nearest_unbiased) -&gt; 8
+round(8.5, nearest_unbiased) -&gt; 8
+round(8.500000001, nearest_unbiased) -&gt; 9
+round(8.6, nearest_unbiased) -&gt; 9</pre>
+	</div>
+	
+	<div id="object.generator">
+		<h2>14.9. interface generator</h2>
+		
+		<pre>interface{I} generator
+	func next() I</pre>
+		
+		<p>The next() method will return objects when called until it throws a GeneratorDone exception.</p>
+		
+		<p>Some looping constructs will automatically obtain a generator by calling the object's getValueIterator, getKeyIterator, or getPairIterator method, and call the next() method of the generator until the exception is thrown</p>
+		
+		<code xml:space="preserve">
+MyClass[] objs
+for each o in objs
+	o.doStuff()
+		</code>
+	</div>
+	
+	<div id="object.id">
+		<h2>14.10. func id</h2>
+		
+		<pre>func id(obj) Int
+
+println( id(true) )</pre>
+		
+		<p>Every object is associated with a constant non-negative integer. No two objects that are still accessible can have the same object number. This function returns a value, with Int as the active interface, that encodes the object number for the object associated with the given value. Two objects with non-overlapping lifetimes may have the same object id.</p>
+		
+		<p>Returns a different number for every object. Always returns the same number for the same object, even if that object is a part of different values (the same object cast to different interfaces).</p>
+	</div>
+	
+	<div id="object.sameObject_q">
+		<h2>14.11. func sameObject?</h2>
+		
+		<p>Determines whether the two values have the same object.</p>
+		
+		<pre>func sameObject?(obj, obj) Bool
+
+println( sameObject?(foo, bar) )
+//same as
+println( (foo as obj) == (bar as obj) )
+//same as
+println( id(foo) == id(bar) )</pre>
+		
+		<p>Tells whether the values are associated with the same object.</p>
+	</div>
+	
+	<div id="object.implements_q">
+		<h2>14.12. func(obj, interface)bool implements?</h2>
+		
+		<p>Tells whether the object implements the interface, like the implements node.</p>
+		
+		<code xml:space="preserve">
+if implements(foo, Bar)
+	(foo as Bar).propOfBar()
+		</code>
+	</div>
+	
+	
+	<div id="ident.Int">
+		<h2>14.13. interface Int</h2>
+		
+		<ul>
+			
+			<li>func lessThan?(Int) Bool</li>
+			<li>func lessThanOrEqual?(Int) Bool</li>
+			<li>func equal?(Int) Bool</li>
+			<li>func greaterThanOrEqual?(Int) Bool</li>
+			<li>func greaterThan?(Int) Bool</li>
+			<li>func unequal?(Int) Bool</li>
+			
+			
+			<li>Bool positive?</li>
+			<li>Bool negative?</li>
+			
+			
+			<li>func add(Int) Int</li>
+			<li>func subtract(Int) Int</li>
+			<li>func multiply(Int) Int</li>
+			<li>func multiply(Rat) Rat</li>
+			<li>func divide(Int) Rat</li>
+			<li>func divide(Rat) Rat</li>
+			<li>func floorDivide(Int) Int</li>
+			<li>func floorDivide(Rat) Int</li>
+			<li>func remainder(Int) Int</li>
+			<li>Int absolute</li>
+			
+			
+			<li>func add!(Int)</li>
+			<li>func subtract!(Int)</li>
+			<li>func multiply!(Int)</li>
+			<li>func increment!()</li>
+			<li>func decrement!()</li>
+			<li>func floorDivide!(Int)</li>
+			<li>func floorDivide!(Rat)</li>
+			
+			
+			<li>func toBuiltin() Int</li>
+			<li>convert Int</li> 
+			<li>convert Rat</li>
+			<li>convert String</li>
+		</ul>
+		
+		<p>The non-mutating methods of Int should never throw for precsion reasons, i.e. they should always return an Int that fully represents the result without loss of precision. However, the mutator methods may throw a PrecisionError if the value is not capable of representing the resultant integer.</p>
+		
+		<p>When Niviok implementations need to determine the value of Int objects that were implemented by user code, they should call the toBuiltin method to get an Int object that was implemented by the implementation. If toBuiltin throws an error, it should raise into user code. If the returned Int is not a built-in, an error results that should extend into user code.</p>
+		
+		<p>The String produced by the String convertee must represent the stored integer absolutely, with no loss of precision. It may throw an error if it is incapable of producing such a representation. There are no restrictions on how the integer should be represented, although Int implementations generally should try to produce a representation that is simple and short. Implementations of Int should prefer exotic and strange representations over throwing an error. For example, implementations should prefer representing a googolplex with e.g. &quot;10E(10E100)&quot; ofer throwing an error.</p>
+	</div>
+		
+	<div id="object.BigInt">
+		<h2>14.14. interface BigInt</h2>
+		
+		<p>Inherits from Int.</p>
+	</div>
+	
+	<div id="object.BigRat">
+		<h2>14.15. interface BigRat</h2>
+		
+		<p>Inherits from Rat.</p>
+	</div>
+
+	<div id="ident.Interface">
+		<h2>14.16. interface Interface</h2>
+		
+		<ul>
+			<li>get Bool fromAddition?</li>
+			<li>get Set{Interface} inheritees</li>
+			<li>get List{Parameters} parameters</li>
+			<li>get Type returnType</li>
+			<li>get List{Property} properties</li>
+			<li>get List{Method} methods</li>
+			<li>func add(Interface) Interface</li>
+			<li>func subtract(Interface) Interface</li>
+		</ul>
+		
+		<p>Implements itself.</p>
+	</div>
+		
+	<div id="object.Object">
+		<h2>14.17. interface Object</h2>
+		
+		<ul>
+			<li>Bool builtin?</li>
+			<li>Bool mutable?</li>
+			<li>Int number</li>
+			<li>func{I} cast() I</li>
+			<li>func implements? (Interface) Bool</li>
+			<li>func sameObject? (Object) Bool</li>
+		</ul>
+		
+		<p>These methods expose the same functionality of some of the nodes.</p>
+		
+		<p>The builtin? property tells whether the object is implemented by the Niviok implementation, such as for integers and strings. The implements? method tells whether the object implements a specified interface.</p>
+	</div>
+	
+	<div id="interface.rat">
+		<h2>14.18. interface rat</h2>
+		
+		<ul>
+			<li>func toInt() int</li>
+			<li>func round() int</li>
+			<li>func round!()</li>
+		</ul>
+		
+		<p>toInt will throw if the represented value is not already an integer. round should not throw. round! modifies the represented value.</p>
+	</div>
+
+	<p class="xxx">Para between sections:</p>
+	
+	<p>Constant identikeys in the std namespace. The values these identikeys are bound to are immutable.</p>
+	
+	<ul>
+		<li>interface InterfaceBuilder</li>
+		<li>func()InterfaceBuilder CInterfaceBuilder</li>
+	
+		<li>func(int, interface[], interface)interface getFuncInterface</li>
+		
+		<li>interface{I} Iterator</li>
+		
+		
+		<li>func{I}(:vararg)array{I} CArray</li>
+		<li>func(bool[] bits, bool positive = true)int CInt</li>
+		<li>func{I}(:vararg)list{I} CList</li>
+		
+		<li>func{I}(I)SelfGen print</li>
+		<li>func{I}(I)SelfGen println</li>
+	</ul>
+	
+	<div id="Generator">
+		<h2>14.19. Generator</h2>
+		
+		<code xml:space="preserve">
+generic&lt;T&gt;
+interface Generator {
+	func yield() T //throws a GeneratorExhausted exception (which inherits from SpecialCase) when all values have been yielded
+}
+		</code>
+	</div>
+		
+	
+	<div id="InterfaceBuilder">
+		<h2>14.20. InterfaceBuilder</h2>
+	
+		<ul>
+			<li>map{string, interface} properties</li>
+			
+			<li>bool alwaysImmutable?</li> 
+			<li>func()interface generate</li>
+		</ul>
+		
+		<p>interface interface is always immutable, so InterfaceBuilder exists to allow creating interface objects procedurally.</p>
+	</div>
+		
+	<div id="Iterator">
+		<h2>14.21. Iterator</h2>
+			
+		<pre>interface{I} Iterator
+	//values may change
+	bool first?
+	bool last?
+	bool hasNext?
+	bool hasPrevious?
+	bool between? //iterator points between 2 items (such as after the item was removed)
+	bool valid?
+
+	//capabilities of the iterator - values should not change
+	bool canMoveForward? //whether the iterator can move forward
+	bool canMoveBackward? //whether the iterator can move backwards
+	bool canRemove?
+	bool canReplace? //whether the objects can be replaced with different objects
+	bool canRead?
+	bool canInsertAfter?
+	bool canInsertBefore?
+	bool canCompareCollection?
+	bool canCompareIterator? //corresponds to equal?
+	bool canComparePosition? //corresponds to before? and after?
+
+	func moveForward()
+	func moveBackward()
+	func remove()
+	func replace(I)
+	func insertAfter(I)
+	func insertBefore(I)
+	func sameCollection?( Iterator{I} ) bool
+	func before?( Iterator{I} ) bool
+	func after?( Iterator{I} ) bool
+	func equal?( Iterator{I} ) bool
+	
+	I value</pre>
+
+		<p>An iterator is used to access the elements in a container. If the elements are not ordered 2-dimensionally, an 2-dimensional order must be decided for the iterator that does not change for that iterator instance. If the elements in the container are ordered 2-dimensionally, the iterator must refer the elements in that order.</p>
+
+		<p>The equals? method returns true if both iterators are pointing to same item of the same collection. If the collection is unordered, the order the iterator moves over items must also be the same.</p>
+
+		<p>A valid iterator either refers to an element or a position between two elements. An iterator should only refer to a position between two elements when the element the iterator currently pointed to was removed. If the iterator is not valid, or read? is false, the value property refers to null.</p>
+			
+		<p>An iterator only becomes invalid if:</p>
+		<ul>
+			<li>the container contains no objects</li>
+			<li>the iterator is moved beyond all objects</li>
+			<li>a non-supported method is called (example: moveBackward() is called on an iterator that can only move forward)</li>
+		</ul>
+
+		<p>If an iterator is not valid, it may be possible to revalidate it by calling next() or previous(). For example, if the iterator refers to the last object and next is called, the iterator becomes invalid, but calling previous may make the iterator valid again. Whether an iterator can be revalidated and under what circumstances the iterator is revalidated is dependant on the implementation of the iterator.</p>
+			
+		<p>Containers should always give iterators with the same functionality. For example, if a container, when it has three elements, gives an iterator with forward? set to true, it should also give an iterator with the property forward? set to true when it has 1, even though calling moveForward() would invalidate the iterator.</p>
+
+		<code xml:space="preserve">
+Container{int} numbers;
+Iterator iter = numbers.iterate();
+int num = iter.value
+
+while( iter.valid? )
+	int num = iter.value
+	iter.moveForward()
+		</code>
+	</div>
+		
+	<div id="CInterfaceBuilder">
+		<h2>14.22. CInterfaceBuilder</h2>
+			
+		<p>CInterfaceBuilder, when called, returns an object that can be used to procedurally and/or dynamically create interface objects.</p>
+	</div>
+		
+	<div id="getFuncInterface">
+		<h2>14.23. getFuncInterface</h2>
+			
+		<pre>func getFuncInterface (
+	int templateParamCount,
+	interface[] params,
+	interface returnInterface,
+) interface</pre>
+			
+		<p>Returns an interface specifying a call method with the specified number of template parameters, the specified parameters, and the specified return interface. If returnInterface is null, the interface specifies a void call method. Every time it is called with the same arguments, it must return the same object.</p>
+	</div>
+</div>
+	
+	<div id="warnings-list">
+		<h1>Chapter 15. Warnings</h1>
+		
+		<p>This is a list of warnings predefined by this specification. Agents should create other warnings whenever needed.</p>
+		
+		<table>
+			<tbody>
+				<tr>
+					<th>name</th>
+					<th>meaning</th>
+				</tr>
+				<tr>
+					<td>always null</td>
+					<td>A node that will never produce a value when executed is being used as if it will sometimes produce a value. This warning is produced by the node that attempts to make use of the output, such as an assignment node, and not the node that doesn't produce. A node that will never produce a value when executed is being used as if it will produce a value. Example: The result is being assigned to an identikey or passed as an argument. This applies to node types like <a href="#node.call">call</a> which can sometimes produce a value, if a particular instance can be determined to never produce a value. (XXX should this warning apply to using nodes like throw, break, or return as expressions?</td>
+				</tr>
+				<tr>
+					<td>no effect</td>
+					<td>The output of a node that does not have side effects is not being used. For example, a member of a <a href="#node.compound">compound</a> that is an integer node and does not appear last. The integer node would have no effect.</td>
+				</tr>
+				<tr>
+					<td>unreachable</td>
+					<td>Code is unreachable. Execution will never reach a particular piece of code.</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div id="error-handling-processing">
+		<h1>Chapter 16. Error handling during processing</h1>
+		
+		<p>If an error is found during processing, and none of the already generated nodes have been executed, all generated nodes in the entire Niviok tree must not be used for purposes beyond explaining the source of errors. Construction of the Niviok node tree may continue after errors are found. The main() function must not be called, and the members should not be exposed as a library.</p>
+			
+		<p>If errors occur while generating the Niviok node tree, and execution has already begun, a warning should immediately be emitted describing the error. How this warning is emitted is undefined. Generation of the Niviok node tree may continue. When execution reaches the damaged section of the tree, an error should be thrown describing the error. If execution never reaches the damaged section of the tree, the error should have no effect.</p>
+	</div>
+	
+	<div id="rationales">
+		<h1>Chapter 17. Rationales</h1>
+		
+		<p>This chapter explains the decisions behind various choices made for Niviok.</p>
+		
+		<div id="rationale.dynamic-static-typing">
+			<h2>17.1. Dynamic static typing</h2>
+			
+			<p>Dynamic static typing refers to explicitly using and enforcing type information that isn't available until runtime. The type information isn't known until runtime, but after it's known, it's enforced and can't be changed.</p>
+			
+			<p>An example of this is loading an interface from a library and then using obtaining values with that interface through the library. The loaded interface can be used as the type for function parameters, free identifiers, etc. So although the interface wasn't known until runtime, one the information was known, it was enforced, and the values of that interface are only accessed by ensuring they are of that interface.</p>
+			
+			<p>Dynamic static typing can do nothing beforehand to ensure property/method access is correct, but it can ensure that various values are of the same type. For example, consider the case where an interface is loaded from a library and bound to an identifer. Then a free identifier is declared to be of that type, and a function is declared to accept a value of that type. An implementation will known that the free identifer and the function's parameter are of the same type, so the value bound to the free identifier can safely be passed to the function. This safety could not be ensured with fully dynamic typing.</p>
+			
+			<p>Dynamic static typing is not as safe as fully static typing, but interfaces cannot always be known before runtime, which is a requirement for fully static typing. Therefore, Niviok should provide something to give more type safety for the cases when interfaces cannot be known until runtime. Dynamic static typing is safer than fully dynamic typing.</p>
+			
+			<code xml:space="preserve">
+Interface Foo = lib['Foo']
+Interface Bar = lib['Bar']
+func()Foo getFoo = lib['getFoo']
+func(Bar)Int doStuff = lib['doStuff']
+
+Foo foo = getFoo() //static typing: known beforehand that types match
+foo.somthing() //dynamic typing: don't know beforehand whether Foo declares a 'somthing' method
+doStuff(foo) //static typing: known beforehand that types don't match
+
+---
+
+Dyn getFoo = lib['getFoo']
+Dyn doStuff = lib['doStuff']
+
+Dyn foo = getFoo() //dynamic typing: don't know beforehand whether types match
+foo.somthing() //dynamic typing: don't know beforehand whether value of foo has a &quot;somthing&quot; method
+doStuff(foo) //dynamic typing: don't know beforehand whether types match
+			</code>
+			
+			<p>Arguments against: Interfaces should almost always be known beforehand. Dynamic static typing may be very rarely used, and could encourage bad programming.</p>
+		</div>
+		
+		<div id="rationale.terms">
+			<h2>17.2. Terms</h2>
+			
+			<div id="rationale.get-set">
+				<h3>17.2.1. get/set</h3>
+								
+				<table>
+					<tbody>
+						<tr>
+							<th>term as verb</th>
+							<th>term as noun</th>
+							<th>good points</th>
+							<th>bad points</th>
+						</tr>
+						
+						<tr>
+							<td>get</td>
+							<td>getter</td>
+							<td>short, easy to say, easy to spell, common amoung programming languages</td>
+							<td>implies the property has been taken away</td>
+						</tr>
+						
+						<tr>
+							<td>set</td>
+							<td>setter</td>
+							<td>short, easy to say, easy to spell, common amoung programming languages</td>
+							<td>sounds more like adding a new property than changing the value of a pre-existing property</td>
+						</tr>
+						
+						<tr>
+							<td>access</td>
+							<td>accessor</td>
+						</tr>
+						
+						<tr>
+							<td>retrieve</td>
+							<td>retriever</td>
+						</tr>
+						
+						<tr>
+							<td>read</td>
+							<td>reader</td>
+						</tr>
+						
+						<tr>
+							<td>write</td>
+							<td>writer</td>
+						</tr>
+						
+						<tr>
+							<td>mutate</td>
+							<td>mutator</td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<p>Additional notes:</p>
+				<p>The one letter difference between &quot;get&quot; and &quot;set&quot; (and &quot;getter&quot; and &quot;setter&quot;) could cause errors more easily than if the difference were greater. Also, the noun form is slightly irregular; some people may expect &quot;geter&quot; and &quot;seter&quot; to be the noun form.</p>
+			</div>
+		</div>
+		
+		<div id="rationale.executing-boolean-logic">
+			<h2>17.3. Executing boolean logic nodes</h2>
+			
+			<p>In other languages, functions/methods that return boolean values are often chained together with short-circuiting boolean logic nodes. XOR and XNOR nodes cannot short-circuit, and thus this does not apply to them.</p>
+			
+			<code xml:space="preserve">
+list.empty? $or list.clear()
+//similar to:
+$if $not list.empty? : list.clear()
+
+list.empty? $and list = getValues()
+//similar to:
+$if list.empty? : list = getValues()
+			</code>
+		</div>
+		
+		<div id="executing-declaration-first">
+			<h2>17.4. Disallowing executing declaration-first</h2>
+			
+			<p>Children of declaration-first nodes are executed when the scope is first created, which may involve executing an identifier associated with a variable identikey. When execution reaches a declaration-first node, the identifiers used to create the initial value assigned to the identikey may be assigned to different values. Thus, executing a declaration-first node could produce unexpected results.</p>
+			
+			<code xml:space="preserve">
+$decl Int alpha = 12345
+
+$block {
+	alpha = 9000
+	println ( $decl-first Int beta = alpha ) //prints &quot;12345&quot;
+}
+			</code>
+			
+			<p>In the above example, alpha is executed and assigned to beta when the scope for the block node is created. Then, 9000 is assigned to alpha. Then, the declaration-first node is executed, producing the value assigned to beta, which is 12345. A programmer may have expected beta to be bound to the current value of alpha, which is 9000.</p>
+		</div>
+	</div>
+
+	<div id="unsorted-outdated-stuff">
+		<h1>Chapter 18. Unsorted/outdated stuff</h1>
+
+		<div id="closures">
+			<h2>18.1. Closures</h2>
+			
+			<p>Functions and classes (amoung others) have references to their containing scope. Identifier references in these scopes can be accessed and modified by the functions/classes.</p>
+			
+			<p>Copy closures create copies of specific values when a function node is executed. Modifying this copy does not modify the captured scope.</p>
+			
+			<code xml:space="preserve">
+
+//regular closures
+
+func makePrinters(Int max) func()void[] {
+	func()void[] printers = new func()void[]
+	Int i = 1
+	while i &lt;= max {
+		printers &lt;&lt; func()void {
+			print i + ' '
+		}
+		i++
+	}
+	return printers
+}
+
+//array of functions that have no parameters and return nothing
+func()void[] printers = makePrinters(10)
+for printer in printers {
+	printer()
+}
+
+//output
+10 10 10 10 10 10 10 10 10 10 
+
+Each of the anonymous functions held a reference to the same scope where i was defined. Because i held 10 when the functions were called, each output 10.
+
+			</code>
+			
+			<code xml:space="preserve">
+
+//copy closures
+
+func makePrinters(Int max) func()void[] {
+	func()void[] printers = new func()void[]
+	Int i = 1
+	while i &lt;= max {
+		printers &lt;&lt; func()void {
+			copyclosure i
+			print i + ' '
+		}
+		i++
+	}
+	return printers
+}
+
+//array of functions that have no parameters and return nothing
+func()void[] printers = makePrinters(10)
+for printer in printers {
+	printer()
+}
+
+//output
+1 2 3 4 5 6 7 8 9 10
+
+Each of the anynonymous functions held a copy of the value of i at the time the function was created.
+
+			</code>
+		</div>
+
+		<div id="tree-examples">
+			<h2>18.2. Tree examples</h2>
+				
+			<div id="tree-example-1">
+				<h3>18.2.1. Example 1</h3>
+					
+				<code xml:space="preserve">
+
+
+global
+	declare-const
+		identifier
+			&quot;main&quot;
+		expression [value] (function-definition)
+			function-parameter
+				identifier
+					&quot;args&quot;
+				expression [interface] (interface-template-instantiation)
+					expression [interface-template] (identifier)
+						&quot;array&quot;	
+					expression [template-argument] (identifier)
+						&quot;string&quot;
+			expression [return-interface] (identifier)
+				&quot;int&quot;
+			expression (return)
+				expression (integer)
+					0
+
+func main(string[] args) int
+	return 0
+
+				</code>
+			</div>
+				
+			<div id="tree-example-2">
+				<h3>18.2.2. Example 2</h3>
+					
+				<code xml:space="preserve">
+
+global (global)
+	declaration (declaration &gt; function-declaration)
+		name (string)
+			&quot;main&quot;
+		return (expression &gt; object-reference)
+			name (string)
+				&quot;int&quot;
+		item (item &gt; return)
+			value (expression &gt; integer)
+				0
+
+func main() int
+	return 0
+
+&lt;global type=&quot;global&quot;&gt;
+	&lt;declaration type=&quot;function-declaration&quot;&gt;
+		&lt;name type=&quot;string&quot;&gt;main&lt;/name&gt;
+		&lt;return type=&quot;object-reference&quot;&gt;
+			&lt;name type=&quot;string&quot;&gt;int&lt;/name&gt;
+		&lt;/return&gt;
+		&lt;item type=&quot;return&quot;&gt;
+			&lt;value type=&quot;integer&quot;&gt;0&lt;/value&gt;
+		&lt;/item&gt;
+	&lt;/declaration&gt;
+&lt;/global&gt;
+
+				</code>
+			</div>
+
+			<div id="tree-example-3">
+				<h3>18.2.3. Example 3</h3>
+					
+				<code xml:space="preserve">
+
+global (global)
+	name-bind (name-bind)
+		identifier (identifier)
+			&quot;main&quot;
+		expression (function-definition)
+			parameter (parameter)
+				interface (interface &gt; function-call)
+					function (function &gt; identifier)
+						&quot;array&quot;
+					argument (expression &gt; identifier)
+						&quot;string&quot;
+				identifier (identifier)
+					&quot;args&quot;
+		return-interface (interface &gt; identifier)
+			&quot;int&quot;
+		expression (expression &gt; return)
+			expression (expression &gt; literal-integer)
+				0
+
+func main(string[] args) int
+	return 0
+
+&lt;global type=&quot;global&quot;&gt;
+	&lt;name-bind type=&quot;name-bind&quot;&gt;
+		&lt;identifier type=&quot;identifier&quot;&gt;main&lt;/identifier&gt;
+		&lt;expression type=&quot;function-definition&quot;&gt;
+			&lt;parameter-list type=&quot;parameter-list&quot;&gt;
+				&lt;parameter type=&quot;parameter&quot;&gt;
+					&lt;identifier type=&quot;identifier&quot;&gt;args&lt;/identifier&gt;
+					&lt;expression type=&quot;function-call&quot;&gt;
+						&lt;identifier type=&quot;identifier&quot;&gt;array&lt;/identifier&gt;
+						&lt;argument-list type=&quot;argument-list&quot;&gt;
+							&lt;identifier type=&quot;identifier&quot;&gt;string&lt;/identifier&gt;
+						&lt;/argument-list&gt;
+					&lt;/expression&gt;
+				&lt;/parameter&gt;
+			&lt;/parameter-list&gt;
+			&lt;return-interface type=&quot;identifier&quot;&gt;int&lt;/return-interface&gt;
+			&lt;expression-list type=&quot;expression-list&quot;&gt;
+				&lt;expression type=&quot;return&quot;&gt;
+					&lt;expression type=&quot;literal-integer&quot;&gt;0&lt;/expression&gt;
+				&lt;/expression&gt;
+			&lt;/expression-list&gt;
+		&lt;/function&gt;
+	&lt;/name-bind&gt;
+&lt;/global&gt;
+
+				</code>
+			</div>
+		</div>
+		
+		<div id="get-interface">
+			<h2>18.3. get interface</h2>
+			
+			<p>It's always possible to bind the interface of an object to an identifier.</p>
+			
+			<code xml:space="preserve">
+func getInterface{I}(I o) {
+return I;
+}
+
+dynref o = getMysteryObj()
+interface i = getInterface(o)
+i o2 = o
+			</code>
+		</div>
+		
+		<div id="obj-interface">
+			<h2>18.4. obj interface</h2>
+			
+			<p>All objects automatically implement the &quot;obj&quot; interface.</p>
+			
+			<code xml:space="preserve">
+obj foo = getAnObject()
+(myinterface foo) .doStuff 3
+			</code>
+		</div>
+		
+		<div id="identifier-binding">
+			<h2>18.5. Binding to identifiers</h2>
+			
+			<code xml:space="preserve">int alpha</code>
+			<p>Declares that &quot;alpha&quot; can refer to objects that implement the &quot;int&quot; interface. alpha currently doesn't refer to anything; i.e. it refers to null.</p>
+			
+			<code xml:space="preserve">alpha = 3</code>
+			<p>Creates an object that implements the int interface and makes alpha refer to it</p>
+			
+			<code xml:space="preserve">int beta = 5</code>
+			<p>Declares that &quot;beta&quot; can refer to objects that implement the &quot;beta&quot; interface. Creates an object that implements the int interface. Binds the object to &quot;beta&quot;.</p>
+			
+			<p>Multiple identifiers can refer to the same object.</p>
+			<code xml:space="preserve">
+obj o = getObj()
+int a = o
+rat b = o
+			</code>
+		</div>
+		
+		<div id="print-println-return-interfaces">
+			<h2>18.6. Return interfaces of print and println</h2>
+			
+			<p>Below, [unbound] means the interface is not bound to an identifier. However, these interfaces can be bound to identifiers and used like any user-created interface, and they have no special properties.</p>
+			
+			<ul>
+				<li>func{I}(I)[unbound] print</li>
+				<li>func{I}(I)[unbound] println</li>
+			</ul>
+
+			<pre>interface{I} Print
+	func call(I) Print
+
+interface{I} PrintLine
+	func call(I) PrintLine</pre>
+			
+			<p>When print is called, it returns an object that implements an interface like Print. When println is called, it returns an object that implements an interface like PrintLine. Neither interface is bound to an identifier when execution begins. They are not the same interface, meaning print(1).interface == println(1).interface executes to false.</p>
+			
+			<pre>println 1 2 3 &quot;a&quot; &quot;b&quot; &quot;c&quot; 4.5 6.7 8.9</pre>
+		</div>
+		
+		<div id="adjuncts">
+			<h2>18.7. Adjuncts</h2>
+			
+			<code xml:space="preserve">
+interface IMyInterface
+	public func doStuffA()
+	public func doStuffB()
+
+class MyClass
+	:implements(IMyInterface)
+	...
+
+func IMyInterface.doAB()
+	this.doStuffA()
+	this.doStuffB()
+
+func testThing(ref IMyInterface arg)
+	arg.doAB()
+
+MyClass inst
+testThing(inst)
+			</code>
+		</div>
+		
+		<div id="runtime-inteface">
+			<h2>18.8. runtime interface implementation</h2>
+		
+			<p>With Niviok, you should be able to write a function that takes an interface (foo) and returns a function that takes an object of that interface (foo) and returns an object that implements that same interface (foo), but with an implementation that writes to a log anytime a method is called.</p>
+		
+			<pre>log l = Log()
+foo o = Foo()
+foo wrapped = wrap(o, l)
+doStuffWithAFoo(wrapped)</pre>
+		
+			<p>Now anytime a method is called on the object, a log entry could be written.</p>
+		
+			<pre>func{I} wrap(I o, log l) I
+objbuilder wrapper = newObjbuilder()
+wrapper.implement(I)
+for prop in I.props
+wrapper.interfaces[I].setProp( prop.name,
+func(:vararg)obj
+
+interface i = newInterface()
+i.inherit(I)
+for prop in 
+
+wrap(...) takes an interface and returns a function
+wrap(foo)(...) takes a foo and returns a foo</pre>
+		</div>
+		
+		<div id="runtime-interface-creation">
+			<h2>18.9. Runtime interface creation</h2>
+			
+			<pre>func createInterface( map{string,dyn} methods ) interface
+	interface rv = newInterface()
+	for (name, meth) in methods
+		rv.methods.add( pair(name, meth.functionSignature) )
+	return rv
+
+func foo(int b) string
+...
+
+func bar(float c, float d) myClass
+...
+
+func baz(widget1 e, widget4 f)
+...
+
+map(string, func) table = {
+&quot;methA&quot;: foo,
+&quot;methB&quot;: bar,
+&quot;methC&quot;: baz
+}
+interface myinterface = createInterface(table)
+
+func alpha(int g) string
+...
+
+func beta(float h, float i) myClass
+...
+
+func gamma(widget1 j, widget4 k)
+...
+
+myinterface myobj = {
+methA: alpha,
+methB: beta,
+methC: gamma
+}
+string str = obj.methA(3)
+myClass val = obj.methB(5.5, 7.7)
+obj.gamma( createWidget1(), Widget4Factory.makeOne() )</pre>
+		</div>
+		
+		<div id="self-return-type">
+			<h2>18.10. &quot;self&quot; return type</h2>
+			
+			<pre>func(int,float)self
+
+is the same as
+
+interface __foo__
+	func call(int,float) __foo__
+
+func example(int num) self
+	...
+	
+example 1 2 3 4 5 6 7 8 9 0 //calls the example function 10 times</pre>
+		</div>
+
+		<div id="bind">
+			<h2>18.11. Bind</h2>
+			
+			<pre>interface foo
+	...
+
+func bar(foo o, int num)
+	...
+
+foo fooInst = getAFoo()
+bar(fooInst, 3)
+(fooInst =&gt; bar) 3
+func() funcy = (fooInst =&gt; bar)
+funcy(3)</pre>
+		
+			<p>obj =&gt; func</p>
+		
+			<p>The &quot;=&gt;&quot; operator binds the obj to the first argument of the function. It executes to a function. Semantically this creates a function-definition with a closure of the obj and func.</p>
+		</div>
+
+		<div id="classes">
+			<h2>18.12. Classes</h2>
+			
+			<p>Classes produce functors that, when called, create objects. If a class implements more than 1 interface, it can declare which of the implemented interfaces is the active interface of the returned object by marking an interface as default. If no interface is marked, the active interface is obj.</p>
+		</div>
+
+		<div id="noninstantiated-interface-templates">
+			<h2>18.13. Noninstantiated interface templates</h2>
+		
+			<pre>interface list{I}
+	readonly int count
+	func pushFront(I o)
+	func popFront() I
+
+struct node{C}
+	node{C} next = null
+	node{C} value = null
+
+class makeList{T}
+	node{T} first
+	
+	interface list{T} #default //so makeList returns a list instead of an obj that has to be cast
+		...
+
+list{int} nums = makeList{int}()
+nums.pushFront(3)
+nums.pushFront(5)
+print nums.size //2
+
+list{string} names = makeList{string}()
+names.pushFront(&quot;John&quot;)
+names.pushFront(&quot;Sarah&quot;)
+names.pushFront(&quot;Billy&quot;)
+print names.size //3
+
+list someList = nums
+print someList.size //2
+someList.pushFront(5) //error</pre>
+			
+			<p>someList may refer to any kind of list, such as list{foo}, list{bar}, etc, so only methods that have the same paramater and return interfaces for all list{}s can be called.</p>
+		</div>
+
+		<div id="dynamic-library-loading">
+			<h2>18.14. Dynamic library loading</h2>
+		
+			<p>The selectLibrary function enables gaining references to objects without knowing the nodes that created the objects.</p>
+		
+			<pre>interface Library
+	readonly String path
+	readonly String name
+	readonly String version
+	readonly Bool loaded?
+	func key(String name) Dyn
+	func get{I}(String name) I
+	func load()
+	func unload()
+
+//prototype
+func selectLibrary(string identifier, string version, bool load? = true) Library
+
+---
+
+string identifier
+string version
+if platform == platforms.MacOSX or platform == platforms.Windows
+	identifier = &quot;libxml&quot;
+	version = &quot;2.1&quot;
+elif platform == platforms.Linux
+	identifier = &quot;/usr/lib/libxml.so&quot;
+	version = &quot;56&quot;
+else
+	throw Error(&quot;unsupported platform&quot;)
+
+Library XmlLib = selectLibrary(identifier, version)
+
+Interface XmlElement = XmlLib.get{Interface}(&quot;XmlElement&quot;)
+Dyn XmlReader = XmlLib[&quot;XmlReader&quot;]
+
+XmlElement element = XmlRead.read(&quot;foo.xml&quot;).documentElement</pre>
+		</div>
+		
+		<div id="static-typing">
+			<h2>18.15. Static typing</h2>
+			
+			<p>XXX spec out static typing and demand that implementations check all typing as much as possible before running anything. Note the section on dynamic static typing.</p>
+		</div>
+	</div>
+</body></html>

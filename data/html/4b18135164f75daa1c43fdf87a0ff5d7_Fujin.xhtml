@@ -1,0 +1,1130 @@
+<?xml version="1.0" encoding="utf-8"?><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Desal Text Representation</title><link href="styling.css" rel="stylesheet" type="text/css"/><script>
+		/* hack around Gecko bug */
+		function checkHash() {
+			if( oldHash != document.location.hash ) {
+				oldHash = document.location.hash;
+				causeReflow();
+			}
+		}
+		function causeReflow() {
+			var s = document.documentElement.style;
+			s.position = 'relative';
+			setTimeout( function(){ s.position = ''; }, 10 );
+		}
+		var oldHash = document.location.hash;
+		setInterval( checkHash, 100 );
+	</script></head><body>
+
+	<h1>Desal Text Representation</h1>
+	<h2>Dextr</h2>
+	
+	<ol class="toc"><li><a href="#overview">1. Overview</a><ol><li><a href="#introduction">1.1. Introduction</a></li><li><a href="#design-goals">1.2. Design goals</a></li><li><a href="#syntactic-blocks">1.3. Syntactic blocks</a></li></ol></li><li><a href="#tokenization">2. Tokenization</a><ol><li><a href="#token-types">2.1. Token types</a></li><li><a href="#tokenization-modes">2.2. Tokenization modes</a></li></ol></li><li><a href="#unsorted-stuff">3. unsorted stuff</a><ol><li><a href="#get-interface">3.1. get interface</a></li><li><a href="#postfix-operator">3.2. postfix incrementation operator</a></li><li><a href="#function-interface">3.3. function-interface</a></li><li><a href="#cast">3.4. cast</a></li></ol></li><li><a href="#not-marked-up">4. not marked-up</a></li></ol><div id="overview">
+		<h1>Chapter 1. Overview</h1>
+		
+		<div id="introduction">
+			<h2>1.1. Introduction</h2>
+		
+			<p>This document defines a means of representing Desal semantics, and a means for extracting the semantics by a computer agent.</p>
+		</div>
+		
+		<div id="design-goals">
+			<h2>1.2. Design goals</h2>
+			
+			<ul>
+				<li>easy for current programmers to pick-up. This means a representation that uses text files which are meant to be worked with directly by programmers.</li>
+				<li>relatively easy to parse by humans and computers</li>
+				<li>able to encode most semantics offered by Desal Semantics, with a very direct 1-to-1 mapping</li>
+				<li>minimalism where not detrimental. This means if leaving a few characters out doesn't really hurt, leave them out</li>
+			</ul>
+		</div>
+		
+		<div id="syntactic-blocks">
+			<h2>1.3. Syntactic blocks</h2>
+			
+			<pre>if a &gt; b
+	doSomething1()
+	doSomething2()
+else
+	doSomethingElse1()
+	doSomethingElse2()
+
+if a &gt; b : doSomething1(), doSomething2()
+else : doSomethingElse1(), doSomethingElse2()
+
+if a &gt; b { doSomething()
+  doSomethingElse2() }
+else
+{
+	doSomethingElse1()
+doSomethingElse2()
+}</pre>
+			
+			<p>In the first way, whitespace is significant. In the second and third way, newlines end the block, but otherwise whitespace is not significant.</p>
+		</div>
+	</div>
+	
+	<div id="tokenization">
+		<h1>Chapter 2. Tokenization</h1>
+
+		<p>How to break up Dextr source code into tokens.</p>
+	
+		<div id="token-types">
+			<h2>2.1. Token types</h2>
+			
+			<ul>
+				<li>xxx</li>
+				<li>xxx</li>
+			</ul>
+		</div>
+		
+		<div id="tokenization-modes">
+			<h2>2.2. Tokenization modes</h2>
+			
+			<ul>
+				<li>xxx</li>
+			</ul>
+		</div>
+	</div>
+
+	
+	<div id="unsorted-stuff">
+		<h1>Chapter 3. unsorted stuff</h1>
+		
+		<pre>Word ::=
+	WordChar +
+	
+Identifier ::=
+	Word
+	
+Keyword ::=
+	&quot;$&quot; Word
+
+$if else &gt; return {
+	$throw throw
+}
+
+Rationale: Users should be quickly and easily able to tell whether a word is an identifier or a keyword, without having to memorize the list of keywords. Because identifiers are usually more common than keywords, keywords are given the burden of having an extra character instead of identifiers.
+
+Move to IDE guidelines:
+Syntax highlighters are encouraged to hide the $ character in keywords (in display only, not to remove it from source) and differentiate between keywords and identifiers though some other means (e.g. color). Such syntax highlighters must provide a means of switching a word between keyword and identifier.
+
+One possibility would be to display the $ in a particular keyword whenever the cursor has been next to or within the keyword for more than half a second. Such syntax highlighters should automatically and immediately recognize when a word has lost or gained a $ and update the way it is displayed immediately e.g. if the $ is removed from a keyword, the syntax highlighter should recognize the change immediately and not continue displaying the word like it is a keyword.
+
+Another possibility would be to never show the $ after a keyword has been typed, and ignore $ added in front of identifiers, but have a button, menu item, and/or keyboard shortcut that when activated, flips the meaning of the keyword that the cursor is currently in or next to.</pre>
+		
+		<div id="get-interface">
+			<h2>3.1. get interface</h2>
+			
+			<p>It's always possible to bind the interface of an object to an identifier.</p>
+			
+			<code xml:space="preserve">
+func getInterface{I}(I o) {
+	return I;
+}
+
+dynref o = getMysteryObj()
+interface i = getInterface(o)
+i o2 = o
+			</code>
+		</div>
+		
+		<div id="postfix-operator">
+			<h2>3.2. postfix incrementation operator</h2>
+			
+			<p>&quot;object++&quot; doesn't create a temporary. The object has its increment method called after the object is accessed. The below two groups of code represent the same semantics.</p> 
+			
+			<code xml:space="preserve">
+int a = 3
+int b = a++
+
+int a = 3
+int b = a
+++a
+			</code>
+		</div>
+		
+		<div id="function-interface">
+			<h2>3.3. function-interface</h2>
+			
+			<pre>required_s ::= ( &quot; &quot; | comment ) +
+s ::= required_s ?
+required_ls ::= ( required_s | &quot;\n&quot; | &quot;\t&quot; ) +
+ls ::= required_ls ?
+
+function-interface ::=
+	funcfaceshort | funcfacelong
+
+funcfacebase ::=
+	&quot;func&quot; s &quot;(&quot; s funcfaceparameters ? s &quot;)&quot;
+
+funcfaceshort ::=
+	funcfacebase s identifier
+
+funcfacelong ::=
+	funcfacebase s &quot;(&quot; ls expression ls &quot;)&quot;
+
+funcfaceparameters ::= ...</pre>
+		</div>
+		
+		<div id="cast">
+			<h2>3.4. cast</h2>
+			
+			<pre>cast ::=
+	expression s &quot;as&quot; s expression
+
+example:
+(foo as Bar)</pre>
+		</div>
+	</div>
+	
+	
+
+	<div id="not-marked-up">
+		<h1>Chapter 4. not marked-up</h1>
+		
+		<pre>foo
+
+*** operator precendence examples ***
+
+interface alpha
+	func beta(int)
+alpha foo
+
+foo.beta(3)
+//is the same as
+foo =&gt; alpha::beta (3)
+
+(alpha o).beta(3)
+//is the same as
+cast{alpha}(o).beta(3)
+//is the same as
+o =&gt; cast{alpha} .beta(3)
+
+
+*** statement block ***
+
+indented statements
+	statement 1
+	statement 2
+	statement 3
+
+colon then statements: statement 1, statement 2, statement 3
+
+enclosed in braces { statement 0
+	statement 1
+statement 2
+		statement 3, statement 4  }
+
+
+*** 2007-06-10: adjuncts removed ***
+
+func int.times(func() f)
+	for(int i = 0; i &lt; this; i++)
+		f()
+ 
+3.times func()
+	println &quot;test&quot;
+
+func times(int num, func() f)
+	for( int i = 0; i &lt; num; i++ )
+		f()
+
+3 =&gt; times func()
+	println &quot;test&quot;
+	
+3..times || println &quot;test&quot;
+
+do 3 times: println &quot;test&quot;
+
+//same as
+
+times( 3, func()
+	println &quot;test&quot;
+)
+
+//same as
+
+times(3, ||println &quot;test&quot;)
+
+
+*** functions ***
+
+a &quot;function&quot; is an object that implements the &quot;callee&quot; interface
+(xxx would &quot;callable&quot; be a better name?)
+
+function literals create objects with an interface that inherits from callee
+function declaration - defines a function and binds it to an identifier
+syntax
+	&quot;func&quot;
+	identifier
+	&quot;(&quot;
+	* [ interface identifier ] (seperated by ,)
+	&quot;)&quot;
+	? interface
+	statement-block
+func foo(float a) int
+	return a * 2
+
+syntax for interface of specific types of functions
+func(float)int f = foo
+
+function expressions aka inline functions
+
+func{I}(I)int h = |x| x * 3
+func(int)int h = |x| x * 3 //can auto convert
+func(int)int j = { |int x|
+	string str = cast string x
+	int hash = hash(string)
+	return str.toLowerCase()
+}
+
+
+*** additional semantics ***
+
+Desal Text Representation (Dextr, or Desal Dextr) has additional semantics on top of Desal semantics. These semantics are used to obtain Desal semantics from Dextr source code. Most of these semantics involve tokens/objects &quot;grabbing&quot; other tokens/objects.
+
+
+*** example of additional semantics in Dextr ***
+
+func doStuff() int
+	return 3
+
+func foo1()
+	function square(ratnum num) ratnum
+		return num * num
+
+	doStuff()
+	
+func foo2()
+	function(ratnum num) ratnum
+		return num * num
+	
+	doStuff()
+
+In foo1, the function is bound to the identifier &quot;square&quot; and not called.
+In foo2, the function is not bound to an indentifer. The value returned from doStuff() is fed into it as an argument.
+
+So Dextr differentiates between &quot;function expressions&quot; and &quot;function declarations&quot;, although in Desal Semantics there is not such differentiation.
+
+
+*** operators ***
+
+Operators are able to &quot;grab&quot; what comes before and/or after it. Which operator grabs what is determined by operator precedence. Operators can be thought of as macros.
+
+[] grabs what is before it and passes it to the array function
+	string[] is equal to array(string)
+
+[int] grabs what is before it and passes it and the int to the array function
+	float[5] is equal to array(float, 5)
+
++ grabs what is before and after it, and sends what's after it to the add method of what's before it
+	3 + 5 is equal to 3.add(5)
+	
+= grabs what is before and after it, and sends what's after it the assign method of what's before it
+	a = 8 is equal to a.assign(8)
+
++ has greater precedence than =
+	a = 3 + 5 is equal to a.assign( 3.add(5) )
+
+The actual functions follow the regular left-to-right behavior.
+	a .assign 3 .add 5 //is equal to
+	a.assign(3).add(5)
+
+&quot;not&quot; grabs the boolean that's after it and inverses it
+	not true //is the same as
+	true.inverse()
+
+&quot;or&quot; grabs the booleans before and after it
+	foo or bar //is the same as
+	foo.or(bar)
+	
+if f is a function:
+f 1 + 2 + f 3
+is equal to
+f(1).add(2).add( f(3) )
+
+function calls have precedence over +
+
+
+*** parameters/arguments ***
+
+Parameters are a part of a function, and have names. Arguments are the values passed to functions.
+
+//alpha and beta are the parameters
+function foo(int alpha, float beta) string 
+	...
+
+//3 and 7.8 are the arguments
+foo(3, 7.8)
+
+
+*** function signatures ***
+
+a function signature consists of the parameters and the return type
+
+
+*** function calling ***
+
+If something follows a function, it will be passed to the function an argument.
+Like operators, functions are able to &quot;grab&quot; what follows them.
+If a function grabs a collection (described below), the items in the collection will be passed as arguments.
+
+func foo(int arg = 3)
+	...
+
+foo //function not called
+foo() //function called
+foo ()
+foo 3 //function called
+foo(3) //function called
+foo (3)
+foo.params //function not called
+foo .params
+
+
+*** collections ***
+
+Things grouped in parenthesis forms a collection. How this collection is touched determines how it is treated.
+
+If a collection is grabbed by a function, the elements are passed as arguments to the function.
+
+else
+	if the collection has one element
+		the element is evaluated
+		the (...) evaluates to that
+	else
+		error
+
+--- functions ---
+
+a = (3)
+The = is an operator. The line is equivalent to: a.assign (3)
+Assign is a function, so it grabs what follows, &quot;(3)&quot;
+3 is passed as an argument to the assignment function.
+
+string[] names
+names = (&quot;Bob&quot;, &quot;Sam&quot;, &quot;Sally&quot;)
+names.assign (&quot;Bob, &quot;Sam&quot;, &quot;Sally&quot;)
+assign here is a var-arg function
+The strings are passed as arguments to names.assign
+
+dynref foo = int[] (3, 5, 7)
+dynref foo = array(int)(3, 5, 7)
+
+dynref foo = int[] 9
+dynref foo = arry(int)(9)
+
+--- else ---
+
+a = (3) + (5) + (8)
+Operator precendence causes the + to grab arguments before = can get anything.
+a.assign( (3) .add (5) .add (8) )
+Because there's not a function before (3) trying to grab it, and (3) only has one element, (3) evaluates to 3.
+a.assign( 3 .add (5) .add (8) )
+int a = ((3.add(5)) + (8))
+Because there's nothing before (3.add(5)) trying to grab something, it evaluates to 3.add(5)
+int a = (3.add(5).add(8))
+int a \n a.assign(3.add(5).add(8))
+
+--- labels and enum shortcuts ---
+
+enum bar
+	VALUE_1,
+	VALUE_2,
+	VALUE_3
+
+func foo( int a = 1, int b = 2, int c = 3, bar eBar)
+	...
+
+foo( c: 8 )
+
+foo( 7, 8, 9, = VALUE_1 )
+
+foo( eBar: = VALUE_1 )
+
+foo( a: 1, b: 2, c: 3, eBar: bar.VALUE_1 )
+
+foo( a: 1, b: 2, c: 3, eBar: = VALUE_1 )
+
+foo( 1, 2, 3, bar.VALUE_1 )
+
+
+**** ----- ****
+
+All identifiers are in the same namespace. There are no reserved words. If a user defined idetifier conflicts with a system identifier, the system identifier must be prefixed with &quot;$&quot;. The &quot;$&quot; is optional for other user defined identifiers.
+
+
+UTF-8 is default encoding, if none is specified.
+A BOM on a UTF-8 document shouldn't causes problems.
+&quot;.desalt&quot; file extension
+
+
+Input consists of a series of Unicode characters.
+Tokenization processes input character by character to produce a series of tokens.
+Parsing processes the tokens to extract semantics.
+
+
+*** character types ***
+
+illegal
+	control characters
+	Unicode reserved code points
+	Unicode tags
+	surrogates
+	illegal characters cannot appear anywhere in source code
+		not even in comments
+reserved
+	space
+	tab
+	newline
+	quote &quot; ' `
+	opening bracket
+		parenthesis (
+		box bracket [
+		brace {
+	closing bracket
+		parenthesis )
+		box bracket ]
+		brace }
+	special + - / * @ $ = \ , .
+numeral
+	0 1 2 3 4 5 6 7 8 9
+free
+	all Unicode characters not otherwise categorized
+	includes: ! ? _
+
+XXX uncategorized
+	% ~ # ^ | ; &amp; :
+
+
+*** token types ***
+
+indentation, line separation, string, opening bracket, closing bracket, special, number, word
+
+examples:
+
+number
+	5
+	700.0
+	3.03f
+	6i
+	0xFF
+	
+word - a free character optionally followed by free characters and numerals
+	x
+	if
+	else
+	myItem2
+	myItem3
+	MyClass
+	IDoStuff
+	foo2bar3baz
+
+string
+	&quot;&quot;
+	&quot;foo&quot;
+	&quot;foo bar&quot;
+	'''test 333 
+	    test'''
+	&quot;foo \&quot; bar&quot;
+	
+	
+*** tokenization ***
+
+Tokenization begins in ready mode with the first character.
+
+
+--- modes that do not produce tokens ---
+	
+ready
+	Based on the type of the current character, ready mode switches to the appropriate mode.
+	
+	character type		mode to go to
+	------------------------------------
+	illegal				illegal
+	space				space
+	tab					indentation
+	newline				line seperation
+	quote				string
+	opening bracket		opening bracket
+	closing bracket		closing bracket
+	special				special
+	numeral				number
+	free				word
+	
+illegal
+	end tokenization unseccessfully
+	
+line comment
+	if there's a newline character following
+		move to the next newline character and switch to line seperation mode
+	else
+		end tokenization successfully
+	
+multiline comment
+	if there's an instance of */ following
+		if there's a character after it
+			move to that character
+			switch to ready mode
+		else
+			end tokenization successfully
+	else
+		end tokenization unsuccessfully
+	
+space
+	go to the next character
+	switch to ready mode
+
+	
+--- modes that do produce tokens ---
+
+indentation
+	create an indentation token
+	add the current character to it
+	loop
+		go to the next character
+		if it's a tab
+			add it to the token
+		else
+			close the token
+			switch to ready mode
+	
+line separation
+	create a line separation token
+	go to the next character that isn't a newline
+	switch to ready mode
+	
+string
+	String processing rules determine when this mode is done.
+	When it's done
+		if an illegal token was encountered
+			switch to illegal mode
+		if some other error occured
+			end tokenization unsuccessfully
+		else
+			string processing rules produced a string token
+			switch to ready mode
+
+opening bracket
+	create an opening bracket token for the current character
+	go to the next character
+	switch to ready mode
+	
+closing bracket
+	create a closing bracket token for the current character
+	go to the next character
+	switch to ready mode
+	
+special
+	create a special token
+	add the current character to it
+	loop
+		go to the next character
+		if it's a special character
+			add it to the token
+			if token == '//'
+				discard token
+				go to line comment mode
+			if token == '/*'
+				discard token
+				go to multiline comment mode
+		else
+			close the token
+			switch to ready mode
+
+number
+	create a number token
+	add the current character to it
+	loop
+		go to the next character
+		if it's a numeral
+			add it to the token
+		if it's an &quot;x&quot;
+			if the token currently consists of &quot;0&quot;
+				add it to the token
+			else
+				end tokenization unsuccessfully
+		if it's a &quot;.&quot;
+			if the token does not contain an &quot;x&quot;
+				add it to the token
+			else
+				end tokenization unsuccessfully
+		else
+			close the token
+			switch to ready mode
+	
+word
+	create a word token
+	add the current character to it
+	loop
+		go to the next character
+		if it's a free character or a numeral
+			add it to the free token
+		else
+			close the token
+			switch to ready mode
+
+
+*** tokens ***
+
+In normal text, a token is a series of characters of the same type.
+Strings and comments are considered to be string and comment tokens.
+Each of the reserved types are considered seperately here. 
+
+example 1:
+  func doStuff(ref int arg) int
+    return arg * 2
+  }
+
+  tokens:
+    func
+    SPACE
+    doStuff
+    (
+    ref
+    SPACE
+    int
+    SPACE
+    arg
+    )
+    SPACE
+    int
+    LINEBREAK
+    SPACE
+    return
+    SPACE
+    arg
+    SPACE
+    *
+    SPACE
+    2
+    LINEBREAK
+    }
+  
+  
+example 2:
+  423oeuth03928nothunho394898+&amp;*(^%$#&amp;+++oetuhntoh
+  
+  tokens:
+    423
+    oeuh0328notho3998
+      transition from numerals to free characters begins a new token
+      transition from free characters to numerals continues the same token
+    +&amp;*(^%$#&amp;+++
+      transition from free characters to symbols
+    oetuhntoh
+      transition from symbols to free characters
+
+	  
+
+	  
+
+*** identifiers ***
+
+An identifier is a token with an assigned meaning. 
+Identifiers must consist of either:
+  all symbols
+  all free characters
+  free characters and numerals
+Identifiers can never:
+  begin with numerals
+  begin with reserved characters
+  begin with /*
+  end with */ 
+
+
+*** default identifiers ***
+
+Identifiers that are already defined by default.
+Some of these can be redefined or overloaded while others can't.
+  
+includes:
+  if
+  else
+  {
+  }
+  [
+  ]
+  break
+  class
+  func
+  #
+  +
+  -
+  *
+  /
+
+  
+*** reserved identifiers ***
+
+An identifier that cannot be (re)defined.
+
+includes:
+  if
+  else
+  {
+  }
+  [
+  ]
+  break
+  class
+  func
+  #
+  
+
+*** string tokens ***
+
+When the first character of a quote token is found, string processing rules take over.
+They determine:
+	what characters are part of the string token
+	where normal processing should continue from
+
+examples:
+
+a + &quot;test&quot; + b
+
+a - free - a free token begins
+  - space - the free token ends (the space itself is ignored since it served only to separate)
++ - symbol - a symbol token begins
+  - space - the symbol token ends
+&quot; - quote - string processing rules take over and produce a string token
+  - space - the string processing rules said to start here, and it was just a space, which should be discarded
++ - symbol - a symbol token begins
+  - space - the symbol token ends
+b - free - a free token begins
+end of file - the free token ends
+
+output tokens:
+free	a
+symbol	+
+string	test
+symbol	+
+free	b
+
+
+&quot;this is a string&quot;
+'this is a string'
+&quot;&quot;&quot;this is a string&quot;&quot;&quot;
+'''this is a string'''
+sized-string 16 this is a string
+
+
+*** Enclosers ***
+
+Some characters surround other characters to note that the inner characters are grouped together in some way.
+
+(...)
+[...]
+&lt;...&gt;
+
+Enclosers allow things to span multiple lines.
+
+
+*** Blocks ***
+
+A block is code that is grouped together.
+
+Some identifiers can open blocks.
+These are known as &quot;block-opening identifiers&quot;.
+These include: &quot;if&quot;, &quot;else&quot;, &quot;while&quot;, colon, opening curly brace
+
+Some identifiers can close blocks.
+These are known as &quot;block-closing identifiers&quot;.
+These include: closing curly brace
+
+Some identifiers can close a block and open a new one.
+These are known as &quot;block-reseting identifiers&quot;.
+These include: &quot;else&quot;, &quot;while&quot;
+
+The full-stop opens a block and immediately closes it.
+  (Meaning it signifies an empty block.)
+
+
+int a
+if test
+  doStuff()
+a = 3
+
+&quot;if&quot; absorbs the following test and then opens a new block.
+&quot;  doStuff&quot; set the indentation for this block to 2 spaces.
+&quot;a = 3&quot; was not indented, so it closed the block.
+
+To ensure the block doesn't include more than it should, include a closing brace.
+
+int a
+if test
+  doStuff()
+}
+a = 3
+
+To avoid the indentation requirements, start the block with an opening curly brace {.
+Note that blocks beginning this way must also end with a closing curly brace }.
+
+int a
+if test {
+doStuff()
+}
+a = 3
+-or-
+int a
+if test
+{
+  doStuff()
+}
+a = 3
+
+To place the block's code on the same line, begin the block with a colon.
+
+int a
+if test: doStuff()
+a = 3
+-or-
+int a
+if test : doStuff()
+a = 3
+
+The below code doesn't work.
+
+int a
+if test
+  :doStuff()
+a = 3
+-or-
+int a
+if test:
+  doStuff()
+a = 3
+
+
+
+
+*** Phrases ***
+
+Phrases are similar to what is often called &quot;statements&quot;.
+Phrases consists of identifiers and/or reserved symbols and/or blocks that are grouped together.
+Phrases can be ended by linebreaks or commas.
+
+Example:
+  In C++, semicolons end statements.
+    doStuff1(); doStuff2(); doStuff3();
+
+  In Desal, linebreaks or commas end statements.
+    doStuff1()
+    doStuff2()
+    doStuff3()
+
+    doStuff1(), doStuff2(), doStuff3()
+
+    
+*** Desal Syntax Description Language (DSDL) ***
+
+Used to describe the syntax of features of Desal.
+
+&quot;text&quot;
+  specific text that must appear
+newscopeid
+  an identifier that is not defined anywhere else in that scope
+join
+  the thing before and after this cannot have any whitespace between them
+paren()
+  the arguments have parenthesis surrounding them
+opt()
+  the arugments are optional
+optmult()
+  the arguments may appear 0 or more times
+type
+  a type that is already defined in that scope
+userid
+  an identifier that is defined by the user
+codeblock
+  a block of code
+block()
+  a block with contents described in the arguments
+obj
+  identifier for an object that is in scope
+  may be: doStuff(args) if doStuff returns something
+objid
+  identifier for an objcet that is already defined and in scope (no object literals)
+either()
+  any 1 of the multiple arguments may appear
+    
+    
+    
+    
+
+
+*** XXX Unsorted Stuff ***
+
+if the keyword phrase is ended by a linebreak, the block ends with a curly brace that resides on its own line or another keyword
+  //keyword phrase: &quot;if waitingCount &gt; 0&quot;
+  //keyword: &quot;if&quot;
+  //body: &quot;waitingCount &gt; 0&quot;
+  //ends with a linebreak
+  if waitingCount &gt; 0 
+    doStuff()
+  }
+  
+  &quot;if&quot; test block
+  
+  //the keywords that can end a block depend on what keyword opened the block
+  
+  switch obj
+    case 1 //keyword phrase opened block that can be closed by &quot;case&quot;, &quot;fallcase&quot;, or &quot;default&quot;
+      doStuff1()
+    case 2 //&quot;case&quot; keyword ended previous block
+      doStuff2()
+    default //&quot;default&quot; keyword ended previous block
+      doStuff0()
+    }
+  }
+  
+  if obj eql current //keyword phrase opened block that can be closed by &quot;elif&quot; or &quot;else&quot;
+    doCurrent()
+  elif obj eql past //&quot;elif&quot; keyword ended previous block
+    doPast()
+  else //&quot;else&quot; keyword ended previous block
+    doFuture()
+  }
+  
+if the keyword phrase is ended by a colon, the block ends with a line break or a comma
+  if test: doStuff()
+  
+  if test: doStuff(), else: doOtherStuff() //&quot;if&quot; block ended with comma, &quot;else&quot; block ends with linebreak
+
+if the keyword phrase is ended by a full-stop, the block must be empty
+  while notReady? //test value of notReady until it evaluates to true
+
+  if doNothing?
+  else: doStuff()
+  
+if the keyword phrase is ended by an opening curly brace, the block ends with a closing curly brace
+  if that eql &quot;cool&quot; { buy(that) }
+  
+  if that eql &quot;cool&quot; {
+    buy(that)
+  } //note that &quot;else&quot; can't close this block due to the opening curly brace
+  else {
+    burn(that)
+  }
+  
+when a block is empty, a warning is raised
+  if test: //empty block ended with linebreak
+  if test //empty block ended with &quot;else&quot;
+  else
+  } //empty block ended with }
+  
+
+*** colon ***
+
+if a colon is followed by whitespace, it begins a block
+  example:
+    if num1 &lt; num2: doStuff()
+else, it seperates a namespace identifier from an identifier in that namespace
+  example:
+    std:doStuff()  
+
+This means the colon character has special meaning beyond that of other reserved characters.
+
+
+*** namespaced operators ***
+
+The &quot;boost&quot; library defines a binary &quot;|&lt;&quot; operator.
+It returns the amount of elements in the array on the left that are less than the number on the right.
+
+array int numbers
+int amount
+
+amount = numbers boost:|&lt; 3
+amount = numbers boost:op(|&lt;) 3
+amount = numbers boost:(|&lt;) 3
+amount = numbers boost(|&lt;) 3
+with namespace boost: amount = numbers |&lt; 3
+with boost:operators: amount = numbers |&lt; 3
+with boost:(|&lt;): amount = numbers |&lt; 3
+
+
+*** tabs and spaces ***
+
+The semantics of spaces is to separate characters.
+The semantics of newlines is to separate actions.
+The semantics of tabs is to group related actions.
+
+Desal partially attempts to require proper use of these characters.
+
+
+*** tabs ***
+
+Tabs are only allowed at the beginnig of lines.
+After any non-tab character, further tabs are not allowed.
+The first code on a line must be preceded only by 0 or more tabs.
+
+
+*** comments ***
+
+Comments are treated as spaces.
+
+These lines are equivalent:
+(end-of-line represented by |)
+
+a /* big */ = b /* small */|
+a           = b            |
+
+
+*** blocks ***
+
+1. Blocks are opened by some keywords.
+2. The block ends when a line with code is encountered that has the same indention as the line that opened the block.
+
+1:
+if alpha &lt; num //opens a block
+	doStuff()
+
+2:
+if alpha &lt; num
+	doStuff()
+else //this line has the same level of indention as the line that opened the above autoblock, so that block is closed
+	...
+
+Lines that are direct children must begin with 1 more tab than the line that opened the block.
+Within a block, on a line with code:
+	a tab or group of tabs must appear first
+	code must appear second
+	then spaces, comments, and more code may appear
+	
+
+example:
+(tabs represented by 4 underscores)
+
+if test
+____doStuff1()
+____
+____doStuff2()
+
+____doStuff3()
+
+is equivalent to:
+
+if test {
+doStuff1()
+doStuff2()
+doStuff3()
+}
+
+
+example 2:
+
+/* comment */ doStuff()
+doStuff()____/* comment */
+
+This is illegal because a tab appeared after code.
+
+
+
+syntax:
+
+()* means 0 or more
+
+tab* (space/comment)*
+tab* ( code (space/comment)* )*</pre>
+	</div>
+</body></html>

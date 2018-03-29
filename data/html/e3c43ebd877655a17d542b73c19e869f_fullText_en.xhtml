@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" media="screen" href="../../../../library/css/editing.css" type="text/css" />
+  </head>
+  <body> <img src="http://static.technorati.com/pix/icn-talkbubble.gif" title="tag technorati" /> <a class="Tags" href="http://technorati.com/tag/Java+imaging"
+      rel="tag">Java imaging</a> <a class="Tags" href="http://technorati.com/tag/Mistral" rel="tag">Mistral</a> <a class="Tags"
+      href="http://technorati.com/tag/Java2D" rel="tag">Java2D</a> <a class="Tags" href="http://technorati.com/tag/JAI"
+      rel="tag">JAI</a> <a class="Tags" href="http://technorati.com/tag/ImageJ" rel="tag">ImageJ</a> <a class="Tags" href="http://technorati.com/tag/JHLabs"
+      rel="tag">JHLabs</a> <a class="Tags" href="http://technorati.com/tag/JIU" rel="tag">JIU</a><br />
+    <p>This article describes Mistral, an opensource, high level imaging engine aimed at professional imaging
+      applications which:<br />
+    </p>
+    <ul>
+      <li>allows to use under an unified API a number of existing imaging engines (such as Java2D, JAI and others);</li>
+      <li>implements platform-specific optimizations;</li>
+      <li>can be easily extended;</li>
+      <li>includes an advanced image renderer;</li>
+      <li>has extensive support for distributed processing;</li>
+      <li>supports metadata extraction (in progress).<br />
+      </li>
+    </ul>
+    Feedback to this article can be posted to the Mistral <a href="https://mistral.dev.java.net/servlets/ForumMessageList?forumID=2238">forum</a>.
+    <h3>Introduction</h3>
+    In more than ten years Java has colonized a lot of application fields, ranging from the cellular phone to the data
+    center and beyond. In the latest years there has also been a "renaissance" in the desktop segment, both thanks to
+    new rich APIs such as <a href="http://www.swinglabs.org/">SwingLabs</a> and to the general fact that the Virtual
+    Machine and Swing itself have gotten faster, removing a lot of showstopping problems that haunted their early
+    versions. Furthermore, rich platforms such as <a href="http://www.netbeans.org/">NetBeans</a> RCP or <a href="http://www.eclipse.org/">Eclipse</a>
+    RCP now provide a lot of tools for the design of complex and modular desktop applications.<br />
+    <br />
+    Focusing on the desktop, one of the application fields that have been only marginally targeted is imaging - I'm
+    talking of the end-user, desktop kind of imaging, as in some scientific and technologic fields <a href="http://java.sun.com/products/java-media/2D/">Java2D</a>,
+    <a href="https://jai.java.net/">JAI</a> (Java Advanced Imaging) and <a href="http://rsb.info.nih.gov/ij/">ImageJ</a>
+    have been used for years.<br />
+    <br />
+    But it looks like things are changing also in this scenario. More or less one year ago, <a href="http://www.lightcrafts.com/products/lightzone">Lightzone</a>,
+    a commercial application targeted at photographers, has appeared; <a href="http://www.jasperpotts.com/">Jasper
+      Potts</a> has recently blogged about a <a href="http://www.jasperpotts.com/blog/2007/03/blurb-booksmart-the-best-java-app-i-have-seen-in-a-long-time">nice
+      desktop application</a> used for setting up photos for printing albums; Jasper himself has worked at Xerto that
+    has produced <a href="http://www.xerto.com/imagery.php">Imagery</a>, announced some months ago and that now seems
+    to be near the beta stage; even though is not a full-fledged imaging software, <a href="http://jalbum.net/">JAlbum</a>
+    is one of the most used tools for creating an publishing gallery. Also worth mentioning is <a href="http://www.jhlabs.com/">JH
+      Labs</a>, an open source application; and Dirk Hennig has his own project named <a href="http://quippix.dirkhennig.de/">Quippix</a>.
+    All of these projects have been done in Java and this means that probably the technology is now mature also in this
+    field.<br />
+    <br />
+    I've been working on opensource imaging since 2003, even though for some time I wasn't clearly committed in
+    delivering a real product - I've rather worked on prototypes that I used to try some technologies I didn't knew.
+    I've taken the final decision of going towards a real product only recently. Today the project, called <a href="http://bluemarine.tidalwave.it/">blueMarine</a>,
+    is near to its first Release Candidate (compulsive downloaders, beware: there are some early eaccess builds already
+    available, but they aren't quality tested and in most cases they will fail just when installing - I'd suggest you to
+    go to the site and rather subscribe to the <a href="http://bluemarine.tidalwave.it/feeds/news">news feed</a> and
+    wait for the incoming RC1; if instead you're interested in joining the project, contact me following the links on
+    the website).<br />
+    <br />
+    As the project has grown, I've started to spin-off some sub-projects which covers specific parts, since I thought
+    that they could be useful to others. One of the APIs at the core of blueMarine is Mistral, an imaging engine with
+    all the features for a professional imaging application.<br />
+    <h3>State of the art of Java imaging<br />
+    </h3>
+    Before talking of Mistral, I think it's a good thing to look at the current scenario about imaging APIs.<br />
+    <ul>
+      <li>The core API for imaging is <a href="http://java.sun.com/products/java-media/2D/">Java2D</a>, which is part
+        of the JRE. Java2D deals with <span class="Code">BufferedImage</span>, provides some operation for image
+        manipulation - and <span class="Code">BufferedImage</span> is fully compatible with Swing, so it can be
+        directly drawn on a GUI component.</li>
+      <li><a href="https://jai.java.net/">JAI</a> is the Java Advanced Imaging API and is a step forward: not only it
+        provides a much richer set of manipulation primitives (such as Fourier Transforms and Histograms, support for
+        Region of Interests, etc...), but it also comes with its own image class, <span class="Code">PlanarImage</span>,
+        which has support for "tiling". Tiling is a memory allocation strategy by which only the currently used portions
+        of the image are kept in memory. The JAI attitude towards efficient handling of large images is also
+        demonstrated by the <a href="http://java.sun.com/products/java-media/jai/forDevelopers/jaifaq.html">"deferred
+          execution"</a> feature: when you apply a sequence of operations to an image, they are not executed at once,
+        but only when the API understands that the application wants a result (e.g. it wants to draw the image
+        somewhere). In this way execution can be optimized as only the strictly required subset of tiles is manipulated.
+        This attitude towards very large images is explained by the fact that <a href="http://www.nasa.gov/">NASA</a> -
+        who has contributed the design of the API - is using JAI for the management of astronomic images that tend to be
+        very large. JAI is not part of the JDK but it's available as a standard extension; and <span class="Code">PlanarImage</span>
+        is somewhat a close relative of <span class="Code">BufferedImage</span> (but must be handled in a rather
+        different way if you want to use tiling).</li>
+      <li><a href="http://rsb.info.nih.gov/ij/">ImageJ</a> is a public domain imaging engine developed by the <a href="http://www.nih.gov/">National
+          Institutes of Health</a>. While it is not as sophisticated as JAI, it has some popularity in the scientific
+        world, specially for medical image processing. It comes with a desktop application for image manipulation, with
+        the same name (I didn't cited it before since it's not targeted at the desktop casual end-user). ImageJ models
+        images with its own class.</li>
+      <li><a href="http://www.jhlabs.com/ie/">JHLabs</a> provides a set of filter classes orientated to photo
+        manipulation, with similar effects as Photoshop. JHLabs works on regular <span class="Code">BufferedImage</span>s.</li>
+      <li><a href="http://schmidt.devlib.org/jiu/">JIU</a> is the latest API I've been aware of (just a few days ago)
+        and provides another set of image manipulation classes. I don't know much about it since I was be pointed to JIU
+        just a few days ago. I could be wrong but I think that JIU models images with its own class.<br />
+      </li>
+    </ul>
+    So, indeed it looks like there's a lot of stuff. While blueMarine editing attitude is presently only aimed to RAW
+    camera formats conversion (that require a very special set of filters), I plan to integrate a full-fledged editor
+    sooner or later. Even though JAI is by far my favourite imaging API, as blueMarine has been designed as a
+    plugin-expandable core I would also like to have people to use it with their own library. How to achieve this?<br />
+    <h3>A meta imaging engine</h3>
+    Mistral is a "meta imaging engine", in the sense that it doesn't include its own imaging code, but use other APIs.
+    It acts as an abstract imaging layer, as the programmer only sees Mistral classes, while the actual implementation
+    is pluggable. This means that you can use the very same Mistral code and have Java2D, or JAI, or JHLabs, or JIU to
+    do the work (of course, supposing that you're done something which is covered by all these APIs). Furthermore, you
+    are not constrained in using a single implementation, but you can use multiple ones at different stages of the
+    elaboration. For instance, you can start with Java2D (by default Mistral always starts with Java2D when an image is
+    loaded from a file, since the JDK has a very rich and puggable image I/O facility), perform some operations with
+    Java2D, then use some JAI features, later JHLabs and so on. This makes a lot of sense when the different APIs share
+    the same image representation (such as, for instance, Java2D and JHLabs) or where the conversion of the image
+    representation is fast (such as for Java2D and JAI when no tiling is used). For instance, a typical imaging
+    application operation is creating thumbnails from the original files, which can be done by using Java2D; but if you
+    need a Fourier Transform, you can immediately switch to JAI.<br />
+    <br />
+    The core of Mistral is the <span class="Code">EditableImage</span> class, an opaque wrapper against the actual
+    image representation. It exposes a few methods for reading an image from an external source or creating it from the
+    scratch, performing operations on it and getting the most common attributes such as the size, the number of colors,
+    and so on. Here it is an example of code:<br />
+    <pre class="prettyprint lang-java">
+EditableImage image = EditableImage.create(new ReadOp(file, 0));<br />image.execute(new CropOp(10, 10, 600, 400));<br />Histogram histogram = image.execute(new HistogramOp()).getHistogram();  
+</pre> This sequence loads an image from a file, crops it, and computes the histogram on the cropped image. <span class="Code">ReadOp</span>,
+    <span class="Code">CropOp</span> and <span class="Code">HistogramOp</span> are classes representing the three
+    operations; they are simple Java beans that only hold the required parameters (and eventually the result if it's not
+    an image), but not the implementation code. The code is instead contained in some specific <span class="Code">CropXXXOp</span>
+    and <span class="Code">HistogramXXXOp</span> classes which are specific to the API used (for instance, <span class="Code">CropJ2DOp</span>,
+    <span class="Code">HistogramJ2DOp</span> - and <span class="Code">CropJAIOp</span>, <span class="Code">HistogramJAIOp</span>,
+    and so on). The mapping between the generic and the specialized operations is stored in so called "implementation
+    factories". There's one implementation factory for every supported API and they are registered into the runtime with
+    the following code:<br />
+    <pre class="prettyprint lang-java">
+ImplementationFactoryRegistry registry = ImplementationFactoryRegistry.getInstance();<br />registry.registerFactory(new ImplementationFactoryJ2D());<br />registry.registerFactory(new ImplementationFactoryJAI());<br />registry.registerFactory(new ImplementationFactoryImageJ());<br />
+</pre> (in the real case, <span class="Code">ImplementationFactoryJ2D</span> is always registered by default, while the
+    others have to be explicitly registered by the programmer). When an <span class="Code">execute()</span> operation
+    is performed, Mistral searches the implementation in the current implementation factory (always Java2D at the
+    beginning); if it can't find it, other factories are searched and the image representation is eventually converted.<br />
+    <br />
+    <div style="text-align: center;"><img width="600" vspace="10" border="0" hspace="10" height="558" alt="" src="http://mistral.tidalwave.it/infoglueDeliverLive/digitalAssets/1554_Class_Diagram__EditableImage_Class_Diagram.png" /><br />
+    </div>
+    <br />
+    Referring to the above histogram example, the whole sequence is executed using Java2D since all the three operations
+    are defined in its factory. Somebody could prefer to use the JAI version of <span class="Code">HistogramOp</span>
+    (which BTW is faster and much accurate). The programmer can take the control and choose the proper API for each
+    operation, unregistering the operation from all the other factories. For instance:<br />
+    <pre class="prettyprint lang-java">
+ImplementationFactoryJ2D.getInstance().unregister(HistogramOp.class);
+</pre> makes sure that the implementation from Java2D is not used (note that the previous sample code for computing the
+    histogram doesn't change, but now the histogram is computed by means of JAI).<br />
+    Last but not least, new operations can be defined and added to a factory by registering them at runtime.<br />
+    It is to be pointed out that this abstraction layer doesn't have a significant performance cost since finding an
+    implementation is just a matter of a few hashtable lookups, a much faster operation than the average image
+    manipulation.<br />
+    <h3>Added value of the abstraction layer</h3>
+    If you need this imaging API interchangeability you are already appreciating the abstraction layer of Mistral; if
+    you don't, consider another bunch of clear advantages of it:<br style="font-weight: bold;" />
+    <ul>
+      <li><span style="font-weight: bold;">Simplified APIs.</span> A lot of image manipulation can be performed in
+        different ways, often a trade-off between performance and quality. For instance, there are many ways of resizing
+        an image, and the better quality ones involve more than a single API call. For instance, the following is a
+        typical error from many Java2D and JAI programmers that want to resize an image: there are two available
+        operations, AffineTransform and Scale, that "seem" to do the desired thing; but often the result quality is not
+        good for many people and the API are blamed for it. Indeed, good quality resizing requires a more complex
+        approach which is well described in <a href="http://archives.java.sun.com/cgi-bin/wa?A2=ind0311&amp;L=jai-interest&amp;P=R9579&amp;I=-3">this
+          post and the linked document</a>, while APIs are usually "atomic" in the sense that they do only one thing at
+        a time. This holds true for resizing as well as other complex image manipulations. In this perspective, Mistral
+        helps the programmer as its operations are not necessarily atomic. For instance, there is <span class="Code">SizeOp</span>
+        with the algorithm described in the above linked documents and everything is simple as:<br />
+        <pre class="prettyprint lang-java">
+image.execute(new SizeOp(0.5));<br />
+</pre> Generally speaking, the easy way in which the programmer can define his own custom operations allows to implement
+        a consistent implementation strategy for complex operations and to stick with it in all the application. This
+        usually also leads to a reduced number of lines of code in the application.<br />
+      </li>
+      <li><span style="font-weight: bold;">Performance optimizations.</span> In spite of the WORA concept of Java, some
+        Java2D/JAI operations have dramatically different performance on different operating systems (this is partly due
+        to bugs). For instance, you can scale an image using an AffineTransform or drawing the source image over the
+        target image using the Swing <span class="Code">Graphics</span> object: the former approach is faster or slower
+        depending on the operating system where you run the test. Furthermore, Java2D allows different layouts for the
+        raster (<span class="Code">PixelInterleavedSampleModel</span>, <span class="Code">SinglePixelPackedSampleModel</span>,
+        and so on). Some are faster, some are quicker, again it depends on the operating system and the differences can
+        be wild.<br />
+        One of the basic best practices in Swing is to convert images into a "compatible image", that "has a layout and
+        color model that is closest to this native device configuration and can therefore be optimally blitted to this
+        device" (from the javadoc of <span class="Code">GraphicsConfiguration</span>). Mistral takes care of this
+        thanks to the <span class="Code">OptimizeOp()</span> operation. The difference in manipulating the original
+        image versus the optimized one can be tenth of seconds versus minutes. Here it is a table of test results (from
+        Mistral v0.9.2.256 unit tests) - of course the tests have been run on the same hardware, a Mac Mini Core Duo
+        with a triple boot, so results from the different operating systems are comparable (the higher the number the
+        worst performance):<br />
+        <br />
+        <table width="100%" cellspacing="0" cellpadding="2" border="1" align="" summary="">
+          <tbody>
+            <tr>
+              <td nowrap="nowrap" style="font-weight: bold;">Test</td>
+              <td nowrap="nowrap" style="font-weight: bold;">Quality</td>
+              <td nowrap="nowrap" colspan="3" style="font-weight: bold; text-align: center;"><br />
+              </td>
+            </tr>
+            <tr>
+              <td nowrap="nowrap" style="font-weight: bold;"> </td>
+              <td nowrap="nowrap" style="font-weight: bold;"> </td>
+              <td nowrap="nowrap" style="font-weight: bold;">Mac OS X</td>
+              <td nowrap="nowrap" style="font-weight: bold;">Linux Ubuntu</td>
+              <td nowrap="nowrap" style="font-weight: bold;">  Win XP  <br />
+              </td>
+            </tr>
+            <tr>
+              <td nowrap="nowrap">J2DUtils.ScaleWithAffineTransform<br />
+              </td>
+              <td nowrap="nowrap">INTERMEDIATE</td>
+              <td align="right" style="color: rgb(255, 0, 0);">1214328</td>
+              <td align="right"><span style="color: rgb(255, 0, 0);">1169925</span></td>
+              <td align="right" style="color: rgb(255, 0, 0);">1236672</td>
+            </tr>
+            <tr>
+              <td nowrap="nowrap">J2DUtils.ScaleWithAffineTransform (opt)</td>
+              <td nowrap="nowrap">INTERMEDIATE</td>
+              <td align="right">1859</td>
+              <td align="right"><span style="color: rgb(255, 0, 0);">FAILS</span></td>
+              <td align="right"> 1921</td>
+            </tr>
+            <tr>
+              <td nowrap="nowrap">J2DUtils.ScaleWithDrawImage</td>
+              <td nowrap="nowrap">INTERMEDIATE</td>
+              <td align="right">1844<br />
+              </td>
+              <td align="right"><span style="color: rgb(255, 0, 0);">1044457</span></td>
+              <td align="right"> <span style="color: rgb(255, 0, 0);">1095032</span></td>
+            </tr>
+            <tr>
+              <td nowrap="nowrap">J2DUtils.ScaleWithDrawImage (opt)<br />
+              </td>
+              <td nowrap="nowrap">INTERMEDIATE</td>
+              <td align="right">3991</td>
+              <td align="right">3230</td>
+              <td align="right"> 2062</td>
+            </tr>
+            <tr>
+              <td nowrap="nowrap" style="background-color: rgb(240, 240, 240);">ScaleJ2DOp</td>
+              <td nowrap="nowrap" style="background-color: rgb(240, 240, 240);">INTERMEDIATE</td>
+              <td align="right" style="background-color: rgb(240, 240, 240);"> 1755</td>
+              <td align="right" style="background-color: rgb(240, 240, 240); color: rgb(255, 0, 0);">1161022</td>
+              <td align="right" style="background-color: rgb(240, 240, 240); color: rgb(255, 0, 0);">1220625</td>
+            </tr>
+            <tr>
+              <td nowrap="nowrap">ScaleJ2DOp (opt)</td>
+              <td nowrap="nowrap">INTERMEDIATE</td>
+              <td align="right"> 1818</td>
+              <td align="right">2950</td>
+              <td align="right">1906</td>
+            </tr>
+            <tr>
+              <td nowrap="nowrap" style="background-color: rgb(240, 240, 240);">OptimizeJ2DOp</td>
+              <td nowrap="nowrap" style="background-color: rgb(240, 240, 240);">INTERMEDIATE</td>
+              <td align="right" style="background-color: rgb(240, 240, 240);"> 5146</td>
+              <td align="right" style="background-color: rgb(240, 240, 240);">4053</td>
+              <td align="right" style="background-color: rgb(240, 240, 240);">4062</td>
+            </tr>
+            <tr>
+              <td nowrap="nowrap">OptimizeJ2DOp (opt)</td>
+              <td nowrap="nowrap">INTERMEDIATE</td>
+              <td align="right"> 1663</td>
+              <td align="right">2940</td>
+              <td align="right"> 1734</td>
+            </tr>
+            <tr>
+              <td nowrap="nowrap" style="background-color: rgb(240, 240, 240);">RotateJ2DOp</td>
+              <td nowrap="nowrap" style="background-color: rgb(240, 240, 240);">INTERMEDIATE</td>
+              <td align="right" style="background-color: rgb(240, 240, 240);">24805</td>
+              <td align="right" style="background-color: rgb(240, 240, 240); color: rgb(255, 0, 0);">4040127</td>
+              <td align="right" style="background-color: rgb(240, 240, 240);"><span style="color: rgb(255, 0, 0);">4300516</span></td>
+            </tr>
+            <tr>
+              <td nowrap="nowrap">RotateJ2DOp (opt)<br />
+              </td>
+              <td nowrap="nowrap">INTERMEDIATE</td>
+              <td align="right">57435</td>
+              <td align="right">28843</td>
+              <td align="right">18188</td>
+            </tr>
+          </tbody>
+        </table>
+        <br />
+      </li>
+      <li><span style="font-weight: bold;">Profiling</span>. Mistral automatically collects the execution timing for
+        each operation and make them available for dumping in the log files, aggregated by operation type. This avoid
+        cluttering the application code with explicit timestamping code.</li>
+      <li><span style="font-weight: bold;">Parallel / Distributed Processing</span>. Mistral has also extensive support
+        for distributed processing (including distributed profiling). I'm not going to talk about this feature now: you
+        can read a previous <a href="http://weblogs.java.net/blog/fabriziogiudici/archive/2006/12/clustering_with.html">introductory
+          blog post</a>. More information will be released as the implementation of this area is complete - at present
+        time there's still some work to do about the distributed image cache - the important point is that the bitmaps
+        are distributed transparently, behind the <span class="Code">EditableImage</span> scenes: so the same Mistral
+        code, written following a few best practices, is able to run in very different parallel contexts. For instance,
+        some preliminary prototypes have been able to run the very same Mistral code on multi-core computers, local
+        clusters and the <a href="http://www.network.com/">Sun Grid</a>. If you are interested in this topic, track <a
+          href="http://java.net/blogs/fabriziogiudici/">my blog</a> or come to <a href="http://jazoon.com/">Jazoon</a> 
+        where <a href="http://www.bloomingstars.com/">Emmanuele Sordini</a> (Mistral co-author) and I will have a <a href="http://jazoon.com/en/conference/program/presentationdetails.html?type=sid&amp;detail=880"
+          class="dotlink">speech</a> (please note: the speech is about parallel processing design in general and will
+        not be about Mistral on the whole, but about its distributed computing design patterns).<br />
+      </li>
+    </ul>
+    <h3>The Renderer</h3>
+    A central feature of any desktop imaging application is the image renderer: a component able to show images at
+    various scales, quickly, possibly integrating with other tools visual cues (such as selection tools and so on). Thus
+    it's no surprise that Mistral comes with its own image renderer able to work with <span class="Code">EditableImage</span>s.
+    The design of such a component is apparently easy: after all an image can be directly drawn over a <span class="Code">Graphics</span>
+    object.<br />
+    <div style="text-align: center;"><img width="300" vspace="20" border="0" hspace="20" height="233" src="http://mistral.tidalwave.it/infoglueDeliverLive/digitalAssets/1465_Picture_1.jpg"
+        alt="" /><br />
+    </div>
+    There are some issues indeed, that Mistral rendering component <span class="Code">EditableImageRenderer</span>
+    deals with:<br />
+    <ul>
+      <li><span style="font-weight: bold;">Performance</span>. As we said before, scaling is one of those troubled
+        operations, as its speed can dramatically change in different scenarios. There are also other potential
+        problems: for instance, some performance bugs must be worked around (e.g.  it's extremely slow to resize images
+        with certain non-sRGB color profiles). Furthermore, a professional image renderer should be also able to rotate
+        an image and this is another source of performance troubles. Last but not least, there are some specialized
+        Java2D image classes, such as <span class="Code">VolatileImage</span>, which offer a substantial performance
+        boost and sometimes even hardware acceleration. <span class="Code">EditableImageRenderer</span> takes care of
+        this and offers some approaches for trading off memory with speed, for instance keeping optimized copies of the
+        image in memory.</li>
+      <li><span style="font-weight: bold;">Flexibility</span>. Many image visualization components use scroll bars for
+        dealing with very large images - after all scroll bars have been invented for this. Nevertheless, this approach
+        is not necessarily the best for an imaging tool. Modern applications usually prefer to use the mouse drag to pan
+        the image and mouse click to toggle between zoomed mode and 1:1 rendering. Also, zooming can be controlled by
+        specialized buttons or by mouse wheel. <span class="Code">EditableImageRenderer</span> allows to implement all
+        of these approaches by attaching specialized (and extendable) controllers. </li>
+      <li><span style="font-weight: bold;">Previewing editing</span>. Users want to preview in real time the editing
+        changes they apply - for instance a contrast or a white point adjustment. For performance reasons, it's not
+        feasible to apply these changes in real time to the whole image and redisplay it: the preview transformation -
+        when possible - must be instead directly applied to the scaled image in the renderer. For this purpose a special
+        <span class="Code">PreviewSettings</span> class can be applied to rendering.</li>
+      <li><span style="font-weight: bold;">Support for different imaging APIs.</span> The actual rendering of the image
+        is delegated to a <span class="Code">PaintOp</span>, which can be implemented in different ways by the
+        underlying adapter as previously explained. For instance, the JAI adapter could take advantage of tiling for
+        large images and take into memory only the portion of the image that should be shown. Other existing image
+        rendering components usually require a preliminary conversion to a <span class="Code">BufferedImage</span>,
+        which is not compatible with tiling.</li>
+    </ul>
+    The renderer has been designed in a modular way as all the classes that control the interaction with the user are
+    external controllers. In this way, for instance, it has been possible to implement an <span class="Code">AnimatedZoomController</span>
+    which applies a smooth animation when the scale is changed; the programmer can add his own as well.<br />
+    <div style="text-align: center;"><img width="600" vspace="10" border="0" hspace="10" height="416" alt="" src="http://mistral.tidalwave.it/infoglueDeliverLive/digitalAssets/1553_Class_Diagram__Renderer_Class_Diagram.png" /></div>
+    Some <a href="http://mistral.tidalwave.it/infoglueDeliverWorking/ViewPage.action?siteNodeId=393">JavaWebStart demos</a>
+    for the image renderer are available.<br />
+    <h3>Status</h3>
+    Mistral, at present time, is in beta stage. The design requires only a few changes before the final version, most of
+    the things described in this article are ready and  stable (there are just a few platform-specific performance
+    issues). The two parts that now require extensive development are: operation coverage (only a subset of Java2D and
+    JAI features are covered - up to now Mistral development has been driven by the needs of some projects that rely on
+    it) and testing (there is basic automated testing, but it's not enough). Only adapters for Java2D and JAI exist;
+    there's a non working skeleton for ImageJ. Some old workarounds, written at the old times of JDK 1.4, could probably
+    be removed as the relevant JDK bugs could have been fixed (Mistral targets JDK 1.5).<br />
+    Work is already scheduled for integrating metadata extraction capability (including native maker notes and <a href="http://www.adobe.com/products/xmp/">XMP</a>)
+    - taking advantage of both the standard Java capabilities and external libraries. Mistral is able to work with <a href="http://en.wikipedia.org/wiki/RAW_image_format">"RAW
+      format files"</a> thanks to the Image I/O <a href="http://jrawio.dev.java.net/">jrawio</a> plugin.<br />
+    While most of this article has been focused on desktop applications, Mistral can be used on the server side as well.
+    Its various features are implemented in separated JARs, so you can include in your classpath only what you need and
+    keep the footprint low.<br />
+    <h3>Future plans</h3>
+    The evolution of Mistral is strictly related to the feedback we will have from the community (the current plans are
+    constrained by the requirements of a few opensource and paid projects that rely upon it). The ideal target is to
+    have Mistral to become something similar as <a href="http://www.apple.com/macosx/features/coreimage/">CoreImage</a>
+    is for Mac OS X. At the moment there are two improvement areas we are thinking of:<br />
+    <ul>
+      <li>providing a component for generation and maintainance of thumbnails;</li>
+      <li>creating an adapter for Mac OS X CoreImage Image Units, in order to take full advantage of Mac OS X imaging
+        facilities.</li>
+    </ul>
+    The former activity is already scheduled (indeed there's already working code in blueMarine that just has to be
+    moved and refactored); the latter would start only if programmers with specific CoreImage skills will join the
+    project.<br />
+    <br />
+    Feedback to this article can be posted to the Mistral <a href="https://mistral.dev.java.net/servlets/ForumMessageList?forumID=2238">forum</a>.
+    <h3>Further reading</h3>
+    <ul>
+      <li>The Mistral <a href="http://mistral.tidalwave.it/infoglueDeliverLive/ViewPage.action?siteNodeId=394">tutorial</a>;</li>
+      <li>The Mistral <a href="http://mistral.tidalwave.it/infoglueDeliverLive/ViewPage.action?siteNodeId=368">white
+          paper</a>;</li>
+      <li>Pleiades <a href="http://pleiades.bloomingstars.com/infoglueDeliverLive/ViewPage.action?siteNodeId=345">documents</a>
+        - Pleiades is an opensource library for astrophotographic "image stacking" which relies on Mistral.</li>
+      <li>JavaPolis 2006 BOF: <a href="http://www.javapolis.com/confluence/display/JP06/Parallel+Computing%2C+the+new+frontier+of+WORA">Parallel
+          Computing, the new frontier of WORA</a> was focused on Mistral.</li>
+    </ul>
+  </body>
+</html>

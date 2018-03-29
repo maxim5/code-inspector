@@ -1,0 +1,236 @@
+#!/bin/zsh
+
+f () {
+  echo $@
+  grep -R "$@" *
+}
+
+compare_files() {
+  hash=`ssdeep -b $1`
+  echo $hash | tr " " "\n" | ssdeep -bm /proc/self/fd/0 $2
+}
+
+
+function mcp
+{
+    set -A mcp_sources ${*[1,$(($# - 1))]}
+    local mcp_destination="${@[$#]}"
+    if [[ ! -d "${mcp_destination}" ]]; then
+        echo "mcp: destination must be extant directory" >&2
+        return 1
+    fi
+    for prog in pv tar du tput; do
+        hash "${prog}" || return 1
+    done
+    local mcp_errors="0"
+    echo "calculating total copy size..."
+    set -A mcp_sizes
+    local mcp_size_total="0"
+    local mcp_size_current="0"
+    for ii in `seq 1 "${#mcp_sources[*]}"`; do
+        mcp_sizes[${ii}]="`du -sb "${mcp_sources[${ii}]}" | awk '{print($1)}' -`"
+        mcp_size_total="$(( mcp_size_total + mcp_sizes[${ii}] ))"
+    done
+    tput cuu1; echo -ne '\033[K';
+    for ii in `seq 1 "${#mcp_sources[*]}"`; do
+        local full_path="`echo "${mcp_sources[${ii}]}" | sed 's#/*$##'`"
+        local tar_dir="`echo "${full_path}" | sed 's#[^/]*$##'`"
+        if [[ -z "${tar_dir}" ]]; then
+            tar_dir="."
+        fi
+        local tar_node="`echo "${full_path}" | sed 's#^.*/##'`"
+        if (( ${#mcp_sources[*]} > 1 )); then
+            printf '[%05.2f%%] ' "$(( ( ${mcp_size_current}.0 / ${mcp_size_total} ) * 100.0 ))"
+            echo "${tar_node}: "
+        fi
+        if [[ ! -e "${full_path}" ]]; then
+            echo -e "${full_path} not found"
+            mcp_errors="$(( ${mcp_errors} + 1 ))"
+            continue
+        fi
+        tar cf - -C "${tar_dir}" "${tar_node}" | \
+            pv --size "${mcp_sizes[${ii}]}" | \
+            tar xf - -C "${mcp_destination}" || return 1
+        mcp_size_current="$(( mcp_size_current + mcp_sizes[${ii}] ))"
+        tput cuu1; echo -ne '\033[K'; tput cuu1; echo -ne '\033[K'
+    done
+    unset mcp_sources
+    if (( ${mcp_errors} == 0 )); then
+        echo "complete!"
+    else
+        echo "done, but with errors"
+    fi
+    return 0
+}
+
+cd() {
+  builtin cd "$@"; ll; builtin echo;
+}
+
+#cpio archive this folder
+cpiopack() {
+    find ./ | cpio -H newc -o > ../cpio_packed
+}
+
+chroot_LFS() {
+    sudo setarch linux32 chroot "/home/lfs/lfs/LFS" /tools/bin/env -i HOME=/root TERM="${TERM}" PS1='\u:\w\$ ' PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin /tools/bin/bash --login +h
+
+}
+
+# make a thumb %20 the size of a pic
+thumbit() {
+  for pic in "$@"; do
+    case "$pic" in
+      *.jpg)  thumb="$(echo "$pic" | sed s/.jpg/-thumb.jpg/g)"              ;;
+      *.jpeg) thumb="$(echo "$pic" | sed s/.jpeg/-thumb.jpeg/g)"            ;;
+      *.png)  thumb="$(echo "$pic" | sed s/.png/-thumb.png/g)"              ;;
+      *)      echo "usage: thumbit [file{.jpg,.jpeg,.png}]" && return 1     ;;
+    esac
+    cp "$pic" "$thumb"
+    mogrify -resize 20% "$thumb"
+  done
+}
+
+# grep by paragraph
+grepp() {
+  if [ $# -ne 2 ]; then
+    echo "usage: grepp [term] [file]"
+  else
+    perl -00ne "print if /$1/i" < $2
+  fi
+}
+
+# recursively fix dir/file permissions on a given directory
+fix() {
+  if [ -d "$1" ]; then
+    find "$1" -type d -exec chmod 755 {} \;
+    find "$1" -type f -exec chmod 644 {} \;
+  else
+    echo "usage: fix [directory]"
+  fi
+}
+
+# open a GUI app from CLI
+open() {
+  if [ -z $1 ]; then
+    echo "usage: open [application]"
+  else
+    $1 &>/dev/null &
+  fi
+}
+
+# auto send an attachment from CLI
+send() {
+  if [ $# -ne 2 ]; then
+    echo "usage: send [file] [recipient]"
+  else
+    echo "Auto-sent from linux. Please see attached." | mutt -s "File Attached" -a $1 -- $2
+  fi
+}
+
+# find simplified
+seek()  {
+  if [ $# -eq 0 ]; then
+    echo 'Usage: '
+    echo '   seek <*d,f> <pattern> <*location>'
+    echo '   Search directory for file of folder match (*optional)'
+  else
+    case $1 in
+      d ) if [ -z "$3" ]; then
+            find . -type d -iname "*$2*"
+          else
+            find "$3" -type d -iname "*$2*"
+          fi
+          ;;
+      f ) if [ -z "$3" ]; then
+            find . -type f -iname "*$2*"
+          else
+            find "$3" -type f -iname "*$2*"
+          fi
+          ;;
+      * ) if [ -z "$2" ]; then
+            find . -iname "*$1*"
+          else
+            find "$2" -iname "*$1*"
+          fi
+          ;;
+    esac
+  fi
+}
+
+# daemon statuses
+daemon_status() {
+  C_STOPPED="\033[0;31m" # red
+  C_RUNNING="\033[0;32m" # green
+  C_RESET="\033[m"
+
+  daemons=( /etc/rc.d/* )
+  if [ -z "$1" ]; then
+    for d in ${daemons[@]##*/}; do
+      if [ -f "/var/run/daemons/$d" ]; then
+        printf "%-30b%-10b\n" $d ${C_RUNNING}RUNNING${C_RESET}
+      else
+        printf "%-30b%-10b\n" $d ${C_STOPPED}STOPPED${C_RESET}
+      fi
+    done
+  else
+    [ ! -f /etc/rc.d/$1 ] && echo "err! ${C_STOPPED}$1${C_RESET} is no daemon" && return 1
+    if [ -f "/var/run/daemons/$1" ]; then
+      printf "%-30b%-10b\n" $1 ${C_RUNNING}RUNNING${C_RESET}
+    else
+      printf "%-30b%-10b\n" $1 ${C_STOPPED}STOPPED${C_RESET}
+    fi
+  fi
+}
+
+# mail stats
+fmail() {
+  local -A counts; local i
+
+  for i in "${MAILDIR:-${HOME}/mail}"/**/new/*
+    { (( counts[${i:h:h:t}]++ )) }
+  for i in ${(k)counts}
+  { print -n ${i//\[Gmail\]./}: $counts[$i]' ' }
+}
+
+# go to google for anything
+google() {
+  local term="$@"
+
+  local URL="http://www.google.com/search?q=${term// /+}"
+
+  $BROWSER "$URL" &> /dev/null
+}
+
+# push git repo
+pushrepo() {
+  pushd ${HOME}/docs/myconfs &> /dev/null
+  if [[ $(git status | wc -l) -ne 2 ]]; then
+    git status
+    git commit -a -m "last commit"
+    git push
+  else
+    echo "==> repo up-to-date"
+  fi
+  popd &> /dev/null
+}
+
+# find binary provided by a package
+pacexe() {
+  for ARG in $(pacman -Qql $1); do
+    [[ ! -d $ARG ]] && [[ -x $ARG ]] && echo $ARG;
+  done
+}
+
+zsh_stats() { history | awk '{print $2}' | sort | uniq -c | sort -rn | head }
+
+mk() { mkdir -p "$1"; cd "$1" }
+
+# get ip of an interface
+getip() { /sbin/ifconfig ${1:-ppp0} | awk '/inet addr/ {print $2}' | awk -F: '{print $2}' }
+
+# get file & directory count
+files() { set "${1:-$PWD}"; echo "==> $(tree "$1" | tail -1) [$(du "$1" | cut -f1)]"; }
+
+# fold functions in vim
+# vim:foldmarker={,}

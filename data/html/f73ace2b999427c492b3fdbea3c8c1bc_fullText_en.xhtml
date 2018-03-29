@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p><em>by Fabrizio Giudici and Emmanuele Sordini, September 2006</em></p>
+      <p>
+      Some time ago I read somewhere that with Java there are ten thousands ways to create an image. Well, ten thousands
+      is a bit more than the real thing, but sure there are many ways. This is because there is more than a single API
+      to work with images - for instance:
+    </p>
+    <ul>
+      <li>the class <code>Image</code> is defined in AWT and represents a minimalist approach, just to
+        deal with icons and little more;</li>
+      <li>the class <code>BufferedImage</code> is defined in Java 2D and is much more rich of semantics,
+        as the programmer can manipulate bits, colors, perform filtering, and many more; furthermore, <code>BufferedImage</code>
+        is the type of objects returned by the <a href="http://java.sun.com/j2se/1.5.0/docs/guide/imageio/spec/imageio_guideTOC.fm.html">Image
+          I/O API</a>, the standard way to read and write images in a large number of formats;</li>
+      <li>the class <code>PlanarImage</code> is defined in <a href="http://jai.dev.java.net/">JAI</a>,
+        the Java API for Advanced Imaging, the tool for serious image manipulators (such as the guys at NASA): not only
+        this API features some complex operations, such as Fourier Transforms and such, but also supports sub-pixel
+        processing, ROI (regions of interests) and tiling, the way for handling large images that don't conveniently fit
+        in memory. 
+      </li>
+    </ul>
+    <p>Add to this scenario <a href="http://rsb.info.nih.gov/ij/">ImageJ</a>, a non-standard Java API which is very
+    popular.</p>
+    <p>Having so many APIs is not a bad thing, as each API has a specific context. But a problem
+      might arise if you need to integrate code from different developers that use different APIs. In this scenario you
+      have probably to guess the algorithm from the existing code and re-implement it with your favourite API. This is
+      an issue that I'm planning to address as I'm writing <a href="http://bluemarine.tidalwave.it/">blueMarine</a>, an
+      open source application for photo management designed as an open platform, where users can (and are encouraged to)
+      plug-in many extensions (I've also been contacted by a guy who's researching on image processing and
+      would like to write his own code to handle images).</p>
+     
+    <p>One solution of the problem could be... to add one more API! Obviously this API would not be another imaging
+      engine, but an "abstraction layer", something that enables the programmer to work with images without knowing too
+      much about the inner details. This is precisely what the Mistral project is about. </p>
+    <h3>An experimental approach</h3>
+    <p>Actually I've been involved in image manipulation in Java for some years now, as part of the above cited blueMarine
+    project. Recently I've joined my friend <a href="http://www.bloomingstars.com/">Emmanuele Sordini</a> in <a href="http://cool-apps-pleiades.developer.network.com/">Pleiades</a>,
+    an experimental project about parallel image processing with the <a href="http://www.network.com/">Sun Grid Compute
+      Utility</a>. It was a very pleasing and mind-opening experience, as Emmanuele and I approached the problem with
+    different attitudes: Emmanuele is an expert in maths and such and had image processing experience mostly with other
+    languages with Java; on the other hand I can handle complex maths only if somebody clearly explains them, while I'm
+    mostly interested in the design and architecture perspectives.</p>
+    <p>
+    We started working independently: Emmanuele first wrote a couple of prototypes of the algorithm we wanted to
+    implement. The former prototype was written with ImageJ, the latter with JAI - we then focused on the latter having
+    a preference for standard Java APIs, even though we will return to ImageJ in future for doing some comparisons. But
+    for the sake of this discussion, we can assume that the choice of another developer could have been ImageJ.</p>
+    <p>
+    My contribute on the project was to write a parallel implementation of the algorithm (details can be found <a href="http://pleiades.bloomingstars.com/infoglueDeliverLive/ViewPage.action?siteNodeId=345">here</a>).
+    I must confess that I'm a bit maximalist when I think of design: within the reasonable, I always strive for the most
+    flexible and wide-purpose solutions. For what concerns exploting parallelism, my intention was to define a very
+    simple design that could allow to run Emmanuele's code on a single PC as well as on the Sun Grid, taking advantage
+    of all the computing resources of both contexts. After all, besides running it on the Sun Grid, I also want to
+    integrate Pleiades in blueMarine.</p>
+    <p>
+    Indeed we think that this is an interesting approach, as people is saying that we are going to face more and more
+    parallel computing scenarios in future, and they can be "simple" multi-core systems or complex facilities such as
+    the Grid. And in these days people can easily build a <a href="http://mistral.tidalwave.it/infoglueDeliverLive/ViewPage.action?siteNodeId=369&amp;languageId=1&amp;contentId=1366">cheap
+      distributed computing network</a> by using opensource technologies such as <a href="http://mistral.tidalwave.it/infoglueDeliverLive/ViewPage.action?siteNodeId=369&amp;languageId=1&amp;contentId=1365">Jini&trade;
+      and Rio</a>: definitely another scenario to deal with.</p>
+    <h3>The abstraction layer</h3>
+    <p>As an example is worth a thousands words, let's consider this JAI code sketch that should read a photo (from my
+    Nikon D100 camera), crop it and compute the histogram:</p>
+    <pre class="prettyprint lang-java">import java.util.logging.Logger;  <br/>import java.io.File;  <br/>import java.io.IOException;  <br/>import java.awt.RenderingHints;  <br/>import java.awt.image.BufferedImage;  <br/>import java.awt.image.DataBuffer;  <br/>import java.awt.image.SampleModel;  <br/>import javax.imageio.ImageIO;  <br/>import javax.imageio.ImageReader;  <br/>import javax.imageio.stream.ImageInputStream;  <br/>import javax.media.jai.Histogram;  <br/>import javax.media.jai.PlanarImage;  <br/>import javax.media.jai.RenderedOp;  <br/>import javax.media.jai.operator.CropDescriptor;  <br/>import javax.media.jai.operator.FileLoadDescriptor;  <br/>import javax.media.jai.operator.HistogramDescriptor; <br/>//  <br/>// Loads the image  <br/>// File file = new File("../images/20030701-0043.NEF");  <br/>//  <br/>// Doesn't work: the TIFF plugin gets instantiated before the NEF one, and  <br/>// only the thumbnail is loaded. Unfortunately FileLoadDescriptor does not give  <br/>// enough control on the ImageReader.  <br/>// <br/>//PlanarImage image = FileLoadDescriptor.create(file.getAbsolutePath(), null, true, null);  <br/>ImageInputStream iis = ImageIO.createImageInputStream(file);  <br/>ImageReader ir = ImageIO.getImageReadersBySuffix("NEF").next();  <br/>ir.setInput(iis);  <br/>BufferedImage bufferedImage = ir.read(0);  <br/>iis.close();  <br/>PlanarImage image = PlanarImage.wrapRenderedImage(bufferedImage);  <br/>//  <br/>// Crops the image  <br/>// <br/>image = CropDescriptor.create(image, 10.0f, 10.0f, 600.0f, 400.0f, null);  <br/>//  <br/>// Computes the histogram  <br/>// <br/>SampleModel sampleModel = image.getSampleModel();  <br/>int bandCount = sampleModel.getNumBands();  <br/>int bits = DataBuffer.getDataTypeSize(sampleModel.getDataType());  <br/>int[] bins = new int[bandCount];  <br/>double[] min = new double[bandCount];  <br/>double[] max = new double[bandCount];  <br/>int maxxx = 1 &lt;&lt; bits;  <br/> <br/>for (int i = 0; i &lt; bandCount; i++)<br/>&nbsp; {<br/>&nbsp;&nbsp;&nbsp; bins[i] = maxxx;<br/>&nbsp;&nbsp;&nbsp; min[i] = 0;<br/>&nbsp;&nbsp;&nbsp; max[i] = maxxx;<br/>&nbsp; }<br/><br/>RenderedOp op = HistogramDescriptor.create(image, null, 1, 1, bins, min, max, null);  <br/>Histogram histogram = (Histogram)op.getProperty("histogram");  <br/>//  <br/>// Prints some information item from the histogram  <br/>// <br/>for (int band = 0; band &lt; bandCount; band++)<br/>&nbsp; {<br/>&nbsp;&nbsp;&nbsp; int[] frequencies = histogram.getBins(band);<br/>&nbsp;&nbsp;&nbsp; logger.info("band #" + band + ": min=" + histogram.getLowValue(band) + <br/>                                &nbsp;&nbsp; " max=" + histogram.getHighValue(band) + " " + <br/>&nbsp;                               &nbsp;&nbsp; frequencies.length + " samples");<br/>&nbsp; } </pre>
+    <p>The first thing that comes to our mind is that this code is too long: we are executing three operations here (load,
+    crop and histogram), and we'd expect a little more than three lines of code (writing the least code is one of the
+    trendy discussion all the world around, be it J2EE or anything else). Let us clearly state that we're not
+    criticizing JAI at all: it's a powerful and wide-purpose API and it's quite obvious that it deals with a lot of
+    details. From this point of view, JAI is just like JDBC, a low-level API, and there's nothing wrong with JDBC; but
+    we do prefer to work with some less verbose high-level APIs, such as Hibernate (or the latest Java Persistence API),
+    isn't it? </p>
+    <p>
+    Well, this is the same example re-written with Mistral:</p>
+    <pre class="prettyprint lang-java">import java.util.logging.Logger; <br/>import java.io.File; <br/>import java.io.IOException; <br/>import it.tidalwave.image.EditableImage; <br/>import it.tidalwave.image.Histogram; <br/>import it.tidalwave.image.op.CropOp; <br/>import it.tidalwave.image.op.HistogramOp;  <br/>// <br/>// Loads the image <br/>// <br/>File file = new File("../images/20030701-0043.NEF"); <br/>EditableImage image = EditableImage.read(file, 0); <br/>logger.info("Image loaded in " + image.getLatestOperationTime() + " msec"); <br/>// <br/>// Crops the image <br/>// <br/>image.execute(new CropOp(10, 10, 600, 400)); <br/>logger.info("Image cropped in " + image.getLatestOperationTime() + " msec"); <br/>// <br/>// Computes the histogram <br/>// <br/>Histogram histogram = image.execute(new HistogramOp()).getHistogram();  <br/>histogram.compute(); <br/>logger.info("Histogram computed in " + image.getLatestOperationTime() + " msec"); <br/>// <br/>// Prints some information item from the histogram <br/>// <br/>for (int band = 0; band &lt; histogram.getBandCount(); band++)<br/> &nbsp;{     <br/>    int min = histogram.getMin(band);   <br/>    int max = histogram.getMax(band);     <br/>    int[] frequencies = histogram.getFrequencies(band);     <br/>    logger.info("band #" + band + ": min=" + min + <br/>                                   " max=" + max + " " + <br/>                                     frequencies.length + " samples");  <br/>  }</pre>
+    <p>The code is much more compact and readable (12 lines versus 28). Furthermore, there's a plus: just three lines with
+    the logger provide information about how long each operation was (a valuable feature for tuning an application). To
+    get the elapsed time you don't have to deal with local variables and computing delta times: <code>EditableImage</code>
+    just remembers how long the latest performed operation took. Later we will see that we will be able to get rid also
+    of those <code>logger.info()</code> lines, still retaining statistics.</p>
+    <p>You could argue that choosing the <code>HistogramOp</code> as a paragon is not fair, as maybe this
+    operation requires a longer-than-average preparation. Well, this is partly true, many operations can be prepared in
+    less lines, but this is not so frequent. Remember that JAI is a low-level API, that is it provides (relatively)
+    simple operations that probably needs to be combined in the real world. For instance, the common task of creating a
+    smaller copy of a photo is not performed by JAI in a single step: different combinations of <code>Scale</code>,
+    <code>SubsampleAverage</code> and <code>FilteredSubsample</code> may be needed according
+    to the image type and the scale factor (see <a href="http://www.leptonica.com/scaling.html">here</a> and <a href="http://archives.java.sun.com/cgi-bin/wa?A2=ind0311&amp;L=jai-interest&amp;P=R9579&amp;I=-3">here</a>).
+    Mistral defines a <code>SizeOp</code> which encapsulates all this behaviour (BTW, at this point we
+    could add that there are still sparse bugs in JAI which often triggers only with specific sets of parameters - see
+    for instance <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4857245">bug #4857245</a> - and Mistral is
+    a good place for inserting workarounds that won't clutter your application code).</p>
+    <p>
+    The second thing you should notice are the import declarations: with Mistral, there's no trace of JAI-specific
+    classes (nor specific of any other imaging API). Indeed JAI is still behind the scenes (if you want): <code>EditableImage</code>
+    internally "translates" each operation (such as <code>CropOp</code> or <code>HistogramOp</code>)
+    in a specific JAI implementation. The mapping is kept by a special ImplementationFactory, where you (or another
+    programmer) could easily register alternate ways to perform the same operation. For instance, <code>CropOp</code>
+    and <code>HistogramOp</code> can be implemented with ImageJ, and in this case the above example would
+    "drive" ImageJ code. Thanks to the indirection brought to us by the <code>ImplementationFactory</code>
+    we have achieved a substantial engine-independence - we are just coding a high level image manipulation algorithm.</p>
+    <p><code>ImplementationFactory</code> instances can be easily registered at the application startup:</p>
+    <pre class="prettyprint lang-java">ImplementationFactoryRegistry registry = ImplementationFactoryRegistry.getInstance().<br/>registry.registerFactory(new ImplementationFactoryJ2D());<br/>registry.registerFactory(new ImplementationFactoryJAI());<br/>registry.registerFactory(new ImplementationFactoryImageJ());</pre>
+    <p>and this mechanism can be easily extended with a fully configurable approach, for instance using <code>Class.forName()</code>.</p>
+    <p>
+    So, the second step of Pleiades was me taking Emmanuele's code and refactoring it into the Mistral version,
+    eventually adding some operations that I hadn't coded before, such as the Fast Fourier Transform and such. After
+    some initial skepticism, Emmanuele appreciated the improved readability of the Mistral code over the original JAI
+    version; so he switched on it and went on improving his idea with Mistral. In the meantime, without needing to
+    understand much of what Emmanuele was doing, I was able to perform some more refactoring for performance reasons,
+    reducing the computation time by several seconds. In other words, we achieved a good separation of responsibilities,
+    algorithm versus implementation: in future Emmanuele will mostly work on the former, I will on the latter; everybody
+    will do what he's able to do better. And we can plug in alternate implementations after the fact, just in case some
+    other guy wants to use ImageJ or another stuff.</p>
+    <h3>Exploiting parallelism</h3>
+    <p>Now, the parallel thing. For the sake of simplicity, we just suppose that we have to execute the very same code
+    above on a large number of images (tenths or thousands). Let's say that the above code is encapsulated in a method
+    such as </p>
+    <pre class="prettyprint lang-java">public void process (File file)<br/>&nbsp; {<br/>&nbsp;&nbsp;&nbsp; // ...<br/>&nbsp; }</pre>
+    <p>Our problem is something like:</p>
+    <pre class="prettyprint lang-java">for (int i = 0; i &lt; 100; i++)<br/>&nbsp; {<br/>&nbsp;&nbsp;&nbsp; process(file[i]);<br/>&nbsp; }</pre>
+    <p>In this form, this is pretty serial code. It's good from a modeling point of view, but for instance it can't exploit
+    the dual core of my MacBook Pro, which can execute two tasks at the same time. And what about the Grid, where you
+    have lots of available processors?</p>
+    <p>
+    For my MacBook Pro we could do something like (this won't compile, it's just pseudo-code to render the idea):</p>
+    <pre class="prettyprint lang-java">int i = 0;<br/><br/>for (int j = 0; j &lt; 2; j++)<br/>&nbsp; {<br/> &nbsp;&nbsp; Thread t = new Thread()<br/>&nbsp; &nbsp;&nbsp;&nbsp; {<br/>&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp; public void run() <br/>&nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp; {<br/>            while (i &lt; 100)<br/>              {<br/>    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; process(file[i++]);<br/>              }<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  }<br/>      };<br/>   <br/>   &nbsp;t.start();<br/>&nbsp; }<br/><br/>while (i &lt; 100) <br/>  {<br/>    wait();<br/>  }</pre>
+<p>Basically we've set up a couple of threads that consume all the files in the array. A real code which would compile
+    and work is just a bit of more work, and we can make a thread pool as large as the number of processors in the
+    system (that you get by calling <code>Runtime.getRuntime().availableProcessors()</code>. Fine, this
+    would work also on the newest MacPro (with four cores) and in future multi-core systems.</p>
+    <p>
+    But multi-core systems aren't the only way we could do parallel computing. We have already depicted a few different
+    scenarios: Jini&trade; + Rio and the Sun Grid. This is really distributed computing in different Virtual Machines,
+    and <code>Thread</code> isn't the right abstraction. Both these technologies have their own APIs, that
+    we have to learn; but, above all, looks like we're forced to deal with different ways to do the same thing.</p>
+    <p>
+    The correct way to go is to apply the correct design, and use abstraction. First of all, Mistral wraps the code in a
+    special class called <code>ImagingTask</code>:</p>
+    <pre class="prettyprint lang-java">class MyImagingTask extends ImagingTask<br/>&nbsp; {<br/>&nbsp;&nbsp;&nbsp; public MyImagingTask (File file)&nbsp; <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // ...<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; public void run()<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // ...<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; public EditableImage getResult() <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return ...;<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp; }</pre>
+    <p>
+    Then we have an <code>ImagingTaskProcessor</code> that is an abstract object able to schedule an <code>ImagingTask</code>:</p>
+    <pre class="prettyprint lang-java">for (int i = 0; i &lt; 100; i++)<br/>&nbsp; {<br/>&nbsp;&nbsp;&nbsp; ImagingTaskProcessor.getInstance().post(new MyImagingTask(file[i]);<br/>&nbsp; }</pre>
+    <p>What does <code>ImagingTaskProcessor.getInstance()</code> return? Well, depends on what you want to
+    do. It could return a simple local processor, based on a pool of threads; it could return a processor able to find
+    distributed computing nodes implemented with Jini and Rio; it could return an implementation able to use the
+    available processors on the Sun Grid. The important thing is that we have again separated the algorithm from the
+    concrete implementation - and we can still plug in different implementations after the fact.</p>
+    <p>
+    There are more things to consider, as you seldom deal with simple, independent tasks that just go parallel as in our
+    example. In the real world you have dependencies (some tasks must be completed before others are launched), or what
+    some technologies call "multi-phasing" (running different tasks in different phases). Mistral easily achieve this by
+    using an <code>ImagingTaskProcessorController</code> which implements a callback method that is
+    executed every time a task is completed. Look at the following example:</p>
+    <pre class="prettyprint lang-java">&nbsp;&nbsp;&nbsp; public void notifyTaskCompleted (ImagingTask task)<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (task instanceof Phase1Task)<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; processor.post(new Phase2Task(task.getResult()));<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</pre>
+    <p>
+    This code schedules a phase 2 task that works on the result of a phase 1 task. It's a very limited example, as in
+    the real world there should be a test condition to understand when the processing is over (otherwise you'll run
+    forever), but renders the idea. The following example is a bit more complex:</p>
+    <pre class="prettyprint lang-java">&nbsp;&nbsp;&nbsp; public void notifyTaskCompleted (ImagingTask task)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while (processor.getCompletedTaskCount(Phase1Task.class) &gt;= 2)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EditableImage image1 = processor.popCompletedTask(Phase1Task.class).getResult();<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EditableImage image2 = processor.popCompletedTask(Phase1Task.class).getResult();<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; processor.post(new Phase2Task(image1, image2));<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</pre>
+    <p>
+    Whenever there are at least two completed tasks from phase 1, their results are fed to a phase 2 task. You can find
+    a slightly more complex example of a phase controller <a href="http://pleiades.bloomingstars.com/infoglueDeliverLive/ViewPage.action?siteNodeId=347">here</a>.</p>
+    <h3>Collecting statistics</h3>
+    <p>When dealing with <code>ImagingTask</code>s, you can generate statistics in an implicit way, reducing
+    ever more the number of lines of code. Instead of writing</p>
+    <pre class="prettyprint lang-java">class MyImagingTask extends ImagingTask<br/>&nbsp; {<br/>&nbsp;&nbsp;&nbsp; public void run()<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File file = new File(...);<br/>        EditableImage image = EditableImage.read(file, 0);<br/>        logger.info("Image loaded in " + image.getLatestOperationTime() + " msec");<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; image.execute(new CropOp(10, 10, 600, 400));<br/>&nbsp;       logger.info("Image cropped in " + image.getLatestOperationTime() + " msec"; <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Histogram histogram = image.execute(new HistogramOp()).getHistogram();&nbsp; <br/>        logger.info("Histogram computed in " + image.getLatestOperationTime() + " msec"); <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // ...<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp; }</pre>
+    <p>you can write:</p>
+    <pre class="prettyprint lang-java">class MyImagingTask extends ImagingTask<br/> &nbsp; {<br/> &nbsp;&nbsp;&nbsp; public void run()<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br/>&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File file = new File(...);<br/>         EditableImage image = read(file, 0, "my load operation");<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; execute(image, new CropOp(10, 10, 600, 400), "my crop operation");<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Histogram histogram = execute(image, new HistogramOp(), "compute histogram").getHistogram();&nbsp; <br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // ...<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/> &nbsp; }</pre>
+    <p>It is semantically equivalent, but <code>ImagingTask</code> will keep track of the elapsed time
+    keeping a record. If the same code is executed more than once, the statistics "my load operation", "my crop
+    operation" and "compute histogram" will be updated each time, and the min/max/average values will be available to
+    the programmer (usually these information are just logged). In a distributed environment, Mistral collects and
+    aggregates statistics from all the computing nodes around.</p>
+    <pre class="prettyprint lang-java">ImagingTaskProcessor.getInstance().getStatistics().dump();</pre>
+    <p>
+    As a final note, we at last achieved our target, that is writing roughly three lines of code since we're executing
+    three operations. The code works with any imaging engine, and in any local or distributed computing environment.</p>
+    <h3>Conclusion</h3>
+    <p>
+    Mistral is based on a very simple but effective design. It enables you to concentrate on the imaging algorithm and
+    to choose your favourite imaging engine (JAI, ImageJ or another) in a later time. It also makes you able to abstract
+    the parallelism of your algorithm and take advantage of any distributed processing context with a little effort.
+    Mistral is based on a known and very simple design pattern, the Master-Worker. It's simple but powerful for a
+    certain class of distributed processing, such as the "embarrassingly distributed" algorithms, made of tasks which
+    are largely reciprocally independent. The abstraction layer of Mistral also leads to a good separation of roles and
+    responsibilities when writing the application.</p>
+    <p>
+    In the real world there are a lot of details to deal with, but this is not a topic for this white paper. You can
+    learn more by reading other <a href="http://mistral.tidalwave.it/infoglueDeliverLive/ViewPage.action?siteNodeId=366&amp;languageId=1&amp;contentId=-1">documents</a>
+    about Mistral.</p>
+    <p><em>As a final word, at the moment Mistral is just work in progress. It works, as there are two applications
+        (blueMarine and Pleiades) that are based on it, but it's not complete. The number of available operations is
+        smaller than those of e.g JAI or ImageJ - but this is not a design limitation, just work in progress as
+        Emmanuele and I are adding stuff as we need it. Also, some operations are less flexible than they could be (e.g.
+        they don't deal with the ROI), but it's again just work in progress.</em></p>
+  </body>
+</html>

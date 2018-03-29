@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" media="screen" href="../../../../library/css/editing.css" type="text/css" />
+  </head>
+  <body>
+    <p>Java 8 introduced lambdas and streams, two tools that seem to offer many ways for improve our code, in particular
+      for what concerns conciseness and readability. There are a lot of samples around, focusing often on
+      over-simplified contexts. In this post I'm describing a small refactoring that I applied to a portion of code in a
+      project I'm developing. With its own limitations, I think it's an interesting real-world case to analyse. In this
+      post, I'm assuming that the reader knows the basic concepts and syntax of some Java 8 features, such as lamdas,
+      Streams and <code>Optional&lt;T&gt;</code>.</p>
+    <p>First, let's give the relevant context. I have a <code>MediaItem</code> interface, which represents e.g. an
+      audio file, which exposes a <code>Metadata</code> interface:</p>
+    <pre class="prettyprint lang-java">public interface Metadata
+  {
+    @Nullable
+    public &lt;T&gt; T get (@Nonnull Key&lt;T&gt; key);
+
+    @Nonnull
+    public Set&lt;Map.Entry&lt;Key&lt;?&gt;, ?&gt;&gt; getEntries();
+    …
+  }</pre>
+    <p>It's basically a type-safe <code>Map</code>, that there is a set of pre-defined <code>Key</code> items which
+      carry the type information of the value they're associated with. So there's no need to cast the values coming out
+      from the <code>get()</code> method.</p>
+    <p>Now I have to extract metadata items and store them into a <a href="http://www.ontotext.com/products/ontotext-graphdb/semantic-repository/">semantic
+        repository</a>. You don't need to know a lot about semantic repositories, but the fact that they contain
+      statements, or triples, in the form <em>subject-predicate-object</em>. Subjects or objects, when they refer to an
+      entity and not a literal value, are basically the identifiers of the related entities (which are URIs in the
+      semantic world). That's all you really need to know. </p>
+    <p>Indeed, for the scope of this post, you could pretend that the semantic repository is just a plain relational
+      database in which I have to insert some SQL statements. The relevant point is that I'm going to insert them by
+      firing an asynchronous message in a <a href="http://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern">publish-and-subscribe</a>
+      architecture; a subscriber somewhere will be notified of the request and perform the insertion. For the sake of
+      performance, I'm not firing a message for each statement, but I'm grouping them together (this might also have to
+      do with transaction control: perhaps I want to process them as atomic batches). On this purpose, there's an <code>AddStatementRequest</code>
+      message with its fluent <code>Builder</code>. The fluent nature of this object was a small problem with streams
+      that I needed to solve.</p>
+    <p>Here it is the version of the code at the beginning of the refactoring:</p>
+    <pre class="prettyprint lang-java">public void importMediaItemEmbeddedMetadata (final @Nonnull MediaItem mediaItem, final @Nonnull URI mediaItemUri)
+  {
+    log.info("importMediaItemEmbeddedMetadata({}, {})", mediaItem, mediaItemUri);
+    
+    final MediaItem.Metadata metadata = mediaItem.getMetadata();
+    final Integer trackNumber = metadata.get(MediaItem.Metadata.TRACK);
+    final Integer sampleRate = metadata.get(MediaItem.Metadata.SAMPLE_RATE);
+    final Integer bitRate = metadata.get(MediaItem.Metadata.BIT_RATE);
+    final Duration duration = metadata.get(MediaItem.Metadata.DURATION);
+
+    AddStatementsRequest.Builder builder = AddStatementsRequest.build();
+    
+    if (sampleRate != null)
+      {
+        builder = builder.with(mediaItemUri, MO.SAMPLE_RATE, literalFor(sampleRate));
+      }
+
+    if (bitRate != null)
+      {
+        builder = builder.with(mediaItemUri, MO.BITS_PER_SAMPLE, literalFor(bitRate));
+      }
+
+    if (trackNumber != null)
+      {
+        builder = builder.with(mediaItemUri, MO.TRACK_NUMBER, literalFor(trackNumber));
+      }
+
+    if (duration != null)
+      {
+        builder = builder.with(mediaItemUri, MO.DURATION, literalFor((float)duration.toMillis()));
+      }
+    
+    messageBus.publish(builder.create());
+  }</pre>
+    <p>I think it is quite readable. There are two immediate code smells: the sequence of <code>if</code> statements,
+      and the fact that I'm dealing with <code>null</code>s. </p>
+    <p>Let's start from the latter issue. Java 8 offers the <code>Optional&lt;T&gt;</code> class which represents a
+      value that can be present or not. I can refactor <code>Metadata</code> as follows:</p>
+    <pre class="prettyprint lang-java">public interface Metadata
+  {
+    @Nunnull
+    public &lt;T&gt; Optional&lt;T&gt; get (@Nonnull Key&lt;T&gt; key);
+
+    @Nonnull
+    public Set&lt;Map.Entry&lt;Key&lt;?&gt;, ?&gt;&gt; getEntries();
+    …
+  }</pre>
+    <p>So <code>get()</code> now is guaranteed to return a non <code>null</code> value. The method can be rewritten as
+      follows:</p>
+    <pre class="prettyprint lang-java">public void importMediaItemEmbeddedMetadata (final @Nonnull MediaItem mediaItem, final @Nonnull URI mediaItemUri)
+  {
+    log.info("importMediaItemEmbeddedMetadata({}, {})", mediaItem, mediaItemUri);
+    
+    final MediaItem.Metadata metadata = mediaItem.getMetadata();
+    final Optional&lt;Integer&gt; trackNumber = metadata.get(MediaItem.Metadata.TRACK);
+    final Optional&lt;Integer&gt; sampleRate = metadata.get(MediaItem.Metadata.SAMPLE_RATE);
+    final Optional&lt;Integer&gt; bitRate = metadata.get(MediaItem.Metadata.BIT_RATE);
+    final Optional&lt;Duration&gt; duration = metadata.get(MediaItem.Metadata.DURATION);
+
+    AddStatementsRequest.Builder builder = AddStatementsRequest.build();
+    
+    if (sampleRate.isPresent())
+      {
+        builder = builder.with(mediaItemUri, MO.SAMPLE_RATE, literalFor(sampleRate.get()));
+      }
+
+    if (bitRate.isPresent())
+      {
+        builder = builder.with(mediaItemUri, MO.BITS_PER_SAMPLE, literalFor(bitRate.get()));
+      }
+
+    if (trackNumber.isPresent())
+      {
+        builder = builder.with(mediaItemUri, MO.TRACK_NUMBER, literalFor(trackNumber.get()));
+      }
+
+    if (duration.isPresent())
+      {
+        builder = builder.with(mediaItemUri, MO.DURATION, literalFor((float)duration.get().toMillis()));
+      }
+    
+    messageBus.publish(builder.create());
+  }</pre>
+    <p>Honestly, this is an almost neglectable improvement. Sure, <code>isPresent()</code> is marginally better
+      readable than <code>!= null</code>, but there's no much beef. The <code>if</code> statements are still needed,
+      and while there can't be NPEs any longer, I can still get it wrong: if a presence check is wrong, <code>sampleRate.get()</code>
+      will throw <code>NoSuchElementException</code>. So,  I've just exchanged an exception with another. While there's
+      plenty of code samples like this, and flame wars about whether it's good or not, to me it's quite evident that
+      this usage of <code>Optional</code> is basically meaningless. </p>
+    <div class="note">
+      <p><code>Optional</code> offers a more functionally oriented method, such as <span style="font-family: monospace;">map</span><code>()</code>
+        to apply a <code>Function</code>. It would eliminate conditionals, but wouldn't solve an issue, described
+        below, with the fact that <code>builder</code> is not <code>final</code>. That's why I did not consider this
+        route.</p>
+    </div>
+    <p>Now, a fundamental point is that, <strong>if you want quality in your code then you need testing</strong>. But a
+      compiler of a statically-typed language could help in avoiding some blatant errors and, in the end, save some
+      time. By introducing <code>Optional</code> it has not been the case.</p>
+    <p>Basically, the <code>null</code>-related issue is secondary. The problem here is conditioned by the major
+      code-smell, which is the sequence of conditional statements. It's also an approach that badly scales: what if I
+      need to add mapping for another dozen of metadata items?</p>
+    <p>Let's think of a Java 8-oriented refactoring that will bring the code down to 4 lines. Well, I'm lying: the
+      fundamental lines will be 4+4, plus some other stuff. <strong>But improving the quality of code doesn't (always)
+        mean literally shrinking lines, rather having better lines. </strong></p>
+    <p>First, we realize that, rather than having a sequence of special-cases, we need a collection of metadata
+      mappings, and iterating over it. In Java 8 we have lambda expressions that allow code an iteration in a single
+      line. For instance, something such as the following pseudo-code:</p>
+    <pre class="prettyprint lang-java">AddStatementsRequest.Builder builder = AddStatementsRequest.build();
+mapping.stream().forEach(() -&gt; builder = builder.with(… /* do something smart */));
+messageBus.publish(builder.create());</pre>
+    <p>Unfortunately, it can't work whatever smart the thing is conceived. The problem is that a lambda is a sort of
+      masked inner class, and the usual rule applies: if it accesses local variables declared outside its scope, they
+      must be <code> final</code>. But a fluent Builder can't be referenced by a <code>final</code> variable (it
+      prevents from writing <code>builder = builder.with(...)</code>). While at first sight one might think: <em>“ok,
+        these are the classic devil's details that jeopardise a could-be elegant approach, and I give up”</em>, the
+      problem is that we're looking at a very limited number of features offered by Java 8. Functional often requires
+      that you re-think some details. For instance, a fluent Builder is a sort of 'collector' of things that are
+      incrementally added. But Java 8 streams offer their own version of a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html"><code>Collector</code></a>:
+      an object that 'terminates' a stream, collecting all the elements in it into a single object. Perhaps we can
+      replace <em>our</em> collector with <em>their</em> collector, and find that <em>their</em> collector fits
+      better?</p>
+    <div class="note">
+      <p>I received some feedback about this passage. It was pointed out that the problem is not only related to the
+        limitation about lambdas and <code>final</code> references pointing to immutable objects such as <code>Builder</code>.
+        Indeed from the design point of view a good functional approach should avoid side-effects.</p>
+    </div>
+    <p>So our code becomes:</p>
+    <pre class="prettyprint lang-java">Collector&lt;Statement, List&lt;Statement&gt;, AddStatementsRequest&gt; collector = ...;
+AddStatementRequest request = mapping.stream(). … .collect(collector);
+messageBus.publish(request);</pre>
+    <p>Even better, taking advantage of static methods, in a single line:</p>
+    <pre class="prettyprint lang-java">messageBus.publish(mapping.stream(). … .collect(toAddStatementsRequest()));</pre>
+    <p>Now, what is the cost of writing a custom <code>Collector</code>? Something like that:</p>
+    <pre class="prettyprint lang-java">@Nonnull
+public static Collector&lt;Statement, List&lt;Statement&gt;, AddStatementsRequest&gt; toAddStatementsRequest()
+  {
+    return new ArrayListCollectorSupport&lt;Statement, AddStatementsRequest&gt;()
+      {
+        @Override @Nonnull
+        public Function&lt;List&lt;Statement&gt;, AddStatementsRequest&gt; finisher() 
+          {
+            return statements -&gt; new AddStatementsRequest(statements);
+          }
+      };  
+  }
+
+public abstract class ArrayListCollectorSupport&lt;COLLECTED_TYPE, COLLECTING_TYPE&gt; 
+        implements Collector&lt;COLLECTED_TYPE, List&lt;COLLECTED_TYPE&gt;, COLLECTING_TYPE&gt;
+  {
+    @Override @Nonnull 
+    public Supplier&lt;List&lt;COLLECTED_TYPE&gt;&gt; supplier() 
+      {
+        return ArrayList::new;
+      } 
+
+    @Override @Nonnull 
+    public BiConsumer&lt;List&lt;COLLECTED_TYPE&gt;, COLLECTED_TYPE&gt; accumulator() 
+      {
+        return List::add;
+      }
+
+    @Override @Nonnull 
+    public BinaryOperator&lt;List&lt;COLLECTED_TYPE&gt;&gt; combiner() 
+      {
+        return (left, right) -&gt; { left.addAll(right); return left; };
+      }
+
+    @Override @Nonnull 
+    public Set&lt;Characteristics&gt; characteristics() 
+      {
+        // Not CONCURRENT since ArrayList is not thread-safe
+        return Collections.emptySet();
+      }
+  }</pre>
+    <p>Honestly, we're adding a lot of lines of code. But: </p>
+    <ol>
+      <li><code>ArrayListCollectorSupport</code> is a very reusable class for many kinds of programmer-defined <code>Collectors</code>.
+        Actually, it was already in my kitchen-sink library of small useful things that I reuse everywhere.</li>
+      <li><code>toAddStatementsRequest()</code> is very specific to <code>AddStatementsRequest</code>, but I can reuse
+        it a few times. </li>
+    </ol>
+    <div class="tip">
+      <p>I think most people working with Java 8 know <code>Collectors</code> up to a certain degree, since they offer
+        some facility methods to easily re-pack a <code>Stream</code> into a <code>List</code>, or format it to a <code>String</code>
+        with controllable formatting. But I see that only a few ones understand that they could write their own <code>Collector</code>
+        for their classes, and this kind of usage of the Java 8 APIs can be useful for achieving a real benefit.
+        Sometimes you have complex logics in the collection strategy that don't fit with a simply iterative approach.
+        For instance, within a <code>Stream</code> you can <code>filter()</code> item by item, but you cannot take a
+        decision based on the whole collection of items accumulated so far. In a earlier version of the code related to
+        this post it was possible to override statements with the same subject and predicate, because a certain piece of
+        medatada was first extracted by an audio file and later superseded by a better piece of information retrieved
+        from the web. This was implemented in a custom <code>Collector</code>. </p>
+      <p>This requirement went away with other refactorings, so now the custom <code>Collector</code> was removed. I'm
+        leaving it in this post just for didactic purposes - let's just recall that in some more complex cases it can
+        help us. Ignoring that the Java 8 Streams API is made not only of <code>Stream</code>s might make you give up a
+        refactoring and preclude an interesting way to re-shape your code. </p>
+    </div>
+    <p>Now, let's focus on the stream. We can start with the whole set of metadata entries:</p>
+    <pre class="prettyprint lang-java">mediaItem.getMetadata().getEntries().stream()</pre>
+    <p>and then apply a filter for picking only those that I want to store to my semantic repository:</p>
+    <pre class="prettyprint lang-java">filter(e -&gt; MAPPER.containsKey(e.getKey())</pre>
+    <p>Now the trickiest part. I have to 'translate' a <code>Metadata</code> <code>Key</code> in the corresponding <code>Statement</code>.
+      A <code>Statement</code>, I repeat, is a triple <em>subject-predicate-object</em>. In my case the subject is the
+      id (i.e. the URI) of the <code>mediaItem</code>. This is a variable part for each invocation, so can't be a
+      responsiblity of the <code>MAPPER</code>. The predicate and object are fixed for each <code>metadata</code> key,
+      so they can be a responsibility of the <code>MAPPER</code>. First, we need to introduce a <code>Pair</code>
+      class which encapsulates predicate and object:</p>
+    <pre class="prettyprint lang-java">@Immutable @RequiredArgsConstructor @ToString
+static class Pair
+  {
+    @Nonnull
+    private final URI predicate;
+    
+    @Nonnull
+    private final Value object;
+  }</pre>
+    <p>I'm taking advantage of <a href="http://projectlombok.org">Lombok</a> for saving some plumbing code (constructor
+      and getters). At this point I can define the <code>MAPPER</code> as a <code>Map</code> from <code>Key</code> to
+      a <code>Function</code> transforming an <code>Object</code> (the metadata item value) to a <code>Pair</code> of
+      predicate and object:</p>
+    <pre class="prettyprint lang-java">private static final Map&lt;Key&lt;?&gt;, Function&lt;Object, Pair&gt;&gt; MAPPER = new HashMap&lt;&gt;();
+
+static
+  {
+    MAPPER.put(Metadata.TRACK,       v -&gt; new Pair(MO.P_TRACK_NUMBER,    literalFor((int)v)));
+    MAPPER.put(Metadata.SAMPLE_RATE, v -&gt; new Pair(MO.P_SAMPLE_RATE,     literalFor((int)v)));
+    MAPPER.put(Metadata.BIT_RATE,    v -&gt; new Pair(MO.P_BITS_PER_SAMPLE, literalFor((int)v)));
+    MAPPER.put(Metadata.DURATION,    v -&gt; new Pair(MO.P_DURATION,
+                                                literalFor((float)((Duration)v).toMillis())));
+  }</pre>
+    <div class="note">
+      <p>Note that here we are already losing something. While in the original code, with the “unrolled” conditional
+        statements, we were taking advantage of the type information brought by <code>Key</code>, here we have lost it.
+        For this reason, we are forced to put explicit casts in the parameter of <code>literalFor()</code>. I don't see
+        solutions, and the cause is the limited support of type information, not reified, in Java generics.</p>
+    </div>
+    <p>The final touch is to add to <code>Pair</code> a method to create a <code>Statement</code> with a given
+      subject:</p>
+    <pre class="prettyprint lang-java">@Nonnull
+public Statement createStatementWithSubject (final @Nonnull URI subject)
+  {
+    return ...createStatement(subject, predicate, object);
+  }</pre>
+    <p>How to use that stuff? By applying a mapping to the stream, in which we first get the relevant <code>Function</code>
+      inside the <code>MAPPER</code>, then apply it to the metadata value, retrieve the <code>Pair</code> and create
+      the <code>Statement</code>:</p>
+    <pre class="prettyprint lang-java">stream().map(e -&gt; MAPPER.get(e.getKey()).apply(e.getValue()).createStatementWithSubject(mediaItemUri))</pre>
+    <p>Putting all together:</p>
+    <pre class="prettyprint lang-java">public void importTrackMetadata (final @Nonnull MediaItem mediaItem, final @Nonnull URI mediaItemUri)
+  {
+    log.debug("importTrackMetadata({}, {})", mediaItem, mediaItemUri);
+    messageBus.publish(mediaItem.getMetadata().getEntries().stream()
+        .filter(e -&gt; MAPPER.containsKey(e.getKey()))
+        .map(e -&gt; MAPPER.get(e.getKey()).apply(e.getValue()).createStatementWithSubject(mediaItemUri))
+        .collect(toAddStatementsRequest()));
+  }</pre>
+    <p>So, let's recap. The original method had 15 lines (excluding logging, blanks and braces). The refactored method
+      has got 4, but part of the information has been moved to the further 4 lines that populate <code>MAPPER</code>.
+      In the end, we have 8 lines: we saved 7 lines. But we had to introduce <code>Pair</code> (4 lines, and a few one
+      saved by Lombok): 4 further lines. Roughly, the number of lines didn't change. Was it worth the effort? </p>
+    <p>First, the refactored code scales much better: for each new metadata item to map, we need to add one more line
+      (we can't do better than this!); in the original code we needed to add a whole new <code>if</code> statement. Not
+      only it's made by 2 lines, but it's less readable. In the end, <strong>we split the original blob</strong> into
+      an <strong>imperative part</strong> (the one in the method, with the stream iteration), which will stay the same
+      forever. Then we have a purely <strong>declarative part</strong>, which is the code populating <code>MAPPER</code>.
+      There's not much to test in it, but the correctness of the mapping. <strong>So we have split an original blob of
+        two responsibilities into two separate sections, each one with a single responsibility.</strong> We can
+      understand each section separately, focusing only on a few lines at a time.</p>
+    <p>On the other hand, I think that many would argue that they find the new solution more “complex” (whatever the
+      word means...) than the original.</p>
+    <p>The most controversial line is clearly this:</p>
+    <pre class="prettyprint lang-java">.map(e -&gt; MAPPER.get(e.getKey()).apply(e.getValue()).createStatementWithSubject(mediaItemUri))</pre>
+    <p>Is there any further room for improvement? It can be refactored as:</p>
+    <pre class="prettyprint lang-java">.map(e -&gt; MAPPER.forItem(e).createStatementWithSubject(mediaItemUri))</pre>
+    <p>but with a non neglectable cost, as we need to create a subclass:</p>
+    <pre class="prettyprint lang-java">static class Mapper extends HashMap&lt;Key&lt;?&gt;, Function&lt;Object, Pair&gt;&gt;
+  {
+    @Nonnull
+    public Pair forItem (final @Nonnull Map.Entry&lt;Key&lt;?&gt;, ?&gt; entry)
+      {
+        return get(entry.getKey()).apply(entry.getValue());
+      }
+  }</pre>
+    <p>We're not saving any line here, instead we're introducing 4 more lines. And they are not reusable. In the end I
+      applied this refactoring as well, but I'm not sure it's worth while.</p>
+    <hr />
+    <p>What conclusion to draw? This is a specific problem, but a real case one. Undoubtedly, Java 8 was useful for
+      refactoring my code in a way that has better responsibility separation, readability and maintainability. In terms
+      of lines of code, there's not really a real gain, even considering some of the new lines I wrote are at least
+      partially reusable. </p>
+    <p>So, if we limit ourselves to the mere LoC count, we could be easily displeased. When taking a broader horizon in
+      consideration, the advantage is evident.</p>
+    <p>There are other advantages, in addition to readability. Streams are parallelizable, which means that if I had a
+      large numbers of items to map, the refactored code would be faster, by taking advantage of multiple cores.</p>
+    <p>PS. While I was writing this post, my code evolved further. In particular, I found that the semantic schema I was
+      applying was not correct: some metadata items have to be related to a certain entity, while others to a different
+      one. The current code is:</p>
+    <pre class="prettyprint lang-java">static class Mapper extends HashMap&lt;Key&lt;?&gt;, Function&lt;Object, Pair&gt;&gt;
+  {
+    @Nonnull
+    public Pair forItem (final @Nonnull Map.Entry&lt;Key&lt;?&gt;, ?&gt; entry)
+      {
+        return get(entry.getKey()).apply(entry.getValue());
+      }
+  }
+
+private static final Mapper SIGNAL_MAPPER = new Mapper();
+private static final Mapper TRACK_MAPPER = new Mapper();
+
+static
+  {
+    TRACK_MAPPER. put(Metadata.TRACK,       v -&gt; new Pair(MO.P_TRACK_NUMBER,    literalFor((int)v)));
+
+    SIGNAL_MAPPER.put(Metadata.SAMPLE_RATE, v -&gt; new Pair(MO.P_SAMPLE_RATE,     literalFor((int)v)));
+    SIGNAL_MAPPER.put(Metadata.BIT_RATE,    v -&gt; new Pair(MO.P_BITS_PER_SAMPLE, literalFor((int)v)));
+    SIGNAL_MAPPER.put(Metadata.DURATION,    v -&gt; new Pair(MO.P_DURATION,
+                                                       literalFor((float)((Duration)v).toMillis())));
+  }
+
+public void importAudioFileMetadata (final @Nonnull MediaItem mediaItem, 
+                                     final @Nonnull URI signalUri,
+                                     final @Nonnull URI trackUri)
+  {
+    log.debug("importAudioFileMetadata({}, {}, {})", mediaItem, signalUri, trackUri);
+    final Set&lt;Map.Entry&lt;Key&lt;?&gt;, ?&gt; entries = mediaItem.getMetadata().getEntries();
+    messageBus.publish(entries.stream()
+                              .filter(e -&gt; SIGNAL_MAPPER.containsKey(e.getKey()))
+                              .map(e -&gt; SIGNAL_MAPPER.forItem(e).createStatementWithSubject(signalUri))
+                              .collect(toAddStatementsRequest()));
+    messageBus.publish(entries.stream()
+                              .filter(e -&gt; TRACK_MAPPER.containsKey(e.getKey()))
+                              .map(e -&gt; TRACK_MAPPER.forItem(e).createStatementWithSubject(trackUri))
+                              .collect(toAddStatementsRequest()));
+  }</pre>
+    <p>The readability improvement due do the introduction of <code>MAPPER</code> is now even more evident: the
+      original sequence of conditional statements would easily induce errors in mis-matching the metadata items with the
+      URIs of the two entities, while now we have two <code>MAPPER</code>s with their own configuration.</p>
+    <p>I have to further stress the point, anyway, that the final warranty of quality can't be given by syntax, but I
+      need testing. Actually I have an integration test running over a few thousands audio files of my personal
+      collection that makes sure data is properly translated; I couldn't have applied this radical refactoring without
+      being supported by this test that assured me I was not introducing regressions at each step. </p>
+    <p>The better syntax, however, might help in making fewer errors and spending less time to run tests, detect
+      problems and fix them.</p>
+  </body>
+</html>

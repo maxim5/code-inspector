@@ -1,0 +1,607 @@
+#!/usr/bin/perl -wT
+#
+# Command interface to OpenSSH authorized_keys file. Run perldoc(1) on
+# this file for additional documentation.
+#
+# TODO how is this different from authkey-tool??
+#
+# The author disclaims all copyrights and releases this script into the
+# public domain.
+
+use strict;
+
+# clean up env for taint mode ("perldoc perlsec" for more information)
+sub BEGIN {
+  delete @ENV{qw(IFS CDPATH ENV BASH_ENV)};
+  $ENV{PATH} = '/bin:/usr/bin:/usr/local/bin';
+}
+
+use Digest::MD5 qw(md5);
+use Fcntl qw(:DEFAULT :flock);
+
+use Sys::Syslog;
+
+# path to authorized_keys file.  OpenSSH >= 3.0 should merge old
+# authorized_keys2 files into authorized_keys.
+my $auth_key_file = "~/.ssh/authorized_keys";
+
+# to untaint filename with
+my $auth_key_file_chars = qr"^([\w\s.~/-]+)$";
+
+# filehandle of auth_key_file
+my $akfh;
+
+# where auth keys are stored in memory (Data::Dumper it for format)
+my $data;
+
+# registered commands
+my %command = (
+  'list'   => \&do_list,
+  'write'  => \&do_write,
+  'delete' => \&do_delete,
+  'add'    => \&do_add,
+  'dump'   => \&do_dump,
+  'alter'  => \&do_alter
+);
+
+use Getopt::Std;
+my %opts;
+getopts('h?f:l:aiqL', \%opts);
+
+help() if exists $opts{h} or exists $opts{'?'};
+
+$auth_key_file = $opts{f} if exists $opts{f};
+
+# do ~ expansion on filename
+$auth_key_file =~ s{ ^ ~ ( [^/]* ) }
+                    { $1 ? (getpwnam($1))[7]
+                          : ( $ENV{HOME} || $ENV{LOGDIR}
+                              || (getpwuid($>))[7]
+                              )
+                          }ex;
+
+# untaint filename
+if ($auth_key_file =~ $auth_key_file_chars) {
+  $auth_key_file = $1;
+} else {
+  die "Invalid characters in filename.\n";
+}
+
+# open with locking auth_key_file
+unless (exists $opts{L}) {
+  open $akfh, "+< $auth_key_file"
+   or remark('alert', "problem opening authorized key file: $!")
+   and die;
+
+  unless (flock $akfh, LOCK_EX | LOCK_NB) {
+    remark('notice', "waiting for write lock on $auth_key_file");
+    flock $akfh, LOCK_EX
+     or remark('alert', "write lock on $auth_key_file failed: $!")
+     and die;
+  }
+
+} else {
+  open $akfh, "+< $auth_key_file"
+   or remark('alert', "problem opening authorized key file: $!")
+   and die;
+}
+
+# read in authorized keys to data structure
+while (<$akfh>) {
+
+  # see sshd(8) for expected format of auth_key_file
+  next if m/^#/ or m/^\s*$/;
+  chomp;
+
+  my $values = parse_authkey($_);
+
+  next unless defined $values;
+
+  if (exists $data->{$values->{hash}}) {
+    remark(
+      'warning',         "skipping duplicate key (hash:",
+      $values->{hash}, ") at $auth_key_file line $."
+    );
+    next;
+  }
+
+  $data->{$values->{hash}} = $values;
+}
+
+# clear out arguments unless we're reading commands from there
+@ARGV = () unless exists $opts{a};
+
+# read commands from STDIN if specified
+if (exists $opts{i}) {
+  my @tmp;
+  chomp(@tmp = <STDIN>);
+  push @ARGV, @tmp;
+}
+
+# and flag the help text if nothing from STDIN
+help() unless @ARGV;
+
+# look for commands and deal with them
+for (@ARGV) {
+  next if m/^#/ or m/^\s*$/;
+
+  # TODO: -a will not work with following, as tricky to get
+  # command line arguments with tabs in them on Unix...
+  my @work = split /\t/;
+  my $cmd  = shift @work;
+
+  unless (exists $command{$cmd}) {
+    remark('notice', "skipping unknown command: $cmd");
+    next;
+  }
+
+  $command{$cmd}(@work);
+}
+
+unless (exists $opts{L}) {
+  flock $akfh, LOCK_UN
+   or remark('notice', "problem unlocking $auth_key_file: $!");
+}
+close $akfh or remark('notice', "problem closing $auth_key_file: $!");
+
+exit;
+
+# shows some info about known keys
+sub do_list {
+  push @_, "all" unless @_;
+
+  my @keys = get_hashids(@_);
+
+  remark('info', "listing", scalar @keys, "keys");
+
+  for (@keys) {
+    print join ("\t",
+      $data->{$_}->{hash},
+      $data->{$_}->{type},
+      $data->{$_}->{comment},
+      authkey_options2str($data->{$_}->{options})),
+     "\n";
+  }
+}
+
+# literal display of requested keys in memory
+sub do_dump {
+  push @_, "all" unless @_;
+
+  my @keys = get_hashids(@_);
+
+  remark('info', "dumping", scalar @keys, "keys");
+  
+  for (@keys) {
+    print data2keystring($data->{$_}), "\n";
+  }
+}
+
+# merges keys into auth_key_file
+sub do_write {
+  seek $akfh, 0, 0
+   or remark('alert', "could not seek on $auth_key_file: $!")
+   and die;
+  truncate $akfh, 0
+   or remark('alert', "could not truncate $auth_key_file: $!")
+   and die;
+
+  remark('info', 'writing', scalar keys %$data, "keys to $auth_key_file");
+
+  for (keys %$data) {
+    print $akfh, data2keystring($data->{$_}), "\n";
+  }
+}
+
+sub do_delete {
+  my @evict = get_hashids(@_);
+  remark('info', "deleting", scalar @evict, "keys: @evict");
+  delete @$data{@evict};
+}
+
+# takes command arguments of "standard" form, and returns a list
+# of matching hash id's for the keys in question
+sub get_hashids {
+  return keys %$data if grep { $_ eq "all" } @_;
+
+  # otherwise...
+  my (@keys, @tmpkeys);
+  @tmpkeys = keys %$data;
+
+  for (@_) {
+    my ($cmd, $arg) = split /:/, $_, 2;
+    push @keys, grep { $data->{$_}->{$cmd} eq $arg } @tmpkeys;
+  }
+
+  return @keys;
+}
+
+# adds specified key(s) into memory (replaces preexistant keys by hash)
+sub do_add {
+  my @added;
+
+  for (@_) {
+    my $values = parse_authkey($_);
+
+    next unless defined $values;
+
+    push @added, $values->{hash};
+
+    if (exists $data->{$values->{hash}}) {
+      remark('notice', 'replacing key', $values->{hash});
+    }
+    $data->{$values->{hash}} = $values;
+  }
+
+  remark('info', 'adding', scalar @added, "keys: @added");
+}
+
+# alters specified key(s) in memory (comments or options ONLY!)
+sub do_alter {
+  my $keyspec = shift;
+  
+  my @keys = get_hashids($keyspec);
+  
+  my %updates;
+  
+  for (@_) {
+    my ($cmd, $arg) = /^(comment|options):(.*)/;
+    $updates{$cmd} = $arg;
+  }
+  
+  if (exists $updates{options}) {
+    $updates{options} = parse_authkey_options($updates{options});
+  }
+  
+  remark('info', 'altering', scalar @keys, "keys: @keys");
+  
+  for (@keys) {
+    @{$data->{$_}}{keys %updates} = values %updates;
+  }
+}
+
+# takes scalar containing key, tries to return hash reference with
+# various bits of info expanded out
+sub parse_authkey {
+  my $authkey = shift;
+
+  my (%values, @options);
+
+  # TODO: improve parser to get around boundary cases!
+  # e.g.: command="mumble ssh-rsa AAAA.... zot" ssh-rsa AAAA....
+  # or even: ssh-rsa  AAAA...
+
+  # try to pull apart key so we can do a checksum on the
+  # important bits (i.e. not the optional option and comment fields)
+  my @elements = split /\s/, $authkey;
+  for my $i (0 .. $#elements) {
+
+    if (  $elements[$i] =~ m/^ssh-(?:rsa|dss)$/
+      and $elements[$i + 1] =~ m/^AAAA/) {
+
+      $values{type} = ($elements[$i] =~ m/rsa$/) ? 'rsa' : 'dsa';
+      $values{goodbit} = join " ", @elements[$i .. $i + 1];
+      $values{comment} = join " ", @elements[$i + 2 .. $#elements];
+
+      last;
+
+      } elsif ($elements[$i] =~ m/^\d+$/
+      and $elements[$i + 1] =~ m/^\d+$/
+      and $elements[$i + 2] =~ m/^\d+$/) {
+
+      $values{type}    = 'rsa1';
+      $values{goodbit} = join " ", @elements[$i .. $i + 2];
+      $values{comment} = join " ", @elements[$i + 3 .. $#elements];
+
+      last;
+    }
+
+    push @options, $elements[$i];
+  }
+
+  unless (exists $values{goodbit}) {
+    remark('notice', "could not parse key from: $authkey");
+    return;
+  }
+
+  $values{options} = parse_authkey_options("@options");
+
+  $values{hash} = sprintf "%08x", unpack "N", md5($values{goodbit});
+
+  return \%values;
+}
+
+# takes scalar containing auth_key_file options
+# returns hash reference
+#
+# TODO: fixup to handle 'mumble="asdf, zot",foo' issues
+sub parse_authkey_options {
+  my $options = shift;
+  my $ak_opts;
+
+  for (split /,/, $options) {
+    my ($k, $v) = split /=/;
+    $ak_opts->{$k} = $v;
+  }
+
+  return $ak_opts;
+}
+
+# takes hash ref representing key, returns string suitable for
+# authorized keys file use
+sub data2keystring {
+  my $href = shift;
+  my $ks = q{};
+  
+  if (exists $href->{options}) {
+    $ks .= authkey_options2str($href->{options}) . ' ';
+  }
+  
+  $ks .= $href->{goodbit};
+  
+  if (exists $href->{comment}) {
+    $ks .= ' ' . $href->{comment};
+  }
+  
+  return $ks;
+}
+
+# takes hash ref, returns scalar format of options
+sub authkey_options2str {
+  return join ",", map { $_[0]->{$_} ? $_ . '=' . $_[0]->{$_} : $_ }
+   sort keys %{$_[0]};
+}
+
+# generic log handler
+sub remark {
+  my ($facility, $priority, $message);
+  $facility = 'user';
+
+  if (@_ > 1) {
+    $priority = shift;
+    $message  = "@_";
+  } else {
+    $priority = 'info';
+    $message  = "@_";
+  }
+
+  return 1 if exists $opts{q} and $priority eq 'info';
+
+  if (exists $opts{l}) {
+    if ($opts{l} eq "syslog") {
+      openlog($0, 'cons', $facility);
+      syslog($priority, $message);
+      closelog();
+
+    } elsif ($opts{l} eq "logger") {
+      system "logger", '-p', $facility . '.' . $priority, '-t', $0, $message;
+
+    } else {
+      die "alert: unknown log handler: ", $opts{l};
+    }
+
+  } else {
+    warn $priority, ": ", $message, "\n";
+  }
+
+  return 1;
+}
+
+# a generic help blarb
+sub help {
+  print <<"HELP";
+Usage: $0 [opts]
+
+Command interface to OpenSSH authorized_keys file.
+
+Options:
+  -h/-?  Display this message
+
+  -f ff  Use specified authorized_keys file instead of default.
+  -L     Do not lock authorized keys file (default is to flock).
+
+  -a     Allow commands on the command line.
+  -i     Allow commands on STDIN.
+
+  -l xx  Log to target xx (default: STDERR, also logger, syslog).
+  -q     Hide informational messages.
+
+Run perldoc(1) on this script for additional documentation.
+
+HELP
+  exit;
+}
+
+__END__
+
+=head1 NAME
+
+manage-authkeys - command interface to OpenSSH authorized_keys file
+
+=head1 SYNOPSIS
+
+Get a listing of keys in the default authorized_keys file:
+
+  $ manage-authkeys -a list
+
+=head1 DESCRIPTION
+
+=head2 Overview
+
+Provides a scriptable means of listing, altering, and deleting keys
+out of an OpenSSH C<~/.ssh/authorized_keys> file.
+
+This script is intended to be talked to by other scripts which present
+a better interface to humans.  This script is a first draft prototype,
+and may need a rewrite to support additional functionality (like
+support for management of authorized keys for other ssh products).
+
+=head2 Normal Usage
+
+  $ manage-authkeys [options] [commands]
+
+See L<"COMMANDS"> for details on the command syntax.
+
+See L<"OPTIONS"> for details on the command line switches supported.
+
+=head1 COMMANDS
+
+Commands allow scriptable interaction with the authorized_keys file. 
+Multiple commands may be supplied on either the command line or on
+STDIN.  Arguments to commands are separated by the tab character.
+
+=over 4
+
+=item B<list> I<keymatch statement> [I<keymatch statement> ...]
+
+Shows what temporary keyfiles are available, plus some general data
+about the public key in question.  Will list all available keys if no
+additional arguments are supplied.
+
+The syntax of keymatch statements is either C<all> to match all keys,
+or a colon-separated element consisting of the internal hash key and
+an exact value to match, e.g. C<type:rsa> or C<hash:a5e6d976>.
+
+=item B<dump> I<keymatch statement> [I<keymatch statement> ...]
+
+Lists keys as exist in memory.
+
+=item B<delete> I<keymatch statement> [I<keymatch statement> ...]
+
+Deletes the specified keys from memory.  Delete requires a keymatch
+statement to do anything.
+
+=item B<add> I<keys>
+
+Adds the specified key(s) into memory.  The literal key must not
+contain tab characters.
+
+=item B<alter> I<keymatch statement> [comment:foo] [options:bar]
+
+Will alter the comment or options fields of the specified key(s).
+Leave the argument to comment or options blank to clear the item in
+question.  This allows key options and comments to be updated without
+doing an awkward delete/add command cycle.
+
+=item B<write>
+
+Overwrites the authorized_keys file with the keys in memory (or
+empties the file should none be in memory).
+
+=back
+
+=head1 OPTIONS
+
+This script currently supports the following command line switches:
+
+=over 4
+
+=item B<-h>, B<-?>
+
+Prints a brief usage note about the script.
+
+=item B<-f> I<auth_key_file>
+
+Use the specified authorized_keys file instead of the default. 
+Default is ~/.ssh/authorized_keys, unless changed in the script.
+
+=item B<-L>
+
+Do not lock the C<authorized_keys> file.  By default, the file will be
+locked using flock.
+
+=item B<-a>
+
+Allow commands on the command line.
+
+=item B<-i>
+
+Allow commands on STDIN.  If nothing is found on STDIN, the script
+will stall, waiting for input.
+
+One (or both) of B<-a> or B<-i> must be specified for the script to do
+anything.
+
+=item B<-l> I<target>
+
+Log to I<target>.  Default is to log to STDERR, other options are
+C<syslog> (via L<Sys::Syslog|Sys::Syslog>) or C<logger> (system
+logger(1) utility).
+
+=item B<-q>
+
+Quiet mode: do not emit informational messages.
+
+=back
+
+=head1 EXAMPLES
+
+List only SSH1 keys with a BSD-compatible echo(1):
+
+  $ echo -e "list\ttype:rsa1" | manage-authkeys -i
+
+Delete all keys:
+
+  $ (echo -e "delete\tall"; echo write) | manage-authkeys -i
+
+For more information on generating authorized keys, see:
+
+http://cfm.gs.washington.edu/security/ssh/client-pkauth/
+
+=head1 ENVIRONMENT
+
+Developed for OpenSSH (as of version 3.4); should work on any system
+with perl 5 and the required modules (e.g.
+L<Digest::MD5|Digest::MD5>).  Will most likely not work with other SSH
+server software.
+
+=head1 BUGS
+
+=head2 Reporting Bugs
+
+Newer versions of this script may be available from:
+
+http://github.com/thrig/sial.org-scripts/tree/master
+
+If the bug is in the latest version, send a report to the author.
+Patches that fix problems or add new features are welcome.
+
+=head2 Known Issues
+
+Commands expecting arguments use tabs to separate the parameters. 
+Tabs are difficult to input on the command line, so STDIN is advised
+for commands that require arguments.
+
+Comments or blank lines in the authorized_keys file will be deleted
+following an extract-write cycle.
+
+The key parsing routine is loose, and will be messed up by options
+containing what look like the keys inside a C<command=""> or similar
+option.  Additionally, option parsing will be messed up if there are
+commas inside the same style of quoted blocks.
+
+=head1 TODO
+
+Some sort of ACL/preferences file to limit what commands a remote
+agent has available to it?
+
+Better error handling?  Get user-side script written, so can figure
+out error handling across a SSH channel.
+
+Option to optionally log what keys were altered or not (as key list
+could potentially be long)?
+
+=head1 SEE ALSO
+
+perl(1), ssh-keygen(1)
+
+=head1 AUTHOR
+
+Jeremy Mates, http://sial.org/contact/
+
+=head1 COPYRIGHT
+
+The author disclaims all copyrights and releases this script into the
+public domain.
+
+=cut

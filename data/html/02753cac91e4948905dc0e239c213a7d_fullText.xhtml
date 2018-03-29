@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>x</title>
+    <link rel="stylesheet" media="screen" href="../../../../../library/css/Editing.css" type="text/css" />
+  </head>
+  <body>
+    <p>People who make computer systems including a User Interface (UI) often refer to the <a href="http://martinfowler.com/eaaDev/uiArchs.html#ModelViewController">Model
+        View Controller (MVC)</a> pattern to drive their design. MVC is actually a mainstream pattern of fundamental
+      importance. But there are lots of misunderstandings about MVC and some improved patterns have been proposed to
+      address some problems of the original MVC, which by the way is rather old. </p>
+    <p>The basic good idea behind MVC - and it was MVC to first introduce it - is <a href="http://martinfowler.com/eaaDev/SeparatedPresentation.html">Separated
+        Presentation</a>, as defined by Martin Fowler (emphasis is mine):</p>
+    <blockquote>
+      <p>Ensure that any code that manipulates presentation only manipulates presentation, pushing all domain and data
+        source logic into clearly separated areas of the program. ... The idea behind Separated Presentation is to make
+        a <strong>clear division between domain objects that model our perception of the real world, and presentation
+          objects that are the GUI elements we see on the screen</strong>. Domain objects should be completely self
+        contained and work <strong> without reference to the presentation</strong>, they should also be able to support
+        multiple presentations, possibly simultaneously.</p>
+    </blockquote>
+    <p>This is basically a refinement of <a href="http://en.wikipedia.org/wiki/Separation_of_concerns">Separation of
+        Concerns (SoC)</a> for the UI context. The structure of MVC is the following:</p>
+    <div class="nwXsltMacro_Diagram">
+      <p class="nwXsltMacro_Diagram_image_path">20120808/MVC-class-diagram.png</p>
+      <p class="nwXsltMacro_Diagram_caption">Class diagram for MVC</p>
+    </div>
+    <p>There are three participants in the pattern:</p>
+    <ul>
+      <li>The <strong>Model</strong>. This participant is usually part of the domain model and is made of one or more
+        domain abstractions (e.g. a list of <code>Person</code> objects). It might be connected to a persistence
+        facility (e.g. a relational database) and allow concurrent modification by means of transactions, but this is
+        not relevant in the MVC perspective; actually the Model can be designed in many different ways. What's important
+        is that it contains domain objects and exposes functions to manipulate them. This participant is completely
+        ignorant of the UI - it even doesn't know what a UI is.</li>
+      <li>The <strong>View</strong>. This participant is the one that actually realizes the UI, so we can imagine it's
+        made with a UI-specific technology, such as Swing, Android or Vaadin. It knows about the widget layout on the
+        screen, the way widgets interact with the user, it can change their state as well as listen to user gestures
+        made by means of the mouse, the keyboard, the touch screen or other input peripherals.</li>
+      <li>The <strong>Controller.</strong> This participant provides the “intelligence” of the UI, as it receives
+        notifications by the View about user gestures and interprets them as requests to trigger business logics that
+        manipulate the model or to change the View itself (e.g. by rendering a new screen, web page and so on). We can
+        refer to this set of responsibilities as <strong>“presentation logic”</strong>.<br />
+      </li>
+    </ul>
+    <p>From a dynamic point of view the interactions in a MVC design can be modelled as the union of two <a href="http://en.wikipedia.org/wiki/Observer_pattern">Observer
+        pattern</a>s. Fowler calls it <a href="http://martinfowler.com/eaaDev/MediatedSynchronization.html">Observer
+        Synchronization</a>:</p>
+    <ul>
+      <li>The <strong>View observes the Model</strong> and whenever the latter changes it pulls the new pieces of data
+        to update the UI.</li>
+      <li>The <strong>Controller observes the View</strong> and whenever the user does something it reacts
+        appropriately. </li>
+    </ul>
+    <div class="nwXsltMacro_Diagram">
+      <p class="nwXsltMacro_Diagram_image_path">20120808/MVC-sequence-diagram.png</p>
+      <p class="nwXsltMacro_Diagram_caption">Sequence diagrams for MVC</p>
+    </div>
+    <p>Since design patterns in the real world are seldom found in a “pure“ way, there can be many legitimate variations
+      on the basic theme. On the other hand MVC is probably one of the most misused terms in computer engineering: many
+      people use the term just to mean Separated Presentation, that is a “good” design of a UI, but they aren't actually
+      using MVC. <br />
+    </p>
+    <p>Before going on and criticize MVC, it's fundamental to understand a few points:<br />
+    </p>
+    <ul>
+      <li><strong>What's the Model?</strong> In many simple examples this participant is directly implemented by a
+        Domain Abstraction class. This could be ok with some categories of applications, for instance monolithic desktop
+        applications. If the application connects to a remote server, it's likely that the Model is an adapter to the
+        real Domain Abstraction (for instance by means of a remoting proxy), or a local copy of it (for instance by
+        means of a <a href="http://en.wikipedia.org/wiki/Data_transfer_object">Data Transfer Object (DTO)</a>). </li>
+      <li>Many popular UI frameworks that are considered by many to be MVC, <strong>aren't properly MVC</strong>. For
+        instance, Swing architecture is <cite>“loosely based on the traditional MVC design”</cite> (quote from <a href="http://java.sun.com/products/jfc/tsc/articles/architecture/">the
+          original Sun paper</a>), but it departs significantly from MVC for some details. It's true that many of them
+        are related to some inner parts that aren't necessarily interesting for the developer: for instance, the
+        relationship between components and “UI delegates” can safely be ignored if you aren't developing a look &amp;
+        feel. Ignoring these parts and looking at the technology only with the perspective of the integration with a
+        back end, the MVC characterization can be still good.<br />
+      </li>
+      <li>A more relevant point is that most UI frameworks provide their specific <strong>“intermediate” models</strong>
+        at least for the most complex components: think for instance of Swing <a href="http://docs.oracle.com/javase/6/docs/api/javax/swing/table/TableModel.html"><code>javax.swing.table.TableModel</code></a>,
+        Android <a href="http://developer.android.com/reference/android/widget/Adapter.html"><code>android.widget.Adapter</code></a>
+        and Vaadin <a href="https://vaadin.com/api/com/vaadin/data/Container.html"><code>com.vaadin.data.Container</code></a>.
+        These are adapters that “translate” data in a way that can be directly consumed by the UI components. This
+        concept, which is pretty useful, is called “Presenter” by a variation of MVC called <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93presenter">Model
+          View Presenter (MVP)</a>. <br />
+      </li>
+      <li><strong>How is the notification facility implemented?</strong> In the diagram we supposed to have a simple
+        event notification mechanism without attributes, so the View later reads the Model; but it could be possible to
+        avoid that further step by augmenting the notification with an object describing the changes. These are minor
+        details, anyway.<br />
+      </li>
+      <li>Also, in this area a technique that has got some popularity is <strong><em>data binding</em></strong> (<a href="http://java.net/projects/beansbinding/">BeansBinding</a>
+        is an example in the Java ecosystem): by means of language feature or a specific library, it allows to logically
+        bind properties in two different objects, so when one changes in the former object another is changed in the
+        latter. Data Binding can be pretty useful with forms, as it reduces the complexity of implementing the data item
+        exchange with the View. Think of a form with dozens of items: instead of exposing getter and setter methods for
+        each one, you just need one getter and one setter for an object containing all the items as bindable properties.</li>
+    </ul>
+    <p>For the scope of this discussion, we consider that the characterizing feature of MVC is the direct communication
+      between the Model and the View, which is the source of many issues. Let's ask ourselves some questions:</p>
+    <ol>
+      <li> Which is (or should be) the <strong>most valuable part</strong> of our design? <br />
+      </li>
+      <li>Which is (or should be) the <strong>least valuable part</strong>? <br />
+      </li>
+      <li>Where should we spend more resources<strong> for automated testing</strong>?</li>
+    </ol>
+    <p>The most valuable parts of the design are the Model and the Controller. The former is part of the Domain Model,
+      which is the core of our project, and it has got a strict relationship with data and business rules, which usually
+      are the most stable and valuable portions of a software application. The latter implements the presentation logic
+      and it's responsible for doing the right things on behalf of the user itself. <br />
+    </p>
+    <p>The least valuable part of the design should be the View. UI technologies are very volatile (I'd also say <em>
+        fashionable</em>) and very depending on the context. If we don't have specific deployment issues (it happens for
+      instance where deployment is supervised in some way) we can realize a full fledged desktop application by using
+      Swing, JavaFX 2, the NetBeans or the Eclipse Platforms. If we have deployment issues it's better to go with a web
+      application, for instance made with Vaadin. If we want to run on mobile appliances, we could pick Android. <br />
+    </p>
+    <div class="note">
+      <p>Why am I mentioning Vaadin as a web technology example? For this blog post I'm keeping quite generic about UI
+        technologies, just stressing the fact that I want a design that doesn't depend on them. But in practice I know
+        that it works with the class of UI technologies that support <strong>“push updates”</strong>, that is UI
+        changes that are performed in reaction to a stimulus originating from the server. Most of the technologies that
+        are not web based support them, but the traditional web frameworks don't since they restrain updates within the
+        “pull” approach typical of a HTTP request/response. Fortunately, modern frameworks for Rich Internet
+        Applications support push updates by means of AJAX. Vaadin is one of them; it's not the only one, but one that I
+        have a good experience of.<br />
+      </p>
+    </div>
+    <p>All these technologies have their own libraries for creating a UI, so an hypothetical application that must be
+      deployed to multiple channels (e.g. Web and Android), or that during its life must be ported from an environment
+      to the other, should be able to change its View implementation with the minimal effort and without touching the
+      Model and the Controller. <br />
+    </p>
+    <p>Unfortunately, MVC doesn't separate enough for accomplishing to this requirement. These are some of the most
+      common issues (in random order):</p>
+    <ul>
+      <li><strong>Formatting.</strong> The View directly accesses the Model, that we can call “raw data”. For instance,
+        a date could be represented by a <code>java.util.Date</code>, but almost for sure we want it to be rendered in
+        a human readable way, often localized. This behaviour wouldn't change whether we have a desktop, a web or a
+        mobile application, so if it is implemented in the View we are going to lose it when that specific View
+        implementation goes away - and re-implement it in the new View.<br />
+      </li>
+      <li><strong>Some presentation logic in the View.</strong> The View very often has got some portions of
+        presentation logic. For instance, our requirements could mandate that a measure readout in a gauge is rendered
+        in different colours in function of the value (e.g. normal values are green, alert values are in flashing red).
+        While different UI technologies require different code - changing colour in Swing, Vaadin or Android is made by
+        calling different methods - a common mistake is to put the <em>decision</em> about which colour to use in the
+        View rather than in the Controller, perhaps also because the UI technology offers some support for this
+        operation. As for the previous point: change the View and the implementation goes away.<br />
+      </li>
+      <li><strong>UI behaviour consistency.</strong> When MVC was defined most of UIs were just made of forms for data
+        entry and a full application could be thought as a sequence of forms coordinated by a flow controller. Most of
+        the View behaviour was filling form fields, picking menu items and pressing buttons. Today we have much richer
+        ways of interaction, for instance contextual menus and reaction to click, swipe, pinch, etc... and furthermore
+        we want <em>consistency throughout the whole application</em>: that is, a gauge representing a temperature in
+        different parts of the application should always offer the same contextual menu and react in the same way to
+        click, swipe, pinch, etc... (note that we're talking of a simple widget representing a single piece of data, not
+        a whole View, thus decomposing Views doesn't help here). The typical way to cope with this requirement is to
+        develop specific widgets for specific data types, for instance a <code>TemperatureWidget</code>, but since
+        widgets are technology dependent this ends up in making a <code>SwingTemperatureWidget</code>, a <code>VaadinTemperatureWidget</code>
+        and an <code>AndroidTemperatureWidget</code>. This ends up with further presentation logic in the View
+        implementation that will be lost when that implementation goes away.<br />
+      </li>
+      <li><strong>Lack of flexibility in data binding</strong>. If you like data binding, there are high chances that
+        you experience some frustration when you move off simple cases. In MVC, binding can only occur between M and V.
+        But this also means that the binding framework must provide support for formatting and formal validation
+        (BeansBinding happened to do that, but this is not always the case). And what about derived or split properties?
+        For instance, a single item in the Model could be represented by separate form items in the View (e.g. a phone
+        number could be split into a prefix and the proper number). Usually these issues are addressed with further
+        presentation logic in the View... and at this point you know the rest of the history (if instead you're thinking
+        of binding the view with <span style="font-style: italic;">something else</span> than the Model you're probably
+        on the right track, but this is not MVC any longer... read below).<br />
+      </li>
+      <li><span style="font-weight: bold;">Testing.</span> We didn't answer the previous question about where to spend
+        more resources for automated testing. The answer is obvious: in every place where there's some valuable
+        behaviour. Given the previous points, with MVC we have application-specific behaviour in the View, not only in
+        the Controller, so we must test both (the Model of course is always tested on its own). Since the View depends
+        on the technology, its testing depends too: so we have to use specific Swing, Vaadin and Android testing
+        frameworks. Change UI technology... and you have to rewrite all the tests for your View.<br />
+      </li>
+    </ul>
+    <div class="note">
+      <p>For what concerns testing, there's an additional point. Even if you ignore the problem of switching the UI
+        technology, automatic testing of a UI can be complex. There are many products that allow to do things such as
+        recording user gestures, playing them back against a UI and asserting postconditions (Selenium being one of the
+        popular ones in the web world), but after some initial enthusiasm I find that they are too much expensive to use
+        and to maintain. I had a better experience with Swing automated testing, but now I think that a cheaper,
+        alternate way of testing a UI must be found. </p>
+    </div>
+    <p>The underlying issues that we can infer from the previous points is that in MVC:</p>
+    <ol>
+      <li>the View does too many things<br />
+      </li>
+      <li>we are forced to put too much value in the View</li>
+      <li>when we want / must change the UI technology all that value is lost</li>
+      <li>automated tests for the View are expensive<br />
+      </li>
+    </ol>
+    <p>What we really need is a <em>dumb View</em>, really focused only on the graphic responsibilities. This is where
+      <a href="http://en.wikipedia.org/wiki/Presentation%E2%80%93abstraction%E2%80%93control">Presentation Abstraction
+        Control (PAC)</a> can help.</p>
+    <h4>Presentation Abstraction Control (PAC)</h4>
+    <p>We can see PAC as an evolution of MVC: we still have three participants, but responsibilities are better
+      distributed in two of them and there's some clean up in the interactions:</p>
+    <ul>
+      <li>The <strong>Abstraction</strong>. It plays the same role of the Model in MVC, so there are no further
+        comments. <br />
+      </li>
+      <li>The <strong>Presentation</strong>. It's the dumb View we were searching for. <br />
+      </li>
+      <li>The <strong>Control</strong>. It plays an enriched role of the Controller in MVC.</li>
+    </ul>
+    <div class="nwXsltMacro_Diagram">
+      <p class="nwXsltMacro_Diagram_image_path">20120808/PAC-class-diagram.png</p>
+      <p class="nwXsltMacro_Diagram_caption">Class diagram for PAC</p>
+    </div>
+    <p>The different responsibilities of the pair PC with respect to VC are clear if you look at the interactions in the
+      diagram:</p>
+    <div class="nwXsltMacro_Diagram">
+      <p class="nwXsltMacro_Diagram_image_path">20120808/PAC-sequence-diagram.png</p>
+      <p class="nwXsltMacro_Diagram_caption">Sequence diagrams for PAC</p>
+    </div>
+    <div class="tip">
+      <p>A good general guideline for evaluating a design is the presence or lack of symmetry. Generally speaking,
+        symmetry is a plus. An asymmetry means that one task and its opposite, or its complementary, are performed in a
+        different way. Unless there's a specific reason, this is just unjustified complexity, to be eliminated to comply
+        with the <a href="http://en.wikipedia.org/wiki/Occam's_razor">Occam's razor</a>. Compare the sequence
+        diagrams for MVC and PAC: while PAC is symmetric (both interactions originating from the View and from the
+        Abstraction linearly involve all the three participants), MVC is not (interactions originating from the Model
+        don't involve the Controller). </p>
+    </div>
+    <p> There's <strong>no coupling between the Presentation and the Abstraction</strong>, as everything is mediated by
+      the Control. In this way, the Control can take care of all the presentation logic and there are no residual parts
+      in the Presentation. Referring to one of the examples above, when we need to render a <code>Date</code>, this
+      means that it's possible to format it in the Control and then pass a <code>String</code> to the Presentation. In
+      other words, this means that, when speaking of simple data items, the Presentation can only deal with <code>String</code>s,
+      to be rendered as they are. For instance, look at this code sketch:</p>
+    <pre class="prettyprint lang-java">public interface PersonAbstraction<br />  {<br />    public Date getBirthDate();<br />  }<br /></pre>
+    <pre class="prettyprint lang-java">public interface PersonPresentation<br />  {<br />    public void renderBirthDate (String birthDate);<br />  }<br /></pre>
+    <pre class="prettyprint lang-java">public class PersonControl<br />  {<br />    private PersonAbstraction person = ...;<br /><br />    public void populateBirthDate()<br />     {<br />       SimpleDateFormat format = new SimpleDateFormat(...);<br />       presentation.renderBirthDate(format.format(person.getBirthDate()));<br />     }<br />  }<br /></pre>
+    <pre class="prettyprint lang-java">public class SwingPersonPresentation extends JPanel implements PersonPresentation<br />  {<br />    private JTextField tfBirthDate = new JTextField();<br /><br />    public void renderBirthDate (String birthDate)<br />      {<br />        tfBirthDate.setText(birthDate);<br />      }<br />  }<br /></pre>
+    <p>As promised, no logics in the Presentation. Just get incoming data and render them in the proper place. All the
+      other mentioned problems can be solved in a similar way: for instance, decide which colour to use in the Control
+      and then call Presentation methods such as <code>renderTemperature (int value, Color color)</code>. Imagine that
+      an implementation for Vaadin or Android wouldn't be much different. </p>
+    <div class="note">
+      <p> In the original description of PAC there's much more than this. For instance the pattern is defined in terms
+        of <em>agents</em> and in general there's a better guidance to decomposing complex UIs. All interesting stuff
+        that I'm ignoring in the scope of this post, but that I will pick in future. </p>
+    </div>
+    <p>On these premises, since the Presentation is dumb (no logics), there's less value in testing it. <em>The whole
+        set of user-UI interactions now stays in the Control</em>, so it can be tested by mocking both the Presentation
+      and the Abstraction with one of your regular Java tools such as JUnit, TestNG and Mockito. It also means that you
+      can design in <a href="http://www.agiledata.org/essays/tdd.html">TDD (Test Driven Design)</a> if you wish. More
+      sophisticated testing can include integration tests where you have almost the whole application (I mean, the
+      Abstraction is the real back end, not mocked), while the Presentation is still mocked.<br />
+    </p>
+    <div class="note">
+      <p>There are some things to be clarified here. With this simplified kind of tests are you safe that Presentation
+        is populated with the correct data and the application properly reacts to user gestures? Not completely. What
+        you're sure of is that the object implementing the Presentation is called with the correct data and that when
+        the callbacks in the Control are invoked the proper behaviour is triggered. What you miss is the very last step
+        ("the last mile"): your specific Presentation implementation could miss to pass an inbound string to <code>JTextField.setText()</code>
+        or could forget to bind a <code>JButton</code> to the Control callbacks. So, by restricting automated tests to
+        mocked Presentations you're losing something. Is this a problem? How can be solved? Consider the following
+        points:<br />
+      </p>
+      <ol>
+        <li>I've never seen applications deployed to production after only automated tests were passed, without a final
+          supervision by means of a human tester. There are some aspects, such as the visual quality of the rendering,
+          that are very hard, if not impossible, to automatically test: for instance, how can you test whether a text is
+          rendering on a background with insufficient contrast? Or whether a font is too small to be read, or too large
+          to render the whole contents in a text box? These are <strong>things to be tested by the human eye</strong>.
+          The important thing with human testing it's that it's expensive and must be reduced to the minimum.<br />
+        </li>
+        <li>The responsibility of the Presentation is so simple that <strong>it's less probable to make mistakes and
+            they are restricted to very simple ones</strong>. I mean: with a MVC View, it could happen that you rendered
+          the wrong data because of failing presentation logic. With a PAC Presentation, either you don't see data
+          rendered (because you forgot to call that <code>setText()</code>), or they are correct (because they have
+          been prepared by the Control). In a similar fashion, in a View pressing a button could trigger the wrong
+          behaviour; with a Presentation either the button does nothing or it does the right thing (because it's fully
+          implemented by the Control). Of course “less probable” doesn't mean ”impossible”: but given that you have to
+          perform some human-based testing anyway, the human tester can also easily spot the trivial errors that we are
+          talking about. <em>The added cost of to perform this task is negligible. </em></li>
+        <li>If you still want some form of automated test for your Presentation, you can consider using a specific UI
+          technology framework exercising not the whole application, but each single Presentation in isolation with a
+          mocked Control.</li>
+      </ol>
+      <p>The details about testing will be more clear when I'll introduce some real-world code in a further post.<br />
+      </p>
+    </div>
+    <p>Summing up, PAC solved some problems, with the exception of two: the UI behaviour consistency and the lack of
+      flexibility of the data binding. That's what the Presentation Model is for.</p>
+    <h4> The Presentation Model</h4>
+    <p>Martin Fowler defines the <a href="http://martinfowler.com/eaaDev/PresentationModel.html">Presentation Model</a>
+      as (emphasis is mine):</p>
+    <blockquote>
+      <p><strong>Represent the state and behavior of the presentation independently of the GUI controls</strong> used in
+        the interface. ... Presentation Model pulls the state and behavior of the view out into a model class that is
+        part of the presentation. The Presentation Model coordinates with the domain layer and provides an interface to
+        the view that minimizes decision making in the view. <strong>The view either stores all its state in the
+          Presentation Model or synchonizes its state with Presentation Model frequently</strong>. ... A view then <strong>simply
+          projects the state of the presentation model onto the glass</strong>.</p>
+    </blockquote>
+    <p>In other words, the Presentation Model is a sort of intermediate object between the Presentation and the
+      Abstraction. It doesn't have any knowledge of specific UI widgets, but provides the models that can be bound to
+      them. For instance, an Abstraction can represent a <code>Person</code> in a registry with the name, the job
+      description and a photo. Its Presentation Model could provide a short description (e.g. name + job) to be rendered
+      in a list row, transform the photo into a small icon to be rendered near the description, and provide callbacks
+      for the click and double click gestures, as well as an enumeration of further callbacks that could be rendered in
+      a contextual menu.</p>
+    <div class="note">
+      <p>The Presentation Model is a very similar concept to the Presenter in the previously cited Model View Presenter
+        pattern.</p>
+      <p></p>
+    </div>
+    <p>It's a responsibility of the Control to instantiate and properly prepare a Presentation Model for an Abstraction.
+      The Control would never directly expose an Abstraction to the Presentation to ask for it to be rendered; in its
+      place it would pass the Presentation Model for it. In other words, we can say that the Presentation would never
+      see and access a “naked” Abstraction, but only operate on it by means of its Presentation Model. Thus, the
+      Presentation Model works as an <a href="http://en.wikipedia.org/wiki/Adapter_pattern">Adapter</a> of the
+      Abstraction for the Presentation. By creating the same Presentation Model for a given Abstraction and reusing it
+      for all the PAC instances in our application we are making sure that the UI will always behave in a consistent
+      way. <br />
+    </p>
+    <p>The Presentation Model can also provide a solution for flexible data binding: instead of binding the Presentation
+      to the Abstraction, you can bind it to the Presentation Model. It can expose a mix of the original Abstraction
+      properties and derived ones (such as the description defined as name + job in the previous example).</p>
+    <div class="nwXsltMacro_Diagram">
+      <p class="nwXsltMacro_Diagram_image_path">20120808/PAC-with-PM-class-diagram.png</p>
+      <p class="nwXsltMacro_Diagram_caption">Class diagram for PAC with a Presentation Model</p>
+    </div>
+    <p>Generically speaking, the Presentation Model shouldn't depend on any UI technology. For instance, a developer
+      focusing on Swing could be tempted to model the callbacks for the click gesture as a <code>javax.swing.Action</code>:
+      after all, a Swing Presentation could easily pull it out of the Presentation Model and register it to a Swing
+      component. In a similar fashion, if the Abstraction contains a hierarchic data structure that can be rendered, one
+      might be tempted to implement it with a <code>javax.swing.tree.TreeModel</code> in the Presentation Model.
+      Unfortunately, this would make the Presentation Model unusable with Vaadin or Android. Thus, the PresentationModel
+      should expose generic classes (e.g. generically designed things such as <code>CallBack</code> or <code>Hierarchy</code>).
+      These generic classes would be then “adapted” to their Swing, or Vaadin, or Android counterparts. This sounds as
+      an additional work, but it's very simple and reusable, as shown by the following diagram:<br />
+    </p>
+    <div class="nwXsltMacro_Diagram">
+      <p class="nwXsltMacro_Diagram_image_path">20120808/Real-world-PM-class-diagram.png</p>
+      <p class="nwXsltMacro_Diagram_caption">A real world example of how a Presentation Model interacts with a
+        Presentation for a project made with Swing. <br />
+      </p>
+    </div>
+    <p>Entities outside the packages are not depending on any UI technology; entities in the “Swing &amp; reusable ..."
+      package are reusable for all applications based on the Swing technology. Similar diagrams for Vaadin or Android
+      could be drawn by just replacing the specific classes.</p>
+    <p>Sometimes it's advisable the opposite approach because some UI technology could already provide existing classes
+      that are already a good Presentation Model or a good basis for it. The NetBeans Platform, for instance, offers a <code>org.openide.node.Node</code>
+      class which is an excellent support, performing a number of integration tasks with the rest of the Platform. It
+      could be expensive to rewrite that features. With the NetBeans Platform my approach is to use a Presentation Model
+      implementation that inherits from Node. Both approaches can be made to co-exist by referring to a Presentation
+      Model by means of an interface (or abstract class) and using a <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">Factory
+        pattern</a> which returns the most appropriate implementation.</p>
+    <div class="note">
+      <p>There's a trade off to apply here and often you have to give up to something. Most UI frameworks, or add-on
+        libraries for them, offer specific support for common tasks: for instance, think of a table model that is
+        associated to a SQL query, capable of self-populating and perhaps even in lazy mode (by just querying the
+        minimum set of data to fill the page). In other cases, such as in Vaadin, you have specific APIs for building an
+        Abstraction upon them. By using those features the UI framework will let you create a working application in
+        minutes - a faster approach, definitely. My take is that you should give up to that (unless you are just doing a
+        quick prototype): what you gain in the short term will show an additional cost in the medium and long term. My
+        experience is that with the proper design it's not hard to develop a small set of classes that offer the same
+        features in a UI technology neutral fashion. Of course, only you can make the correct evaluation, case by case.<br />
+      </p>
+    </div>
+    <p>PAC and Presentation Model, when properly implemented, can solve all the MVC issues that we've mentioned. But we
+      can further improve our design to add some flexibility. For instance, for what concerns UI consistency, we assumed
+      that a given Abstraction must be rendered always in the very same way throughout the UI. But sometimes there are
+      exceptions: for instance, in some cases we'd like to prevent a contextual menu from appearing, in other cases we'd
+      like to add or remove some menu item. Or we could need slightly different behaviours of the same PAC reused in two
+      different applications. The most immediate solution is to implement alternate Presentation Models. But there's a
+      better approach that delivers this flexibility without a proliferation of Presentation Models - indeed, we could
+      even have only one single Presentation Model for everything!</p>
+    <h4>DCI adds dynamic behaviour and flexibility to the Presentation Model</h4>
+    <p><a href="http://en.wikipedia.org/wiki/Data,_context_and_interaction">Data Context and Interaction (DCI)</a> is
+      the pattern that can help us. First, let's recall its basic concepts. This pattern is made of three participants:</p>
+    <ol>
+      <li>The <strong>Datum</strong> is a stateful class only representing plain data with a very simple behaviour (the
+        one which does not involve interactions with other objects). For instance, in the classic <code>BankAccount</code>
+        example, there would not be a <code>transfer()</code> method (this requires another <code>BankAccount</code>,
+        or another source or target), but a <code>withdraw()</code> or a <code>deposit()</code> (that is, the
+        “partial” operations that are seen by a single instance of Datum). Apart from this refinement, a Datum is very
+        close to the Model in MVC and to the Abstraction in PAC.</li>
+      <li>A <strong>Role</strong> is a stateless class that cooperates with one or more Datum instances, providing the
+        non elementary behaviour related to <strong>interactions</strong>. Referring to the previous example, a <code>Transferable</code>
+        role can expose the <code>transfer()</code> method by making <code>bankAccount1.withdraw()</code> and <code>bankAccount2.deposit()</code>
+        to properly cooperate. Roles are stateless since they always operate on the state provided by a Datum (by means
+        of methods exposed by Datum, or perhaps by directly accessing its state - it's reasonable to think of a Role as
+        a friend class to a Datum). <br />
+        When properly designed, Roles are pretty generic: for instance a <code>Transferable</code> can be applied to a
+        <code>BankAccount</code>, but also to a <code>CashAmount</code>, or a <code>DebitCardAccount</code> and such.<br />
+      </li>
+      <li>A <strong>Context</strong> is a class representing a specific algorithm, use case or user story, or even an
+        entire application where it makes sense to associate Roles to Data. Its responsibility is to instantiate Roles,
+        bind them to and unbind from the Datum when needed. In fact, according to DCI, <em>Roles must not be statically
+          associated with Data</em>, but dynamically attached and detached in function of the need. In this way, Data
+        are most likely to be stable and reusable in different projects, while specific Roles can be developed ad hoc.
+        This means that we should never see code such as <code>BankAccount implements Transferable</code>, but rather a
+        <code>getTransferable()</code> method in <code>BankAccount</code> (or something even better).<br />
+      </li>
+    </ol>
+    <div class="nwXsltMacro_Diagram">
+      <p class="nwXsltMacro_Diagram_image_path">20120808/DCI-class-diagram.png</p>
+      <p class="nwXsltMacro_Diagram_caption">Class diagram for DCI - note how interactions only occur among Roles or
+        between a Role and client code<br />
+      </p>
+    </div>
+    <p>Given these premises, we can infer the following facts:</p>
+    <ol>
+      <li>A single Domain Abstraction is no more represented by a single class, but by a dynamic aggregate of a Datum
+        and Roles.<br />
+      </li>
+      <li>Datum objects never directly interact among them or with other classes, such as controllers. In other words,
+        nothing can see a “naked” Datum: Roles act as Adapters among Datum objects and other classes.</li>
+      <li>When we focus on a given context, it's quite easy to define some very meaningful and reusable set of Roles.
+        For instance, in the UI context things such as <code>Renderable</code>, <code>Clickable</code>, <code>ContextualMenuProvider</code>.<br />
+      </li>
+    </ol>
+    <p>The fact that there are classes that are never seen “naked”, but accessed by means of adapters, should remind you
+      of something I've written in the previous paragraph about the Presentation Model. Actually, we can think that if
+      we're able to provide a set of UI-related Roles, properly designed so they are not technology-dependent, we can
+      integrate PAC, Presentation Model and DCI so <strong>the Presentation Model just becomes a container of DCI Roles</strong>.
+      In this perspective, the PAC Control is also a DCI Context which, knowing both the DCI Datum and the PAC
+      Presentation, creates a Presentation Model with the Roles required for the interaction with the UI. Being the new
+      Presentation Model just a dynamic container of Roles, it's possible to think of <strong>a universal Presentation
+        Model for any kind of Abstraction</strong>. <br />
+    </p>
+    <div class="note">
+      <p>Note that the Abstraction itself can be designed according to DCI (i.e. it could be already an aggregate of a
+        Datum and Roles) or not. In the latter case, the Control would always create the Roles from scratch; in the
+        former case, it could reuse some existing Role already present in the Domain Abstraction. I think that there are
+        advantages in using DCI also for the Abstractions an application, but <em>this is not a requirement</em>. In
+        other words, if you already have a back-end design not made with DCI, you can safely introduce DCI only for the
+        Presentation and Control.<br />
+      </p>
+    </div>
+    <p>The dynamic and flexible behaviour in the presentation logic we were advocating for can be now easily achieved
+      with the proper design. Instead of having hardwired methods such  as:<br />
+    </p>
+    <pre class="prettyprint lang-java">public interface PresentationModel<br />  {<br />    public Clickable getClickable();<br />    public ContextualMenuProvider getContextualMenuProvider();<br />  }<br /></pre>
+    <p>we can think of something generic such as:</p>
+    <pre class="prettyprint lang-java">public interface PresentationModel<br />  {<br />    public &lt;Role&gt; Role as (Class&lt;Role&gt; roleType);<br />  }</pre>
+    <p>So we can think of a Presentation containing the following code:<br />
+    </p>
+    <pre class="prettyprint lang-java">PresentationModel pm = ...;<br />pm.as(Clickable.class).click();<br />pm.as(ContextualMenuProvider.class).renderContextualMenu();<br /></pre>
+    <p>This Presentation Model would allow to dynamically add, remove or replace Roles according to the needs of the
+      specific Context, furthermore without having to rely on a closed set of predefined Roles.</p>
+    <p>I've been using these patterns together with success for a few years now in various projects using Swing +
+      NetBeans Platform, Vaadin and Android. In this post I've kept code samples at a minimum in order to focus more on
+      concepts and UML diagrams. Full examples of working Java code will be the focus of further posts.</p>
+  </body>
+</html>
