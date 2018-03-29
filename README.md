@@ -6,8 +6,8 @@ Key feature: the algorithm is aimed on classifying *short* and possibly *incompl
 without any prior knowledge of file extension, context, keywords, etc.
 
 Currently recognized languages: 
-c, c++, c#, css, go, html, java, javascript, lua, matlab, objective c, 
-pascal, perl, php, python, r, ruby, shell, swift, typescript, visual basic.
+c, c++, c#, clojure, coffeescript, css, erlang, f#, go, html, java, javascript, lua, matlab, objective c, 
+pascal, perl, php, python, r, ruby, scala, shell, sql, swift, typescript, visual basic.
 
 Snippets examples
 -----------------
