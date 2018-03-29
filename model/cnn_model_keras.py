@@ -44,12 +44,7 @@ for i in range(0, len(filter_sizes)):
   pool = MaxPooling1D(pool_size=pooling_sizes[i])(conv)
   flatten = Flatten()(pool)
   convs.append(flatten)
-
-if len(filter_sizes) > 1:
-  out = Concatenate()(convs)
-else:
-  out = convs[0]
-
+out = Concatenate()(convs)
 graph = Model(inputs=input, outputs=out)
 
 model = Sequential()
