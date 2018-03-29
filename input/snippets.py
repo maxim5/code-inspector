@@ -6,17 +6,18 @@ import itertools
 import numpy as np
 
 
-def generate_snippets(path, preferred_length=None, coverage=1.0, min_lines=1, max_lines=100):
+def generate_snippets(path, preferred_length=None, coverage=1.0, max_snippets=500, min_lines=1, max_lines=100):
   with open(path, errors='ignore') as file_:
     lines = file_.readlines()
 
   current_coverage = 0.0
   total_lines = float(len(lines))
-  while current_coverage < coverage:
+  while max_snippets > 0 and current_coverage < coverage:
     length = preferred_length
     if length is None:
       length = np.random.randint(min_lines, max_lines + 1)
     current_coverage += length / total_lines
+    max_snippets -= 1
 
     yield random_snippet(lines, length)
 
