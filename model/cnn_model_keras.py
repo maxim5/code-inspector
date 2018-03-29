@@ -15,8 +15,8 @@ from input import DataProvider, Mode, Files
 ########################################################################################################################
 
 print('Building vocabulary...')
-provider = DataProvider('../data', mode=Mode.BY_LEXEM)
-provider.build(min_vocab_count=200)
+provider = DataProvider('../data', mode=Mode.BY_CHAR)
+provider.build(min_vocab_count=100)
 vocab_size = provider.vocab_size
 classes = provider.classes
 print('Vocab size=%d classes=%d' % (vocab_size, classes))
@@ -26,17 +26,17 @@ print('Vocab size=%d classes=%d' % (vocab_size, classes))
 ########################################################################################################################
 
 # Hyper-parameters
-sequence_length = 1024
-filter_sizes = (3, 5, 9, 19)
-pooling_sizes = (2, 5, 9, 19)
-num_filters = 128
-dropout_rates = (0.3, 0.6)
+sequence_length = 2048
+filter_sizes = (3, 5, 9, 9)
+pooling_sizes = (2, 5, 9, 9)
+num_filters = (64, 96, 128, 160)
+dropout_rates = (0.5, 0.75)
 hidden_size = 128
 
 input = Input(shape=(sequence_length, vocab_size))
 convs = []
 for i in range(0, len(filter_sizes)):
-  conv = Conv1D(filters=num_filters,
+  conv = Conv1D(filters=num_filters[i],
                 kernel_size=filter_sizes[i],
                 padding='valid',
                 activation='relu',
@@ -61,16 +61,14 @@ model.compile(loss='sparse_categorical_crossentropy', optimizer='adadelta', metr
 ########################################################################################################################
 
 batch_size = 200
-epochs = 100
+epochs = 200
 
 def gen(files, steps):
-  coverage = 1.0 if files == Files.TRAIN else 2.5
   while True:
     for i, batch in enumerate(provider.stream_snippets(batch_size=batch_size,
                                                        files=files,
                                                        max_tokens=sequence_length,
-                                                       parallel_streams=classes,
-                                                       snippet_coverage=coverage)):
+                                                       parallel_streams=classes)):
       if i == steps:
         break
       batch_x, batch_y, batch_len = batch
@@ -80,8 +78,8 @@ def gen(files, steps):
       print(files, 'Not enough steps for one epoch: ', i)
       pass
 
-model.fit_generator(generator=gen(Files.TRAIN, 100), epochs=epochs, steps_per_epoch=100,
-                    validation_data=gen(Files.VAL, 50), validation_steps=50,
+model.fit_generator(generator=gen(Files.TRAIN, 500), epochs=epochs, steps_per_epoch=500,
+                    validation_data=gen(Files.VAL, 80), validation_steps=80,
                     verbose=1)
 
 test_result = model.evaluate_generator(generator=gen(Files.TEST, 100), steps=100)
