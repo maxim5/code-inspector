@@ -67,7 +67,7 @@ def is_low_quality(lines):
   # check if all lines are comments
   prefix = common_prefix(non_empty_lines)
   prefix = prefix.strip()
-  for s in ['# ', '//', '*', '**', '/*']:
+  for s in ['# ', '//', '*', '**', '/*', ';']:
     if prefix.startswith(s):
       return True
 
