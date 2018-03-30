@@ -6,6 +6,7 @@ from io import BytesIO
 import gzip
 import json
 import os
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -40,14 +41,18 @@ def fetch(terms, lang):
   for key, (url, language, filename) in urls.items():
     directory = '_fetched/%s' % language
     os.makedirs(directory, exist_ok=True)
-    print('GET', url)
-    urllib.request.urlretrieve(url, filename='%s/%s_%s' % (directory, key, filename))
+    try:
+      print('GET', url)
+      urllib.request.urlretrieve(url, filename='%s/%s_%s' % (directory, key, filename))
+    except urllib.error.HTTPError:
+      print('FAIL')
 
 
 terms = ['stream', 'data', 'manage', 'amazing', 'algorithm', 'interface', 'science', 'implementation']
 languages = ['c', 'c++', 'c#', 'clojure', 'css', 'js', 'python', 'java',
              'coffeescript', 'f#', 'go', 'javascript', 'lua', 'matlab', 'pascal', 'perl',
-             'php', 'r', 'ruby', 'scala', 'zsh', 'swift', 'typescript', 'xhtml']
+             'php', 'r', 'ruby', 'scala', 'zsh', 'swift', 'typescript',
+             'html', 'xhtml', 'Erlang', 'BourneShell', 'SQL', 'SASS', 'LESS', 'VisualBasic', 'ObjectiveC']
 
 def main():
   for lang in languages:
