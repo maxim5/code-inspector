@@ -1,0 +1,3 @@
+ALTER TABLE public."company" ALTER COLUMN "name" TYPE VARCHAR(255)
+
+ALTER TABLE public."company" ALTER COLUMN "name" SET NOT NULL

@@ -1,0 +1,9 @@
+-- Simple script.  Can actually call sprocs defined elsewhere because this is run after all of the other anytime scripts
+--drop five items prior to this.
+-- just remember, this is still an anytime kind of place, so you make a change, it reruns the file.
+--BAD idea to run inserts here.
+--INSERT INTO dbo.Timmy 
+--INSERT INTO dbo.Timmy
+--INSERT INTO dbo.Timmy
+--INSERT INTO dbo.Timmy
+--INSERT INTO dbo.Timmy
