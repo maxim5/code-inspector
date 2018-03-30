@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# Copyright (C) 2008 Dag Odenhall <dag.odenhall@gmail.com>
+# Licensed under the Academic Free License version 3.0
+
+dir="$(dirname "$0")"
+ruby -I "$dir/amazing-git/lib" "$dir/amazing-git/bin/amazing" "$@"

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+BASE="$(dirname "$0")/.."
+"$BASE/bin/runner" "$BASE/bin/web-interface" 2>&1 | tee -a /var/log/anygit/anygit.log

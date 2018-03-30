@@ -1,0 +1,99 @@
+#!/bin/sh
+#
+# virt-factory-server    virt-factory backend server
+#
+# chkconfig: 345 99 99 
+# description:  This is a web services daemon used by virt-factory
+#               See http://virt-factory.et.redhat.com
+#
+# processname: /usr/bin/cobbler_syslogd
+
+# Sanity checks.
+[ -x /usr/bin/vf_server ] || exit 0
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+
+start() {
+    echo -n $"Starting virt-factory backend : "
+    if test -f /var/lock/subsys/vf_server ; then
+        echo_failure
+        echo
+        return 1
+    fi
+    if test -f /etc/virt-factory/db/exists ; then
+        sudo -u postgres /usr/bin/vf_upgrade_db
+    else
+        sudo -u postgres /usr/bin/vf_create_db --replace 
+    fi 
+    /usr/bin/vf_server --daemon
+    /usr/bin/vf_server qpid --daemon
+    /usr/bin/vf_taskatron --daemon
+    RETVAL=$?
+    echo_success
+    echo
+    touch /var/lock/subsys/vf_server
+    return $RETVAL
+}
+
+
+stop() {
+    echo -n $"Stopping virt-factory backend: "
+    if ! test -f /var/lock/subsys/vf_server ; then
+        echo_failure
+        echo
+        return 1
+    fi
+    pkill vf_server
+    pkill vf_taskatron
+    RETVAL=$?
+    rm /var/lock/subsys/vf_server
+    echo_success
+    echo
+    return $RETVAL
+}
+
+mystatus() {
+    if test -f /var/lock/subsys/vf_server ; then
+        echo "vf_server is running..."
+        return 0
+    fi
+    echo "vf_server is stopped"
+    echo
+    return 0
+}
+
+# See how we were called.
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        mystatus
+        RETVAL=$?
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    condrestart)
+        if [ -f /var/lock/subsys/vf_server ]; then
+            stop
+            start
+        fi
+        ;;
+    reload)
+        echo "can't reload configuration, you have to restart it"
+        RETVAL=$?
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|reload}"
+        ;;
+esac
+exit $RETVAL
+

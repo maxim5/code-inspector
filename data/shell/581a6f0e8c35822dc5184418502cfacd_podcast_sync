@@ -1,0 +1,72 @@
+#!/bin/sh
+
+mount=$(mount|grep SANSA|awk '{print $3}')
+
+if [ $(mount | grep -c $mount) -gt 0 ]; then
+    find $mount/PODCASTS/ -type f -name '*.pdf' -exec rm -v {} \;
+    find $mount/PODCASTS/ -type f -name '*.mp4' -exec rm -v {} \;
+    find $mount/PODCASTS/ -type f -name '*Apache_Tears*' -exec rm -v {} \;
+    origdir=`pwd`
+
+    if test -d /home/avar/Podcasts/Science/Science_Talk; then
+        cd /home/avar/Podcasts/Science/Science_Talk
+        rename 's/(?<!\.mp3)$/.mp3/' *
+    fi
+
+    cd $mount/PODCASTS/
+    if test $? -ne 0
+    then
+        echo "Can't cd to PODCASTS"
+        exit 1
+    fi
+
+    rsync \
+        -av \
+        --size-only \
+        --progress \
+        --exclude='*.log' \
+        --exclude='*German*' \
+        --exclude='*Show_[12]*' \
+        --exclude='*Ostfront*' \
+        --exclude='*Apache*' \
+        --exclude='*.pdf' \
+        --exclude='*.mp4' \
+        --exclude='*Linguistics*' \
+        --exclude='*.mp3-*' \
+        --exclude='*Skeptics_Guide_Special_Report_H1N1_Update*' \
+        --exclude='*The_Universe_[23456789]?_*' \
+        --exclude='*The_Universe_1??_*' \
+        --exclude='*Skeptics_Guide_1??_*' \
+        --exclude='*Skeptics_Guide_2[01234]?_*' \
+        --exclude='*Skeptics_Guide_24[01234]_*' \
+        --exclude='*Astronomy_Cast*Mysteries_of_the_Solar_System*' \
+        --exclude='*Astronomy_Cast*Mysteries_of_the_Milky_Way*' \
+        --exclude='*Are_We_Alone*' \
+        --exclude='*Science_Talk*' \
+        --exclude='*Stuff_You_Missed_in_History*' \
+        --exclude='*Skeptoid*' \
+        --exclude='*Hacking/*' \
+        --exclude='*News/*' \
+        --exclude='*Wikipedia*' \
+        --exclude='*Naked*' \
+        --exclude='*Geologic*' \
+        --exclude='*Ep._121*' \
+        --exclude='*Ep._14[67]*' \
+        --exclude='*Ep._168*' \
+        --exclude='*Ep._170*' \
+        --exclude='*Ep._7[0167]*' \
+        --exclude='*Episode_26*' \
+        --exclude='*Episode_28*' \
+        /home/avar/Podcasts/ \
+        --delete \
+        .
+
+    if test -d /home/avar/Podcasts/Science/Science_Talk; then
+        cd /home/avar/Podcasts/Science/Science_Talk
+        rename 's/\.mp3$//' *
+    fi
+
+    cd $origdir
+else
+    echo "$mount/ isn't mounted"
+fi
