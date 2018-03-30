@@ -1,0 +1,318 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Brief Into To Go</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="font-size-adjustment" content="-1" />
+<link rel="stylesheet" href="slidy.css"
+  type="text/css" media="screen, projection, print" />
+<script src="slidy.js" type="text/javascript">
+</script>
+</head>
+<body>
+<!-- this defines the slide background -->
+
+<div class="background">
+
+  <div class="header">
+  <!-- sized and colored via CSS -->
+  </div>
+
+  <div class="footer"></div>
+  </div>
+
+<div class="slide titlepage">
+<br/>
+<br/>
+<img src="media/go-logo-white.png" width="588px" height="217px">
+<br/>
+<h1 style="color: #0066cc; font-size: 250%; border-bottom: 0;">
+	A Very Brief Intro To Go
+</h1>
+<div style="color: #ffcc00;">
+<br/>
+<h3>Brad Fitzpatrick</h3>
+<h3 style="font-weight: normal;"><code>bradfitz@{google.com,golang.org}</code></h3>
+<h3>2012-08-23</h3>
+
+<h4 style="font-weight: normal; color: red; position: absolute; bottom: 5px; width: 90%;">
+<!--	Google Confidential -->
+</h4>
+</div>
+</div>
+
+<div class="slide">
+	<h1>A very brief intro to Go</h1>
+
+<img align='right' src='gopher1.png' />
+	<h2>Hi.</h2>
+	<h2>Go, briefly, why, status.</h2>
+	<h2>Examples</h2>
+	<h2>Q &amp A</h2>
+</div>
+
+<div class="slide">
+	<h1>Hi.</h1>
+<img align='right' src='go-shirt.jpg' />
+	<h2>I'm Brad.</h2>
+
+</div>
+
+<h1>Go, briefly, why, status.</h1>
+
+<div class="slide">
+	<h1>Go: history</h1>
+
+<img align='right' src='gopher2.jpg' />
+	<h2>New language</h2>
+	<h2>2007-Sep: Robert Griesemer, Rob Pike and Ken Thompson started sketching</h2>
+        <h2>.... (hack hack hack) ...</h2>
+        <h2>2009-Nov: <a href="http://google-opensource.blogspot.com/2009/11/hey-ho-lets-go.html">open sourced</a></h2>
+        <h2>.... (hack hack hack) ...</h2>
+        <h2>2012-Mar: Go 1 released. Stable base.</h2>
+
+</div>
+
+<div class="slide">
+	<h1>Go: team</h1>
+        <h2>Rob Pike, Robert Griesemer, Ken Thompson, Ian Lance Taylor</h2>
+        <h2>Russ Cox, Sameer Ajmani, Peter Weinberger</h2>
+        <h2>Andrew Gerrand, David Symonds, Nigel Tao</h2>
+        <h2>Dmitriy Vyukov, Adam Langley, Luuk van Dijk, me...</h2>
+        <h2>296 unique contributors (on core/stdlib)</h2>
+        <img src='moscow.jpg'>
+
+</div>
+
+<div class="slide">
+	<h1>Go: why?</h1>
+
+	<h2>Current languages are too at the edges of a spectrum:</h2>
+        <table>
+          <tr align=left><th>Fast code, but lots of it, verbose, repetitive, tedious, slow to build.</th><th>Fast code, fun &amp; easy to write, safe</th><th>Slow code, fun &amp; easy to write, explode at runtime, do one thing at a time</th></tr>
+          <tr><td>C++, Java, ...</td><td>????</td><td>Perl, Python, Ruby, JavaScript, PHP, ...</td></tr>
+        </table>
+</div>
+
+<div class="slide">
+  <h1>Go ...</h1>
+
+  <h2>is statically typed,</h2>
+  <h2>... but has type-inference</h2>
+  <h2>generates fast code, on par with C or C++</h2>
+  <h2>... but feels like Py/Ruby/JS/etc (closures, brevity, etc)</h2>
+  <h2>compiles super quickly (A -> B -> C needs only consult B when compiling A)</h2>
+  <h2>... enforces perfect dependencies (IWYU safe)</h2>
+  <h2>(continued)</h2>
+</div>
+
+<div class="slide">
+  <h1>Go ...</h1>
+  <h2>gives you control of memory layout (yay speed)</h2>
+  <h2>has pointers</h2>
+  <h2>... but no pointer arithmetic, no stale pointers ('stack', 'heap')</h2>
+  <h2>is safe</h2>
+  <h2>is garbage-collected</h2>
+  <h2>.. but lets you avoid tons of garbage (unlike Java)</h2>
+  <h2>.. allows structs in structs, pass structs by value, not just reference</h2>
+</div>
+
+<div class="slide">
+  <h1>Go...</h1>
+  <h2>kills the threads vs. events debate</h2>
+  <h2>... you can write sequential, readable code again! die, callback flow control, die.</h2>
+  <h2>has exceptions ("panic", "recover")</h2>
+  <h2>... but not exceptional flow control (no "try", "catch")</h2>
+  <h2>(continued)</h2>
+</div>
+
+<div class="slide">
+  <h1>Go ...</h1>
+  <h2>lets you write fun, high-level code to begin with</h2>
+  <h2>... but you make it fast later if it matters</h2>
+  <h2>... twiddle bits, layout memory, etc.</h2>
+  <h2>... but it's still readable!</h2>
+  <h2>... decades of C cruft, gone.</h2>
+  <h2>... without huge calling convention overhead (Perl/XS, SWIG, etc)</h2>
+  
+  <h2>(continued)</h2>
+</div>
+
+<div class="slide">
+  <h1>Go ...</h1>
+  <h2>Runs basically everywhere</h2>
+  <h2>gc compiler: x86, x64, ARM</h2>
+  <h2>... Linux, OS X, Windows, FreeBSD, OpenBSD, NetBSD, Plan9</h2>
+  <h2>gccgo compiler: also PPC, MIPS, SPARC, more</h2>
+  <h2>... Solaris, IRIX, ...</h2>
+  <h2>(continued)</h2>
+</div>
+
+<div class="slide">
+  <h1>Go ...</h1>
+  <h2>is easy to deploy</h2>
+  <h2>static binary; no libc; no JVM<h2>
+  <h2><i>one file to cp</i></h2>
+  <h2>... (can link with C .so libraries or SWIG, but not required)</h2>
+  <h2>(continued)</h2>
+</div>
+
+<div class="slide">
+  <h1>Go ...</h1>
+  <h2>restored my love for programming</h2>
+</div>
+
+<div class="slide">
+
+<h1>Hello, Go</h1>
+
+<pre>
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Printf("Hello, ä¸ç\n")
+}
+</pre>
+
+<h2>Learn Go: <a href="http://tour.golang.org/">tour.golang.org</a></h2>
+<h2>Docs &amp; spec are very readable</h2>
+
+</div>
+
+<div class="slide">
+
+<h1>It's like...</h1>
+
+<h2>The speed of C++</h2>
+<h2>The safety of Java</h2>
+<h2>The fun of Python/Ruby/JS (etc)</h2>
+<h2>The concurrency of ... Erlang?</h2>
+
+</div>
+
+<div class="slide">
+
+<h1>Open Source</h1>
+
+	<h2>Go core developed in public open source repo (bugs, lists, everything), then pulled in to Google's tree occasionally</h2>
+</div>
+
+
+<div class="slide">
+
+<h1>Standard Library</h1>
+
+<h2>Standard library is awesome: <a href="http://golang.org/pkg/">golang.org/pkg</a></h2>
+<h2>The <tt>go</tt> tool is awesomer</h2>
+<h2><tt>$ go get github.com/bradfitz/runsit</tt></h2>
+<h2><tt>$ runsit</tt></h2>
+<h2><tt>$ go get github.com/bradfitz/rfbgo/rfb</tt></h2>
+<pre>
+import "github.com/bradfitz/rfbgo/rfb"
+...
+s := rfb.NewServer(width, height)
+</pre>
+<h2>Community is awesomest: <a href="http://go.pkgdoc.org/index">go.pkgdoc.org</a></h2>
+
+</div>
+
+<div class="slide">
+<h1>gofmt</h1>
+
+<h2>Go come with a parser for itself</h2>
+<h2>Allows awesomeness like <tt>gofix</tt> (automated code fixing) and <tt>gofmt</tt> (parse + serialize)</h2>
+
+<h2><i>One True Style</i> => stop silly debates about style.  Just gofmt it in your editor's pre-save-hook.</h2>
+
+</div>
+
+<div class="slide">
+<h1>godoc</h1>
+
+<h2>command line</h2>
+<h2>web (localhost or powers golang.org)</h2>
+<h2>good airplane hacking</h2>
+<h2>(demo)</h2>
+
+</div>
+
+<h1>Favorite feature...</h1>
+
+<div class="slide">
+	<h1>synchronous APIs; no threads vs. events/callbacks</h1>
+
+        <h2>No dual set of APIs (sync vs async)</h2>
+        <h2>No callbacks <i>required</i> (can if you want)</h2>
+        <h2>Concurrency is built-in to the <i>language</i>, so APIs don't need to provide it</h2>
+        <h2>Block away! Who cares. Runtime will epoll you or thread you as needed.</h2>
+        <h2>Running? Get a thread. In a syscall? Get a thread.</h2>
+        <h2>Blocked on IO? epoll_wait. (or OS-equivalent)</h2>
+        <h2>Blocked on mutex or channel send/receive? runtime scheduler's waitlist.</h2>
+        <h2>All automatic</h2>
+        <h2>"runtime" is not a separate JVM-like thing. Compiled in to your static binary.</h2>
+</div>
+
+<div class="slide">
+	<h1>Goroutines and channels</h1>
+        <h2>Goroutine: "light-weight thread". small amount of memory.</h2>
+        <ul>
+          <li>one (or several) per client connection. million+ okay.</li>
+        </ul>
+        <h2>segmented stacks</h2>
+        <h2>Channel: typed directional pipe for communicating and/or synchronization</h2>
+        <h2>"select" statement</h2>
+</div>
+
+
+<div class="slide">
+	<h1>Testing</h1>
+
+        <h2>Go code is very testable</h2>
+        <h2>... ad-hoc interfaces</h2>
+
+	<h2><code>testing</code> package works well for most needs</h2>
+	<ul>
+		<li>Includes benchmarking</li>
+	</ul>
+
+	<h2><code>gomock</code> is a mock framework</h2>
+</div>
+
+<div class="slide">
+	<h1>Ancilliary tools</h1>
+
+	<h2>Debugging is good</h2>
+	<ul>
+		<li>Stack traces are good</li>
+		<li>GDB support</li>
+	</ul>
+
+	<h2>Profiling is good</h2>
+	<ul>
+		<li>pprof (offline and online)</li>
+		<li>memory heap profiling</li>
+	</ul>
+
+	<h2>Editor support is good</h2>
+	<ul>
+		<li>Syntax highlighting for Vim, Emacs, ...</li>
+		<li>Eclipse integration (goclipse)</li>
+                <li>code completion daemon ("gocode")</li>
+	</ul>
+
+</div>
+
+<div class="slide">
+	<h1>Write in Go</h1>
+
+        <h2>(demos, Q&A)</h2>
+
+	<img src="media/uncle_gopher.png" style="height: 75%; width: auto; float: right; margin-right: 10%" />
+	<h2>http://golang.org</h2>
+	<h2>http://tour.golang.org</h2>
+</div>
+
+</body></html>

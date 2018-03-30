@@ -1,0 +1,24 @@
+// Simple post form
+
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<p> Use this to POST Data </p>
+<form name="myForm" action="http://localhost:8080/user" method="POST">
+<input type="text" name="name" value="name"/>
+<input type="text" name="phone_number" value="phone"/>
+<input type="text" name="local_time" value="time" />
+<input type="text" name="unique_hash" value="hash" />
+<input type="submit" value="POST"/>
+</form>
+<br><br>
+<p> Use this to GET data </p>
+<form name="getForm" action="http://localhost:8080/user" method="GET">
+<input type="text" name="phone_number" value="number"/>
+<input type="text" name="unique_hash" value="hash" />
+<input type="submit" value="GET" />
+</form>
+</body>
+</html>
