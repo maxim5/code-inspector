@@ -1,0 +1,119 @@
+.border-box-sizing() {
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.webhooks {
+    .webhooks-container {
+        > .aui-item {
+            border-top:1px solid #ddd;
+            padding-top:1em;
+			overflow: hidden
+        }
+        .webhook-details {
+            border-left:1px solid #ddd;
+			width: 65%;
+			.default-value-text {
+				font-style: italic;
+			}
+			.webhook-explicit-events {
+				.border-box-sizing;
+				width: 100%;
+			}
+		}
+    }
+
+    .split-listing {
+		table-layout: fixed;
+        thead th + th {
+            width:50px;
+            }
+        .operations-list .icon-tools {
+            display: inline-block;
+            padding:4px 7px 4px 22px;
+            vertical-align: baseline;
+            width:8px;
+        }
+        .operations-list .icon-tools > span {
+            padding-right: 8px;
+            text-indent: -999em;
+            text-align: left;
+        }
+		tr {
+			.operations-list { display: none; }
+			&:hover { .operations-list { display: block; } }
+		}
+		td {
+			overflow: hidden;
+		}
+		td.operations-container {
+			vertical-align: middle;
+		}
+    }
+    .atlassian-autocomplete {
+		position: relative;
+        #jqlerrormsg {position: absolute; top: 6px; left:4px; width:18px;height: 16px;}
+	    @searchbox-padding: .5em .5em .5em 26px;
+		.overlabel-apply {
+			.border-box-sizing;
+			padding: @searchbox-padding;
+			width: 100%!important;
+		}
+        .search-entry {
+			.border-box-sizing;
+            padding: @searchbox-padding;
+			min-height:48px;
+        }
+    }
+
+    .events-list {
+        list-style: none;
+        margin:0;
+        padding:0;
+	}
+
+	.transitions-list {
+            list-style: none;
+            margin:0;
+            padding:0;
+    }
+}
+
+.webhooks-detached-suggestion-container {
+	position: absolute!important;
+	.suggestions {
+		width: 460px!important;
+	}
+}
+
+form.display-mode-display .display-mode-edit,
+form.display-mode-edit .display-mode-display  {
+	display: none;
+}
+
+#webhook-jql-display,
+#webhook-url-display {
+    word-break: break-word;
+}
+
+/* overrides */
+table.aui {
+	tbody {
+		tr.highlighted {
+			background-color: #F0F0F0
+		}
+	}
+}
+.buttons-container a + a::before {
+    content: " | ";
+    color: #bbb;
+}
+
+.webhook-disabled span.webhook-disabled-info {
+    font-style:italic;
+    display: inline;
+}
+
+span.webhook-disabled-info {
+    display: none;
+}

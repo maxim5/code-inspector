@@ -1,0 +1,135 @@
+.background-image(@color1 ,@color2)
+{
+    background-color:  @color2;
+    background-image: -moz-linear-gradient(top, @color1, @color2);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@color1), to(@color2));
+    background-image: -webkit-linear-gradient(top, @color1, @color2);
+    background-image: -o-linear-gradient(top, @color1, @color2);
+    background-image: linear-gradient(to bottom, @color1, @color2);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=@color1, endColorstr=@color2, GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.box-shadow(@shadow)
+{
+    box-shadow: @shadow;
+    -moz-box-shadow: @shadow;
+    -webkit-box-shadow: @shadow;
+}
+
+.box-sizing()   {
+    box-sizing: border-box;  
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+.border-radius(@radius :4px)
+{
+    border-radius: @radius;
+    -moz-border-radius: @radius;
+    -webkit-border-radius: @radius;
+}
+
+.transition(@value) {
+    transition: @value;   
+    -webkit-transition: @value;   
+    -moz-transition: @value;   
+    -ms-transition: @value;   
+    -o-transition: @value;   
+}
+
+.transition(@value1 ,@value2) {
+    transition: @value1, @value2;   
+    -webkit-transition: @value1, @value2;   
+    -moz-transition: @value1, @value2;   
+    -ms-transition: @value1, @value2;   
+    -o-transition: @value1, @value2;   
+}
+
+.transition-transform(@value) {
+    transition: transform @value;
+    -webkit-transition: -webkit-transform @value;
+    -moz-transition: -moz-transform @value;
+    -ms-transition: -ms-transform @value;
+    -o-transition: -o-transform @value;
+}
+
+.transition-delay(@value) {
+    transition-delay: @value;   
+    -webkit-transition-delay: @value;   
+    -moz-transition-delay: @value;   
+    -ms-transition-delay: @value;   
+    -o-transition-delay: @value;   
+}
+
+.transform(@value) {
+    transform: @value;   
+    -webkit-transform: @value;   
+    -moz-transform: @value;   
+    -ms-transform: @value;   
+    -o-transform: @value;   
+}
+
+.animation(@value) {
+    animation: @value;   
+    -webkit-animation: @value;   
+    -moz-animation: @value;   
+    -ms-animation: @value;   
+    -o-animation: @value;   
+}
+
+.animation-name(@value) {
+    animation-name: @value;   
+    -webkit-animation-name: @value;   
+    -moz-animation-name: @value;   
+    -ms-animation-name: @value;   
+    -o-animation-name: @value;   
+}
+
+.animation-duration(@value) {
+    animation-duration: @value;   
+    -webkit-animation-duration: @value;   
+    -moz-animation-duration: @value;   
+    -ms-animation-duration: @value;   
+    -o-animation-duration: @value;   
+}
+
+.animation-delay(@value) {
+    animation-delay: @value;   
+    -webkit-animation-delay: @value;   
+    -moz-animation-delay: @value;   
+    -ms-animation-delay: @value;   
+    -o-animation-delay: @value;   
+}
+
+.animation-timing-function(@value) {
+    animation-timing-function: @value;   
+    -webkit-animation-timing-function: @value;   
+    -moz-animation-timing-function: @value;   
+    -ms-animation-timing-function: @value;   
+    -o-animation-timing-function: @value;   
+}
+
+.animation-fill-mode(@value)    {
+    animation-fill-mode: @value;
+    -webkit-animation-fill-mode: @value;
+    -moz-animation-fill-mode: @value;
+    -ms-animation-fill-mode: @value;
+    -o-animation-fill-mode: @value;
+}
+
+.animation-iteration-count(@value)  {
+    animation-iteration-count: @value;
+    -webkit-animation-iteration-count: @value;
+    -moz-animation-iteration-count: @value;
+    -ms-animation-iteration-count: @value;
+    -o-animation-iteration-count: @value;
+}
+
+.animation-direction(@value)    {
+    animation-direction: @value;   
+    -webkit-animation-direction: @value;
+    -moz-animation-direction: @value;
+    -ms-animation-direction: @value;
+    -o-animation-direction: @value;
+}

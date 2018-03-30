@@ -1,0 +1,922 @@
+<<<<<<< HEAD
+/*
+	Skin Name: Light Round Ext.
+	Class: light-round-extended
+	Description: Light Round Extended skin for Advanced Slider jQuery plugin. This is used for the HTML example
+	Author: David
+*/
+
+
+/* MAIN SLIDE */
+
+.light-round-extended .slide-wrapper {
+	background-color: #FFF;
+	border: 4px solid #FFF;
+	-moz-box-shadow: 0 0 10px #CCC;
+	-webkit-box-shadow: 0 0 10px #CCC;
+	box-shadow: 0 0 10px #CCC;
+}
+
+
+.light-round-extended .slide {
+	background-color: #FFF;
+}
+
+/* END OF MAIN SLIDE */
+
+
+/* SLIDE ARROWS */
+
+.light-round-extended .slide-arrows a {
+	background: url(images/arrows.png) no-repeat;
+	width: 66px;
+	height: 66px;
+	top: 50%;
+	margin-top: -33px;
+}
+
+
+.light-round-extended .slide-arrows a.previous {
+	left: -100px;
+}
+
+
+.light-round-extended .slide-arrows a.next {
+	right: -100px;
+	background-position: -66px 0;
+}
+
+/* SLIDE ARROWS */
+
+
+/* SLIDESHOW CONTROLS */
+
+.light-round-extended .slideshow-controls {
+	background: url(images/playpause.png) no-repeat;
+	width: 66px;
+	height: 66px;
+	top: 50%;
+	left: 50%;
+	margin-top: -33px;
+	margin-left: -33px;
+}
+
+
+.light-round-extended .slideshow-controls.pause {
+	background-position: 0 0;
+}
+
+
+.light-round-extended .slideshow-controls.play {
+	background-position: -66px 0;
+}
+
+/* END OF SLIDESHOW CONTROLS */
+
+
+/* TIMER ANIMATION */
+
+.light-round-extended .timer-animation {
+	top: 20px;
+	right: 20px;
+}
+
+/* END OF TIMER ANIMATION */
+
+
+/* SLIDE CAPTION */
+
+.light-round-extended .caption-container .background {
+	background-color: #000;
+	width: 100%;
+	height: 100%;
+}
+
+
+.light-round-extended .caption-container .caption {
+	color: #FFF;
+	margin: 0;
+	padding: 8px;
+	font-size: 16px;
+	line-height: 1;
+}
+
+/* END OF SLIDE CAPTION */
+
+
+/* SLIDE BUTTONS/BULLETS */
+
+/* main container of the navigation buttons */
+.light-round-extended .slide-buttons  {
+	bottom: -50px;
+}
+
+
+/* 
+ left, right and middle of the main container 
+ for this skin, these elements are not styled by default
+ feel free to add your own styling
+*/
+.light-round-extended .slide-buttons .left, .light-round-extended .slide-buttons .right {
+}
+
+
+.light-round-extended .slide-buttons .left {
+}
+
+
+.light-round-extended .slide-buttons .middle {
+}
+
+
+.light-round-extended .slide-buttons .right {
+}
+
+
+/* this contains the buttons */
+.light-round-extended .slide-buttons .buttons-inner {
+}
+
+
+/* this is a button */
+.light-round-extended .slide-buttons .buttons-inner a {
+	background: url(images/buttons.png) no-repeat;
+	background-position: 0 0;
+	width: 14px;
+	height: 14px;
+	margin: 0 2px;
+}
+
+
+.light-round-extended .slide-buttons .buttons-inner a.over {
+	background-position: -14px 0; 
+}
+
+
+.light-round-extended .slide-buttons .buttons-inner a.select {
+	background-position: -28px 0; 
+}
+
+
+/* this is used to style the numbers from within the buttons, when they are used */
+.light-round-extended .slide-buttons .buttons-inner a .number {
+	margin-top: 2px;
+	font-size: 8px;
+	line-height: 10px;
+	font-weight: bold;
+	color: #888;
+}
+
+
+.light-round-extended .slide-buttons .buttons-inner a.over .number {
+	color: #666;
+}
+
+
+.light-round-extended .slide-buttons .buttons-inner a.select .number {
+	color: #666;
+}
+
+
+/* 
+ applied to the thumbnail when the thumbnail is used only as a tooltip
+ sets the distance between the button and the thumbnail
+*/
+.light-round-extended .slide-buttons .buttons-inner .thumbnail-wrapper {
+	margin-bottom: 10px;
+}
+
+/* END OF SLIDE BUTTONS/BULLETS */
+
+
+/* THUMBNAIL IMAGE */
+
+.light-round-extended .thumbnail {
+	background-color: #FFF;
+	border: solid 3px #FFF;
+	-moz-box-shadow: 0 0 10px #AAA;
+	-webkit-box-shadow: 0 0 10px #AAA;
+	box-shadow: 0 0 10px #AAA;
+	-ms-filter: "progid: DXImageTransform.Microsoft.Shadow(Strength=4, Direction=130, Color='#AAAAAA')";
+	filter: progid: DXImageTransform.Microsoft.Shadow(Strength=4, Direction=130, Color='#AAAAAA');
+}
+
+/* END OF THUMBNAIL IMAGE */
+
+
+/* THUMBNAIL SCROLLER */
+
+.light-round-extended .thumbnail-scroller.horizontal {
+	bottom: 0;
+	left: 0;
+	padding: 0 50px;
+	margin-top: 30px;
+}
+
+
+.light-round-extended .thumbnail-scroller.horizontal.overlay {
+	bottom: 80px;
+	margin-top: 0;
+}
+
+
+.light-round-extended .thumbnail-scroller.vertical {
+	right: 0;
+	top: 0;
+	padding: 50px 0;
+	margin-left: 30px;
+}
+
+
+.light-round-extended .thumbnail-scroller.vertical.overlay {
+	right: 80px;
+	margin-left: 0;
+}
+
+
+.light-round-extended .thumbnail-scroller .thumbnail-wrapper {
+	margin: 5px;
+	padding: 4px;
+}
+
+
+.light-round-extended .thumbnail-scroller .thumbnail.over {
+	border: solid 3px #FFF;
+	-moz-box-shadow: 0 0 10px #555;
+	-webkit-box-shadow: 0 0 10px #555;
+	box-shadow: 0 0 10px #555;
+	-ms-filter: "progid: DXImageTransform.Microsoft.Shadow(Strength=4, Direction=130, Color='#555555')";
+	filter: progid: DXImageTransform.Microsoft.Shadow(Strength=4, Direction=130, Color='#555555');
+}
+
+
+.light-round-extended .thumbnail-scroller .thumbnail.select {
+	border: solid 3px #FFF;
+	-moz-box-shadow: 0 0 10px #555;
+	-webkit-box-shadow: 0 0 10px #555;
+	box-shadow: 0 0 10px #555;
+	-ms-filter: "progid: DXImageTransform.Microsoft.Shadow(Strength=4, Direction=130, Color='#555555')";
+	filter: progid: DXImageTransform.Microsoft.Shadow(Strength=4, Direction=130, Color='#555555');
+}
+
+
+/* THUMBNAIL CAPTION */
+
+.light-round-extended .thumbnail .caption .background {
+	background-color: #000;
+	filter: alpha(opacity=50);
+	opacity: 0.5;
+}
+
+
+.light-round-extended .thumbnail .caption .content {
+	color: #FFF;
+	font-size: 12px;
+	line-height: 14px;
+	text-align: center;
+	padding: 2px 0;
+	margin: 0;
+}
+
+/* END OF THUMBNAIL CAPTION */
+
+
+/* THUMBNAIL SCROLLER ARROWS */
+
+.light-round-extended .thumbnail-scroller .arrows a {
+	background: url(images/arrows_small.png) no-repeat;
+	width: 40px;
+	height: 40px;
+}
+
+
+.light-round-extended .thumbnail-scroller.vertical .arrows a {
+	background: url(images/arrows_v_small.png) no-repeat;
+}
+
+
+.light-round-extended .thumbnail-scroller .arrows a.next {
+	background-position: -40px 0;
+}
+
+
+.light-round-extended .thumbnail-scroller.horizontal .arrows a.previous {
+	left: 0;
+}
+
+
+.light-round-extended .thumbnail-scroller.horizontal .arrows a.next {
+	right: 0;
+}
+
+
+.light-round-extended .thumbnail-scroller.vertical .arrows a.previous {
+	top: 0;
+}
+
+
+.light-round-extended .thumbnail-scroller.vertical .arrows a.next {
+	bottom: 0;
+}
+
+/* END OF THUMBNAIL SCROLLER ARROWS */
+
+
+/* THUMBNAIL SCROLLER BUTTONS */
+
+.light-round-extended .thumbnail-scroller .buttons a {
+	background: url(images/buttons_small.png) no-repeat;
+	background-position: 0 0; 
+	width: 10px;
+	height: 10px;
+	margin: 2px;
+}
+
+
+.light-round-extended .thumbnail-scroller .buttons a.over {
+	background-position: -10px 0; 
+}
+
+
+.light-round-extended .thumbnail-scroller .buttons a.select {
+	background-position: -20px 0; 
+}
+
+/* END OF THUMBNAIL SCROLLER BUTTONS */
+
+
+/* THUMBNAIL SCROLLER SCROLLBAR */
+
+.light-round-extended .thumbnail-scroller.horizontal .scrollbar {
+	margin-top: 30px;
+}
+
+
+.light-round-extended .thumbnail-scroller.vertical .scrollbar {
+	margin-left: 30px;
+}
+
+/* END OF THUMBNAIL SCROLLER SCROLLBAR */
+
+/* END OF THUMBNAIL SCROLLER */
+
+
+/* TOOLTIP */
+
+.advanced-slider-tooltip {
+	background-color: #DDD;
+	margin-bottom: 20px;
+	border: #EEE solid 4px;
+	border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+}
+
+
+.advanced-slider-tooltip .content {
+	color: #999;
+	padding: 10px;
+	margin: 0;
+}
+
+/* END OF TOOLTIP */
+
+
+/* CSS FOR THE INLINE HTML */
+
+
+.light-round-extended .html .background {
+	width: 100%;
+	height: 100%;
+	background: #DDD;
+}
+
+
+.light-round-extended .html .content-box {
+	width: 180px;
+	margin: 35px 30px;
+	padding: 10px;
+	background: #888;
+    color: #CCC;
+	font-size: 13px;
+	line-height: 20px;
+	border: 4px solid #EEE;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+}
+
+
+.light-round-extended .html .content-box p {
+	font-size: 13px;
+	line-height: 20px;
+}
+
+
+.light-round-extended .html p {
+	color: #CCCCCC;
+}
+
+
+.light-round-extended .html .content-box .title  {
+	font-weight: bold;
+	font-style: italic;
+	color: #EEEEEE;
+}
+
+
+.light-round-extended .html .content-box .slide-button {
+	width: 65px;	
+	color: #666;
+	padding: 2px;
+	margin-top: 10px;
+	text-decoration: none;
+	background-color: #EEEEEE;
+	border: 4px solid #FFFFFF;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+}
+
+
+.light-round-extended .html .images-box {
+	width: 540px;
+	padding: 30px 15px;
+}
+
+
+.light-round-extended .html .image-box {
+	background: url(images/image_shadow.png) no-repeat 9px 158px;
+	width: 260px;
+	height: 170px;
+	float: left;
+}
+
+
+.light-round-extended .html .image-box img {
+	margin: 10px;
+	border: 4px solid #FFF;
+}
+
+=======
+/*
+	Skin Name: Light Round Ext.
+	Class: light-round-extended
+	Description: Light Round Extended skin for Advanced Slider jQuery plugin. This is used for the HTML example
+	Author: David
+*/
+
+
+/* MAIN SLIDE */
+
+.light-round-extended .slide-wrapper {
+	background-color: #FFF;
+	border: 4px solid #FFF;
+	-moz-box-shadow: 0 0 10px #CCC;
+	-webkit-box-shadow: 0 0 10px #CCC;
+	box-shadow: 0 0 10px #CCC;
+}
+
+
+.light-round-extended .slide {
+	background-color: #FFF;
+}
+
+/* END OF MAIN SLIDE */
+
+
+/* SLIDE ARROWS */
+
+.light-round-extended .slide-arrows a {
+	background: url(images/arrows.png) no-repeat;
+	width: 66px;
+	height: 66px;
+	top: 50%;
+	margin-top: -33px;
+}
+
+
+.light-round-extended .slide-arrows a.previous {
+	left: -100px;
+}
+
+
+.light-round-extended .slide-arrows a.next {
+	right: -100px;
+	background-position: -66px 0;
+}
+
+/* SLIDE ARROWS */
+
+
+/* SLIDESHOW CONTROLS */
+
+.light-round-extended .slideshow-controls {
+	background: url(images/playpause.png) no-repeat;
+	width: 66px;
+	height: 66px;
+	top: 50%;
+	left: 50%;
+	margin-top: -33px;
+	margin-left: -33px;
+}
+
+
+.light-round-extended .slideshow-controls.pause {
+	background-position: 0 0;
+}
+
+
+.light-round-extended .slideshow-controls.play {
+	background-position: -66px 0;
+}
+
+/* END OF SLIDESHOW CONTROLS */
+
+
+/* TIMER ANIMATION */
+
+.light-round-extended .timer-animation {
+	top: 20px;
+	right: 20px;
+}
+
+/* END OF TIMER ANIMATION */
+
+
+/* SLIDE CAPTION */
+
+.light-round-extended .caption-container .background {
+	background-color: #000;
+	width: 100%;
+	height: 100%;
+}
+
+
+.light-round-extended .caption-container .caption {
+	color: #FFF;
+	margin: 0;
+	padding: 8px;
+	font-size: 16px;
+	line-height: 1;
+}
+
+/* END OF SLIDE CAPTION */
+
+
+/* SLIDE BUTTONS/BULLETS */
+
+/* main container of the navigation buttons */
+.light-round-extended .slide-buttons  {
+	bottom: -50px;
+}
+
+
+/* 
+ left, right and middle of the main container 
+ for this skin, these elements are not styled by default
+ feel free to add your own styling
+*/
+.light-round-extended .slide-buttons .left, .light-round-extended .slide-buttons .right {
+}
+
+
+.light-round-extended .slide-buttons .left {
+}
+
+
+.light-round-extended .slide-buttons .middle {
+}
+
+
+.light-round-extended .slide-buttons .right {
+}
+
+
+/* this contains the buttons */
+.light-round-extended .slide-buttons .buttons-inner {
+}
+
+
+/* this is a button */
+.light-round-extended .slide-buttons .buttons-inner a {
+	background: url(images/buttons.png) no-repeat;
+	background-position: 0 0;
+	width: 14px;
+	height: 14px;
+	margin: 0 2px;
+}
+
+
+.light-round-extended .slide-buttons .buttons-inner a.over {
+	background-position: -14px 0; 
+}
+
+
+.light-round-extended .slide-buttons .buttons-inner a.select {
+	background-position: -28px 0; 
+}
+
+
+/* this is used to style the numbers from within the buttons, when they are used */
+.light-round-extended .slide-buttons .buttons-inner a .number {
+	margin-top: 2px;
+	font-size: 8px;
+	line-height: 10px;
+	font-weight: bold;
+	color: #888;
+}
+
+
+.light-round-extended .slide-buttons .buttons-inner a.over .number {
+	color: #666;
+}
+
+
+.light-round-extended .slide-buttons .buttons-inner a.select .number {
+	color: #666;
+}
+
+
+/* 
+ applied to the thumbnail when the thumbnail is used only as a tooltip
+ sets the distance between the button and the thumbnail
+*/
+.light-round-extended .slide-buttons .buttons-inner .thumbnail-wrapper {
+	margin-bottom: 10px;
+}
+
+/* END OF SLIDE BUTTONS/BULLETS */
+
+
+/* THUMBNAIL IMAGE */
+
+.light-round-extended .thumbnail {
+	background-color: #FFF;
+	border: solid 3px #FFF;
+	-moz-box-shadow: 0 0 10px #AAA;
+	-webkit-box-shadow: 0 0 10px #AAA;
+	box-shadow: 0 0 10px #AAA;
+	-ms-filter: "progid: DXImageTransform.Microsoft.Shadow(Strength=4, Direction=130, Color='#AAAAAA')";
+	filter: progid: DXImageTransform.Microsoft.Shadow(Strength=4, Direction=130, Color='#AAAAAA');
+}
+
+/* END OF THUMBNAIL IMAGE */
+
+
+/* THUMBNAIL SCROLLER */
+
+.light-round-extended .thumbnail-scroller.horizontal {
+	bottom: 0;
+	left: 0;
+	padding: 0 50px;
+	margin-top: 30px;
+}
+
+
+.light-round-extended .thumbnail-scroller.horizontal.overlay {
+	bottom: 80px;
+	margin-top: 0;
+}
+
+
+.light-round-extended .thumbnail-scroller.vertical {
+	right: 0;
+	top: 0;
+	padding: 50px 0;
+	margin-left: 30px;
+}
+
+
+.light-round-extended .thumbnail-scroller.vertical.overlay {
+	right: 80px;
+	margin-left: 0;
+}
+
+
+.light-round-extended .thumbnail-scroller .thumbnail-wrapper {
+	margin: 5px;
+	padding: 4px;
+}
+
+
+.light-round-extended .thumbnail-scroller .thumbnail.over {
+	border: solid 3px #FFF;
+	-moz-box-shadow: 0 0 10px #555;
+	-webkit-box-shadow: 0 0 10px #555;
+	box-shadow: 0 0 10px #555;
+	-ms-filter: "progid: DXImageTransform.Microsoft.Shadow(Strength=4, Direction=130, Color='#555555')";
+	filter: progid: DXImageTransform.Microsoft.Shadow(Strength=4, Direction=130, Color='#555555');
+}
+
+
+.light-round-extended .thumbnail-scroller .thumbnail.select {
+	border: solid 3px #FFF;
+	-moz-box-shadow: 0 0 10px #555;
+	-webkit-box-shadow: 0 0 10px #555;
+	box-shadow: 0 0 10px #555;
+	-ms-filter: "progid: DXImageTransform.Microsoft.Shadow(Strength=4, Direction=130, Color='#555555')";
+	filter: progid: DXImageTransform.Microsoft.Shadow(Strength=4, Direction=130, Color='#555555');
+}
+
+
+/* THUMBNAIL CAPTION */
+
+.light-round-extended .thumbnail .caption .background {
+	background-color: #000;
+	filter: alpha(opacity=50);
+	opacity: 0.5;
+}
+
+
+.light-round-extended .thumbnail .caption .content {
+	color: #FFF;
+	font-size: 12px;
+	line-height: 14px;
+	text-align: center;
+	padding: 2px 0;
+	margin: 0;
+}
+
+/* END OF THUMBNAIL CAPTION */
+
+
+/* THUMBNAIL SCROLLER ARROWS */
+
+.light-round-extended .thumbnail-scroller .arrows a {
+	background: url(images/arrows_small.png) no-repeat;
+	width: 40px;
+	height: 40px;
+}
+
+
+.light-round-extended .thumbnail-scroller.vertical .arrows a {
+	background: url(images/arrows_v_small.png) no-repeat;
+}
+
+
+.light-round-extended .thumbnail-scroller .arrows a.next {
+	background-position: -40px 0;
+}
+
+
+.light-round-extended .thumbnail-scroller.horizontal .arrows a.previous {
+	left: 0;
+}
+
+
+.light-round-extended .thumbnail-scroller.horizontal .arrows a.next {
+	right: 0;
+}
+
+
+.light-round-extended .thumbnail-scroller.vertical .arrows a.previous {
+	top: 0;
+}
+
+
+.light-round-extended .thumbnail-scroller.vertical .arrows a.next {
+	bottom: 0;
+}
+
+/* END OF THUMBNAIL SCROLLER ARROWS */
+
+
+/* THUMBNAIL SCROLLER BUTTONS */
+
+.light-round-extended .thumbnail-scroller .buttons a {
+	background: url(images/buttons_small.png) no-repeat;
+	background-position: 0 0; 
+	width: 10px;
+	height: 10px;
+	margin: 2px;
+}
+
+
+.light-round-extended .thumbnail-scroller .buttons a.over {
+	background-position: -10px 0; 
+}
+
+
+.light-round-extended .thumbnail-scroller .buttons a.select {
+	background-position: -20px 0; 
+}
+
+/* END OF THUMBNAIL SCROLLER BUTTONS */
+
+
+/* THUMBNAIL SCROLLER SCROLLBAR */
+
+.light-round-extended .thumbnail-scroller.horizontal .scrollbar {
+	margin-top: 30px;
+}
+
+
+.light-round-extended .thumbnail-scroller.vertical .scrollbar {
+	margin-left: 30px;
+}
+
+/* END OF THUMBNAIL SCROLLER SCROLLBAR */
+
+/* END OF THUMBNAIL SCROLLER */
+
+
+/* TOOLTIP */
+
+.advanced-slider-tooltip {
+	background-color: #DDD;
+	margin-bottom: 20px;
+	border: #EEE solid 4px;
+	border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+}
+
+
+.advanced-slider-tooltip .content {
+	color: #999;
+	padding: 10px;
+	margin: 0;
+}
+
+/* END OF TOOLTIP */
+
+
+/* CSS FOR THE INLINE HTML */
+
+
+.light-round-extended .html .background {
+	width: 100%;
+	height: 100%;
+	background: #DDD;
+}
+
+
+.light-round-extended .html .content-box {
+	width: 180px;
+	margin: 35px 30px;
+	padding: 10px;
+	background: #888;
+    color: #CCC;
+	font-size: 13px;
+	line-height: 20px;
+	border: 4px solid #EEE;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+}
+
+
+.light-round-extended .html .content-box p {
+	font-size: 13px;
+	line-height: 20px;
+}
+
+
+.light-round-extended .html p {
+	color: #CCCCCC;
+}
+
+
+.light-round-extended .html .content-box .title  {
+	font-weight: bold;
+	font-style: italic;
+	color: #EEEEEE;
+}
+
+
+.light-round-extended .html .content-box .slide-button {
+	width: 65px;	
+	color: #666;
+	padding: 2px;
+	margin-top: 10px;
+	text-decoration: none;
+	background-color: #EEEEEE;
+	border: 4px solid #FFFFFF;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+}
+
+
+.light-round-extended .html .images-box {
+	width: 540px;
+	padding: 30px 15px;
+}
+
+
+.light-round-extended .html .image-box {
+	background: url(images/image_shadow.png) no-repeat 9px 158px;
+	width: 260px;
+	height: 170px;
+	float: left;
+}
+
+
+.light-round-extended .html .image-box img {
+	margin: 10px;
+	border: 4px solid #FFF;
+}
+
+>>>>>>> 814faae5d63c225913c29c7f628440a425af8b16
+/*END OF CSS FOR THE INLINE HTML */

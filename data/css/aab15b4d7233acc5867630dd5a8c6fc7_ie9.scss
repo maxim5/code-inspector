@@ -1,0 +1,22 @@
+ /* Border fix.  ( <=IE6 )
+-------------------------------------------------------------- */
+
+// Fix borders for IE so they don't cause content stacking (IE <= 6) and so
+// they don't wrap the scrollbar and look strange (IE <= 9)
+
+.highlight table {
+  border: 0;
+}
+ 
+.highlight table td.code {
+  border: 0;
+}
+ 
+.highlight {
+  border: 0;
+}
+
+.highlight code {
+  overflow: visible;
+  border: 0;
+}

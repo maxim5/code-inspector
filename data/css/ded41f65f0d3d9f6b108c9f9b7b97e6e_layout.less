@@ -1,0 +1,329 @@
+// -------------- Background ------------------ 
+
+body {
+    background: url("../images/background.png") repeat;
+}
+
+// ------------- Content ----------------- 
+
+.content-container {
+    .content;
+    border-radius: 10px;
+    box-shadow: 0px 3px 10px @Shadowcolor;
+    margin: auto;
+    padding: 12px;
+    position: relative;
+    text-align: left;
+    display: inline-block;
+
+    &.draft-text {
+        width: 700px;
+    }
+
+    .infopage {
+        width: 800px;
+    }
+}
+
+.content-container + .content-container {
+    margin-top: 45px;
+}
+
+.content-paragraph {
+    .content;
+    padding: 18px;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px #ccc;
+}
+
+.content-paragraph + .content-paragraph {
+    margin-top: 9px;
+}
+
+#tooltip {
+    position: absolute;
+    z-index: 3000;
+    border-radius: 3px;
+    box-shadow: 1px 1px 4px #999;
+    background-color: #eee;
+    padding: 5px;
+    opacity: 0.95;
+
+    h3, div {
+        margin: 0;
+        border-bottom: 0;
+        padding: 0;
+        line-height: 1em;
+        font-size: 1.2em;
+    }
+}
+
+// ------------------- Drafts --------------------------- 
+
+#draft-frame {
+    border-radius: 5px;
+    position: relative;
+
+    canvas {
+        border-radius: 5px;
+        -webkit-border-radius: 0px;
+        border-top: 1px solid rgba(0,0,0,0.2);
+        border-bottom: 1px solid white;
+        margin:auto;
+        z-index: 400;
+    }
+
+    #draft-button-container {
+        background: rgba(0, 0, 0, 0.4);
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        border-radius: 0 0 5px 5px;
+        z-index: 1000;
+    }
+
+    #buttons-hover-area {
+        background: transparent;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 60px;
+        z-index: 500;
+    }
+
+    #info-button {
+        background: url(../images/info.png) no-repeat center;
+    }
+
+    #fullscreen-button {
+        background: url(../images/fullscreen.png) no-repeat center;
+    }
+
+    #talk-button {
+        background: url(../images/talk.png) no-repeat center;
+    }
+
+    #info-button.selected {
+        background: url(../images/info2.png) no-repeat center;
+    }
+
+    #fullscreen-button.selected {
+        background: url(../images/fullscreen2.png) no-repeat center;
+    }
+
+    #talk-button.selected {
+        background: url(../images/talk2.png) no-repeat center;
+    }
+
+    #info-button, #fullscreen-button, #talk-button {
+        margin: 6px 9px;
+        width: 36px;
+        min-width: 36px;
+        height: 24px;
+        min-height: 24px;
+        float: right;
+        border-radius: 2px;
+    }
+
+    #info-button:hover, #fullscreen-button:hover, #talk-button:hover {
+        box-shadow: 0px 0px 2px 1px #ccc;
+        cursor: pointer;
+    }
+
+    #draft-name {
+        width: auto;
+        float: left;
+        color: white;
+        opacity: 0.66;
+        font-size: 125%;
+        padding: 9px 18px;
+    }
+}
+
+// --------------- Layout --------------- 
+
+#top-background {
+    width: 100%;
+    height: 340px;
+    background: url(../images/Gradient-Top.png) repeat-x top;
+    position: fixed;
+    top: 0px;
+    z-index: -1;
+}
+
+#bottom-background {
+    background: url(../images/Gradient-Bottom.png) repeat-x bottom;
+    position: fixed;
+    bottom: 0px;
+    height: 130px;
+    width: 100%;
+    z-index: -1;
+}
+
+#wrapper {
+    text-align: center;
+    width: 100%;
+}
+
+#wrapper-inner {
+    width: 94%;
+    margin: 0px auto;
+    min-width: 950px;
+    max-width: 1280px;
+    text-align: left;
+}
+
+#wrapper-top {
+    width: 100%;
+}
+
+#header {
+    padding-top: 20px;
+}
+
+#logo {
+    text-align: left;
+    img {
+        height: 3.7em;
+    }
+}
+
+#wrapper-content {
+    text-align: center;
+    padding: 40px;
+}
+
+#wrapper-bottom {
+    border-top: #fff dotted 1px;
+    padding: 15px;
+    position: relative;
+    text-align: right;
+    margin-top: 20px;
+}
+
+#footer {
+    color: #fff;
+    font-weight: normal;
+    margin: 0px 15px;
+    text-align: right;
+
+    a {
+        color: #fff;
+        font-weight: normal;
+        &:hover {color: @Lightyellow;}
+    }
+}
+
+// ------------ mainmenu ------------------
+
+#mainmenu {
+    padding: 15px 28px;
+    margin: 0px;    
+
+    .menuitem {
+        margin-right: 9px;
+
+        a {
+            color: #fff;
+            background-color: transparent;
+            padding: 5px 8px;
+            font-weight: bold;
+
+            &:hover {
+                color: @Lightyellow;
+            }
+        }
+    }
+}
+
+// ------------ draftmenu -------------- 
+
+#draftmenu {
+    .content;
+    padding: 6px;
+    position: absolute;
+    top: 156px;
+    left: 0px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 0px 3px 10px @Shadowcolor;
+    min-height: 40px;
+    z-index: 200;
+
+    ul {
+        margin: 0;
+        padding: 0;
+        margin-left: 18px;
+        list-style-type: none;
+    }
+
+    li {
+        .content;
+        padding: 3px;
+        border-radius: 3px;
+        width: 220px;
+        box-shadow: 0 1px 2px @Shadowcolor;
+        margin: 6px;
+
+        a {
+            color: @Text;
+            font-weight: bold;
+        }
+
+        &:hover {
+            box-shadow: 0px 0px 3px @Lightyellow;
+            cursor: pointer;
+            a {
+                color: @Lightgreen;
+            }
+
+            .draft-thumb {border-color: @Lightyellow;}
+            .draft-date {color: @Lightyellow;}
+        }
+
+        .draft-thumb {
+            width: 70px;    
+            height: 60px;
+            border: 1px solid #ddd;
+            float: left;
+            //box-shadow: 1px 1px 2px @Shadowcolor;
+        }
+
+        .draft-name {
+            float: right;
+            padding: 4px 9px;
+        }
+
+        .draft-date {
+            color: @TextLight;
+            font-size: 0.9em;
+            margin-top: 18px; 
+        }
+
+        &:after  {content:"\0020";display:block;height:0;clear:both;visibility:hidden;overflow:hidden;}
+
+    }
+}
+
+// ------------------- Comments --------------------------
+#comment-form {
+    .input-line {
+        padding: 9px 0;
+    }
+
+    .text > input {width: 300px;}
+
+    label.error {
+        padding: 0 9px;
+    }
+}
+
+#comments-container {
+    margin: 9px 0;
+
+    .comment-message {
+        white-space: pre-wrap;
+        margin-bottom: 9px;
+    }
+}
+    

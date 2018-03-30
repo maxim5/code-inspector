@@ -1,0 +1,340 @@
+/* Common */
+.lexus-story h2.hd-title{ position: fixed; left:240px; top:42px; font-size:10px; color:#fff; text-transform: uppercase; z-index: 10; display:none; }
+.lexus-story h2.hd-title.bk-on {color:#474747;}
+.lexus-story .btn-next-arr{position: fixed}
+.lexus-story .kv-indi-wrap{ position: fixed; right:20px; top:50%; z-index: 10;}
+.lexus-story .visual-wrap{ position:relative; overflow: visible;}
+.lexus-story .visual-wrap figure{overflow: hidden;}
+.lexus-story .visual-wrap .kv-type-image .fig-content{overflow: visible; /* height:900px */} /* todo �ӽÿ� width, height - jongjin, ���߽� ���� �ʿ� */
+.lexus-story .visual-wrap .kv-type-image .fig-txt{position:absolute}
+.lexus-story .visual-wrap .kv-type-image .fig-txt.title-pos-0{top:100px; left:238px;}
+.lexus-story .visual-wrap .kv-type-image .fig-txt.title-pos-1{top:100px; left:790px;}
+.lexus-story .visual-wrap .kv-type-image .fig-txt.title-pos-2{top:100px; right:60px;}
+.lexus-story .visual-wrap .kv-type-image .fig-txt.title-pos-3{bottom:360px; left:238px;}
+.lexus-story .visual-wrap .kv-type-image .fig-txt.title-pos-4{bottom:360px; left:790px;}
+.lexus-story .visual-wrap .kv-type-image .fig-txt.title-pos-5{bottom:360px; right:60px;}
+.lexus-story .visual-wrap .kv-type-video video { position: absolute; right: 0; bottom: 0; width: auto; height: auto; min-width: 100%; min-height: 100%; }
+.lexus-story .visual-wrap .kv-type-video .video-image{position:absolute; opacity: 0;}
+.lexus-story .visual-wrap .kv-type-video .fig-txt{position:absolute}
+.lexus-story .visual-wrap .kv-type-video .fig-btn-play{position:absolute;}
+.lexus-story .visual-wrap .kv-type-video .fig-txt.title-pos-0{top:100px; left:238px;}
+.lexus-story .visual-wrap .kv-type-video .fig-txt.title-pos-1{top:100px; left:790px;}
+.lexus-story .visual-wrap .kv-type-video .fig-txt.title-pos-2{top:100px; right:60px;}
+.lexus-story .visual-wrap .kv-type-video .fig-txt.title-pos-3{bottom:210px; left:238px;}
+.lexus-story .visual-wrap .kv-type-video .fig-txt.title-pos-4{bottom:210px; left:790px;}
+.lexus-story .visual-wrap .kv-type-video .fig-txt.title-pos-5{bottom:210px; right:60px;}
+.lexus-story .visual-wrap .kv-type-video .fig-btn-play.title-pos-0{top:302px; left:238px;}
+.lexus-story .visual-wrap .kv-type-video .fig-btn-play.title-pos-1{top:302px; left:790px;}
+.lexus-story .visual-wrap .kv-type-video .fig-btn-play.title-pos-2{top:302px; right:60px;}
+.lexus-story .visual-wrap .kv-type-video .fig-btn-play.title-pos-3{bottom:89px; left:238px;}
+.lexus-story .visual-wrap .kv-type-video .fig-btn-play.title-pos-4{bottom:89px; left:790px;}
+.lexus-story .visual-wrap .kv-type-video .fig-btn-play.title-pos-5{bottom:89px; right:60px;}
+.lexus-story .fig-txt {position:absolute; left:50%; top:0; margin-left:-360px; width:720px;}
+
+/* The Beginning */
+.beginning .section-0, .beginning .section-1, .beginning .section-2, .beginning .section-3 { position:relative; overflow: hidden; }
+.beginning .section-0 {height:800px; overflow:hidden; position:relative;}
+.beginning .section-0 figure { left:0; width:100%; overflow:hidden; }
+.beginning .section-0 .fig-content {position:fixed;left:0; width:100%; }
+.beginning .section-0 .fig-content img {position: absolute;}
+.beginning .section-0 .fig-txt {position:absolute; left:50%; top:50%; margin: -135.5px 0 0 -360px; width:720px; height:311px;}
+.beginning .section-0 .fig-txt p {position:absolute; right:21px; bottom:0;}
+.beginning .section-1, .beginning .section-2, .beginning .section-3 {background:#1e1e1e;}
+.beginning .section-1 {height:620px;}
+.beginning .section-1 .fig-txt {margin-top:98px; height:451px;}
+.beginning .section-1 .fig-txt p {position:relative; left:-10px; z-index:10;}
+.beginning .section-1 .fig-txt > img {position:absolute; bottom:0; right:22px;}
+.beginning .section-2 {padding:79px 0; height:1691px;}
+.beginning .section-2 .section-2-1 {height:570px;}
+.beginning .section-2 .section-2-1 h3 { margin-left: -100px; }
+.beginning .section-2 .section-2-1 p {position:absolute; top:148px; right:22px;}
+.beginning .section-2 .section-2-2 {height:508px;}
+.beginning .section-2 .section-2-2 p {margin-top:58px;}
+.beginning .section-2 .section-2-2 .fig-txt > img {position:absolute; top:0; right:22px;}
+.beginning .section-2 .section-2-3 {height:611px;}
+.beginning .section-3 {height:2400px;}
+.beginning .section-3 .section-3-1 {height:480px;}
+.beginning .section-3 .section-3-1 .fig-content {position:relative; top:120px; height:360px; background:#000;}
+.beginning .section-3 .section-3-1 .fig-content img {position:absolute; left:50%; margin-left:-610px;}
+.beginning .section-3 .section-3-1 .fig-txt h3 { margin-left: -100px; }
+.beginning .section-3 .section-3-1 .fig-txt p {position:absolute; left:485px; top:180px; }
+.beginning .section-3 .section-3-2 {height:540px;}
+.beginning .section-3 .section-3-2 p {margin-top:58px;}
+.beginning .section-3 .section-3-2 .fig-txt > img {position:absolute; top:60px; right:22px;}
+.beginning .section-3 .section-3-3 {height:751px;}
+.beginning .section-3 .section-3-3 p {text-align:center;}
+.beginning .section-3 .section-3-3 .fig-txt span { position:relative; margin:50px 0 0 22px; display:block; }
+.beginning .section-3 .section-3-3 .fig-txt span a { position:absolute; left:50%; top:50%; margin-left:-33px; margin-top:-33px; width:66px; height:66px; }
+.beginning .section-3 .section-3-3 .fig-content { position:relative; top:70px; height:390px; background:#000; }
+.beginning .section-3 .section-3-4 {height:592px;}
+.beginning .section-3 .section-3-4 p {text-align:center;}
+.beginning .section-3 .section-3-4 .fig-txt > img {position:absolute; left:412px; top:159px; }
+
+/* Brand Philosophy */
+.philosophy .section-0, .philosophy .section-1, .philosophy .section-2, .philosophy .section-3, .philosophy .section-4, .philosophy .section-5, .philosophy .section-6 { position:relative; overflow: hidden; }
+.philosophy .section-1, .philosophy .section-2, .philosophy .section-3, .philosophy .section-4, .philosophy .section-5, .philosophy .section-6 { background:#1e1e1e; }
+.philosophy .section-0 { position:relative; height:800px; overflow:hidden; }
+.philosophy .section-0 figure {left:0; width:100%; overflow:hidden; }
+.philosophy .section-0 .fig-content {position:fixed;left:0; width:100%; }
+.philosophy .section-0 .fig-content img {position: absolute;}
+.philosophy .section-0 .fig-txt {position:absolute; left:50%; top:50%; margin: -135px 0 0 -346.5px; width:574px; height:232px;}
+.philosophy .section-1 { height:749px; }
+.philosophy .section-1 .fig-txt { margin-top:100px; height:493px; }
+.philosophy .section-1 .fig-txt h3 { display:none; position:relative; left:22px;  }
+.philosophy .section-1 .fig-txt span { position:relative; margin:50px 0 0 22px; display:block; }
+.philosophy .section-1 .fig-txt span a { position:absolute; left:50%; top:50%; margin-left:-33px; margin-top:-33px; width:66px; height:66px; }
+.philosophy .section-1 .fig-txt p { position:absolute; left:22px; bottom:0; }
+.philosophy .section-2 { height:719px; }
+.philosophy .section-2 .fig-txt { height:568px; }
+.philosophy .section-2 .fig-txt h3 { margin-left:-100px; }
+.philosophy .section-2 .fig-txt h4 { position:absolute; top:179px; right:20px; }
+.philosophy .section-2 .fig-txt p { position:absolute; top:299px; right:22px; }
+.philosophy .section-3 { height:1800px; }
+.philosophy .section-3 .section-3-1 { height:510px; }
+.philosophy .section-3 .section-3-1 .fig-content { position:relative; top:70px; height:390px; background:#000; }
+.philosophy .section-3 .section-3-1 .fig-content img { position:absolute; left:50%; margin-left:-610px; }
+.philosophy .section-3 .section-3-1 .fig-txt h3 { margin-left:-100px; }
+.philosophy .section-3 .section-3-2 { height:1110px; }
+.philosophy .section-3 .section-3-2 h4 { position:relative; left:22px; }
+.philosophy .section-3 .section-3-2 p { position:absolute; right:0; top:49px; }
+.philosophy .section-3 .section-3-2 .fig-txt > img { position:absolute; left:22px; top:390px; }
+.philosophy .section-4 { height:840px; }
+.philosophy .section-4 .fig-txt { height:681px; }
+.philosophy .section-4 .fig-txt h3 { margin-left:-100px; }
+.philosophy .section-4 .fig-txt > img { position:absolute; left:254px; top:180px; }
+.philosophy .section-4 .fig-txt p { position:absolute; left:22px; top:388px; z-index:10;}
+.philosophy .section-5 { height:840px; }
+.philosophy .section-5 .fig-txt { height:683px; }
+.philosophy .section-5 .fig-txt h3 { margin-left:-100px; }
+.philosophy .section-5 .fig-txt > img { position:absolute; left:22px; top:180px; }
+.philosophy .section-5 .fig-txt p { position:absolute; right:22px; top:358px; z-index:10;}
+.philosophy .section-6 { height:1710px; }
+.philosophy .section-6 .fig-txt { height:1420px; }
+.philosophy .section-6 .fig-txt h3 { position:relative; margin-left:-100px; z-index:10; }
+.philosophy .section-6 .fig-txt > img { position:absolute; right:22px; top:90px; }
+.philosophy .section-6 .fig-txt p { position:absolute; left:22px; top:328px; }
+.philosophy .section-6 .fig-txt span { position:absolute; left:22px; top:670px; }
+
+/* Amazing In Motion */
+.amazing { }
+.amazing section { overflow:hidden; }
+.amazing .lexus-story .btn-next-arr{display:none}
+.amazing .visual-wrap .fig-content video{position: absolute; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; left:150px}
+.amazing .visual-wrap .fig-content img{position:absolute}
+.amazing .visual-wrap .fig-content #standard{opacity: 1}
+.amazing .section-0, .amazing .section-1, .amazing .section-2{ position:relative; overflow: hidden; }
+.amazing .section-0 .fig-content img,
+.amazing .section-1 .fig-content img
+.amazing .section-2 .fig-content img {position:relative;}
+.amazing .section-0 figure { left:0; width:100%; overflow:hidden; }
+.amazing .section-0 .fig-content {position:fixed;left:0; width:100%; }
+.amazing .section-0 .fig-txt { position:absolute; left:50%; top:30%; margin:-81px 0 0 -267px; width:354px; height:162px; }
+.amazing .section-0 .fig-txt h2 { position:relative; margin-left:-5px; }
+.amazing .section-0 .fig-txt span { position:absolute; left:-4px; top:387px; }
+.amazing .section-0 .fig-txt p { position:absolute; right:9px; bottom:0; border:1px solid green}
+.amazing .section-0 .fig-txt .has-3-rows{ position:absolute; left:50%; display:block; padding-top:30px; margin:0 0 0 -33px}
+.amazing .section-1 figure{ position:absolute; width:100%; height:800px}
+.amazing .section-1 .visual-wrap{width:100%; height:800px}
+.amazing .section-1 .fig-content{width:100%}
+.amazing .section-1 .fig-txt{ position:absolute; width:auto; left:11%; top:37%; margin:0}
+.amazing .section-1, .amazing .section-2 { background:#1e1e1e; width:100%}
+.amazing .section-2 .visual-wrap{width:100%; height:1140px}
+.amazing .section-2 figure{ position:absolute; width:100%; height:1140px}
+.amazing .section-2 .fig-txt{ position:absolute; left:auto; right:26%; top:22%; width:auto; margin:0 }
+.amazing .section-3 { background:#fff; }
+.amazing .section-3 .hover-wrap { position:relative; margin:0 auto; padding:80px 5px 118px 5px; width:780px; }
+.amazing .section-3 .hover-wrap .title { margin-bottom:60px; }
+.amazing .section-3 .hover-wrap .step { position:relative; padding:60px 0 60px 0; border-top:1px solid #bebebe; }
+.amazing .section-3 .hover-wrap .step > div { float:left; }
+.amazing .section-3 .hover-wrap .step .figure-img { position:relative; }
+.amazing .section-3 .hover-wrap .step .figure-img a { position:absolute; left:0; top:0; padding:102px 195px 102px 195px; }
+.amazing .section-3 .hover-wrap .step .figure-thumb { position:relative; margin-top:30px; }
+.amazing .section-3 .hover-wrap .step .figure-thumb ul li { float:left; }
+.amazing .section-3 .hover-wrap .step-1 { border:none; }
+.amazing .section-3 .hover-wrap .step-1 .figure-txt { position:relative; left:-3px; top:-1px; }
+.amazing .section-3 .hover-wrap .step-3 .figure-group > div { float:left; }
+.amazing .section-3 .hover-wrap .step-3 .figure-group .figure-txt { position:relative; left:-3px; top:-1px; }
+.amazing .section-3 .hover-wrap .step-3 .figure-group .figure-img a { position:absolute; left:0; top:0; padding:102px 195px 102px 195px; }
+.amazing .section-3 .hover-wrap .step-3 .group-1 { margin-bottom:30px; }
+.amazing .section-4 { background:#262626; }
+.amazing .section-4 .motion-wrap { position:relative; margin:0 auto; padding:80px 0 118px 0; width:760px; }
+.amazing .section-4 .motion-wrap .title { margin-bottom:78px; }
+.amazing .section-4 .motion-wrap .banner { margin-bottom:50px; }
+.amazing .section-4 .motion-wrap .banner ul li { position:relative; float:left; margin-right:5px; }
+.amazing .section-4 .motion-wrap .banner ul li.last { margin-right:0; }
+.amazing .section-4 .motion-wrap .banner ul li a { position:absolute; left:0; top:0; padding:207px 107px 207px 107px; display:block; }
+.amazing .section-4 .motion-wrap > a { position:absolute; left:50%; margin-left:-100px; margin-bottom:92px; width:200px; height:40px; display:block; }
+.popup.amazing-pop {width:100%; height:100%; top:0; left:0;border-top:0; border-bottom:0; background-color: #000;padding:0;}
+.popup.amazing-pop .gallery-wrap { position:absolute; left:50%; margin-left:-480px; top:50%; margin-top:-250px; width:960px; z-index:3; }
+.popup.amazing-pop .gallery-wrap .kv-outer-wrap { position:relative; width:960px; height:500px; overflow:hidden; }
+.popup.amazing-pop .gallery-wrap .kv-outer-wrap .visual-wrap .kv-type-image { float:left; overflow:hidden; width:960px; height:500px; }
+.popup.amazing-pop .btn-prev-next{ }
+.popup.amazing-pop .btn-prev-next a { position:absolute; top:50%; margin-top:-30px; z-index:3; }
+.popup.amazing-pop .btn-prev-next a.prev { left:0; }
+.popup.amazing-pop .btn-prev-next a.next { right:0; }
+.popup.amazing-pop .close-pop{right:13px; top:32px; z-index:10;}
+.popup.amazing-pop .close-pop a, .popup.utube-pop .close-pop a span {opacity:0.5; filter:alpha(opacity=50)}
+.popup.amazing-pop .close-pop a:hover {opacity:1; filter:alpha(opacity=100)}
+
+/* Add BJ.K     DATE 2015.09.04 */
+
+.amazing .subfloat-menu{left:7.078%; width:92.921%; position:fixed; z-index:10; background-color:#fff; top:0; height:72px}
+.amazing .subfloat-menu ul{width:55.521%; padding:0; margin:0 23.239% 3px 23.239%} /* width 2% ���� */
+.amazing .subfloat-menu ul li{display:block; float:left; width:21.447%; margin:0 4.736% 0 0; font-size:13px; color:#ababab; text-align:center; background-color:#fff}
+.amazing .subfloat-menu ul li.last-child{margin-right:0}
+.amazing .subfloat-menu ul li a{display:block; width:100%; padding:31px 0 26px 0}
+.amazing .subfloat-menu ul li a:hover{border-bottom:4px solid #000; margin:0 0 -4px 0}
+.amazing .subfloat-menucon li.on:after{display:block; content:""; border-bottom:4px solid #000; margin:0 0 -4px 0}
+.amazing .subfloat-menu-tablet{display:none; position:fixed; left:auto; right:10px; top:110px; z-index:999; width:auto; padding:0; margin:0 !important; border-bottom:0; box-shadow:5px 3px 7px rgba(0,0,0,0.4); }
+.amazing .subfloat-menu-tablet ul { padding:0; margin:0; display:none; }
+.amazing .subfloat-menu-tablet ul li{width:175px; height:44px; text-align:right; padding-right:20px; color:#fff; background-color:#111; list-style-type: none; line-height:44px}
+.amazing .subfloat-menu-tablet ul li a{color:#fff}
+.amazing .subfloat-menu-tablet ul li a:hover{color:#fff}
+.amazing .subfloat-menu-tablet button{text-indent:-9999px; width:45px; height:45px; display:block; position:relative; background-color:#000;}
+.amazing .subfloat-menu-tablet button.on:after{display:block; position:absolute; content:""; width:11px; height:13px; left:50%; top:50%; margin:-6px 0 0 -5px; background:url('../images/lexus_story/amazing/floatmenu_tablet_ham.png') 0 0 no-repeat; background-size:30px 15px;}
+.amazing .subfloat-menu-tablet button.off{width:100%}
+.amazing .subfloat-menu-tablet button.off:after{display:block; position:absolute; content:""; width:8px; height:13px; right:18px; top:50%; margin:-6px 0 0 -5px; background:url('../images/lexus_story/amazing/floatmenu_tablet_ham.png') -15px 0 no-repeat; background-size:30px 15px;}
+
+.amazing .amazing-in-motion{width:100%; position:relative}
+.amazing .amazing-in-motion ul{position:relative; margin-bottom:0; margin-top:0; padding:72px 0 0 180px}
+.amazing .amazing-in-motion ul li{position:relative; width:33.333%; float:left; overflow:hidden; list-style-type:none; }
+.amazing .amazing-in-motion ul li a{display:block}
+.amazing .amazing-in-motion ul li img.sub-txt{position: absolute; left:50%; top:77%; margin-left:-135px}
+.amazing .amazing-in-motion ul li img.btn{position: absolute; left:50%; top:83%; margin-left:-135px}
+.amazing .amazing-in-motion ul li img.back-img{width:100%}
+.amazing .amazing-in-motion .main-txt{position:absolute; z-index:10; top:40%; left:50%; margin-left:-322px}
+
+.amazing .lexus-short-film figure { left:0; width:100%; overflow:hidden; }
+.amazing .lexus-short-film .visual-wrap .fig-content #standard{opacity: 1}
+.amazing .lexus-short-film .fig-content {position:fixed;left:0; width:100%; }
+.amazing .lexus-short-film .fig-txt { position:absolute; left:50%; top:50%; margin:-245px 0 0 -407px; width:639px; height:454px; }
+.amazing .lexus-short-film .fig-txt h2 { position:relative; }
+.amazing .lexus-short-film .fig-txt span { position:absolute; left:-4px; top:387px; }
+.amazing .lexus-short-film .fig-txt p { position:absolute; right:9px; bottom:0; border:1px solid green}
+.amazing .lexus-short-film .fig-txt .has-3-rows{ position:absolute; left:50%; display:block; padding-top:0; margin:0 0 0 -159px}
+.amazing .lexus-short-film .contents-wrap{ position:relative; width:1420px; left:50%; margin-left:-800px; height:inherit; background-image:url('../images/lexus_story/amazing/shortfilm_contents_bg.jpg'); background-repeat: no-repeat }
+.amazing .lexus-short-film .contents-wrap .main-txt{position:absolute; top:100px; margin:0; z-index: 2; left:0}
+
+.amazing .lexus-short-film.films-apply{width:100%; height:965px; background-color: #262626}
+.amazing .lexus-short-film.films-apply .inner-point{width:760px; position:relative; left:50%; margin-left:-380px}
+.amazing .lexus-short-film.films-apply .main-point1{position: absolute; width:266px; margin:0 60px 0 0; float:left}
+.amazing .lexus-short-film.films-apply .main-point1 a{display:block}
+.amazing .lexus-short-film.films-apply .main-point2{width:434px; float:left; margin-left: 328px; margin-top:159px}
+.amazing .lexus-short-film.films-apply .point-detail{margin:491px 0 0 0; top:0; display: block}
+.amazing .lexus-short-film.films-apply .point-detail2{margin-top:34px}
+.amazing .lexus-short-film.films-apply .btn-apply{margin:31px 0 0 0; top:0; vertical-align: auto}
+
+
+.amazing .lexus-short-film.view-film{width:100%; height:1362px}
+.amazing .lexus-short-film.view-film .main-txt{position:static; top:0; margin:93px 0 90px 0}
+.amazing .lexus-short-film.view-film .film-list{width:760px; background-image: none; background-color:#fff; margin-left:-470px}
+.amazing .lexus-short-film.view-film .film-list img.txt-winner{margin:93px 0 90px 0}
+.amazing .lexus-short-film.view-film ol{padding:0 0 80px 0}
+.amazing .lexus-short-film.view-film ol > li{height:220px; border-bottom:1px solid #bebebe}
+.amazing .lexus-short-film.view-film ol li.first-child{margin-top:0; height:190px}
+.amazing .lexus-short-film.view-film ol li.first-child ul li{margin-top:0}
+.amazing .lexus-short-film.view-film ol li.last-child{border:none}
+.amazing .lexus-short-film.view-film ol li ul li{float:left; margin:30px 0 40px 0}
+.amazing .lexus-short-film.view-film ol li ul li.img-con a{display:block}
+.amazing .lexus-short-film.view-film ol li ul li.img-con{width:266px; margin-right:60px}
+.amazing .lexus-short-film.view-film ol li ul li.text-con{width:195px; margin-bottom:25px}
+.amazing .lexus-short-film.view-film ol li ul li.year-con{position:absolute; right:0}
+
+.amazing .lexus-short-film.view-film-etc{width:100%; height:570px; background-color:#262626}
+.amazing .lexus-short-film.view-film-etc .view-film-etc-con{width:760px; background-image: none; background-color:#262626; margin-left:-470px}
+.amazing .lexus-short-film.view-film-etc .view-film-etc-con > img{margin-top:100px}
+.amazing .lexus-short-film.view-film-etc .view-film-etc-con .img-lists-con{margin-top:100px}
+.amazing .lexus-short-film.view-film-etc .view-film-etc-con .img-lists-con li{float:left}
+.amazing .lexus-short-film.view-film-etc .view-film-etc-con .img-lists-con img{margin-top:0}
+.amazing .lexus-short-film.view-film-etc .view-film-etc-con .view-film-etc-txt{margin-top:0; position:absolute; left:50%; margin-left:-127px; top:280px}
+.amazing .lexus-short-film.view-film-etc .view-film-etc-con img.btn-view-detail{position:relative; left:50%; margin-left:-135px; margin-top:70px}
+
+.amazing .lexus-design-award .films-apply{height:940px}
+.amazing .lexus-design-award .fig-txt{ width:774px; margin:-180px 0 0 -437px;}
+.amazing .lexus-design-award .fig-txt .has-3-rows{ position:absolute; left:0; display:block; padding-top:0; margin:60px 0 0 5px}
+.amazing .lexus-design-award .award-theme {background: #000}
+.amazing .lexus-design-award .award-theme .contents-wrap {position: relative; left: 50%; margin-left: -710px; width: 1420px}
+.amazing .lexus-design-award .award-theme .txt-area {position: absolute; top: 100px; left: 50%; margin-left: -250px; width: 501px; text-align: center}
+.amazing .lexus-design-award .award-theme .txt-area p {margin-top: 37px}
+.amazing .lexus-design-award .main-point1 .point-detail{margin-top:735px}
+.amazing .lexus-design-award .main-point2 .point-detail3{margin-top:66px}
+.amazing .lexus-design-award .main-point2 .mento-list li{margin:21px 3px 0 0; float:left}
+.amazing .lexus-design-award .main-point2 .mento-list li.last-child{margin-right:0}
+.amazing .lexus-design-award .view-film ol > li{height:356px}
+.amazing .lexus-design-award .view-film ol li.first-child{height:316px}
+.amazing .lexus-design-award .view-film ol li.last-child{height:auto}
+.amazing .lexus-design-award .view-film ol li ul li{margin:40px 0}
+.amazing .lexus-design-award .view-film ol li ul li.img-con{width:356px}
+.amazing .lexus-design-award .view-film ol li ul li.img-con a{display:block}
+.amazing .lexus-design-award .view-film ol li ul li.picture-con{margin:0 0 25px}
+.amazing .lexus-design-award .view-film ol li ul li.picture-con.has-2-rows {margin-top: -12px}
+
+/*lexus award 수정*/
+.amazing .lexus-design-award .fig-txt p {position: static; margin-top: 34px; border: none}
+.amazing .lexus-design-award .lexus-short-film.view-film{width:100%; height:2064px}
+.amazing .lexus-design-award .lexus-short-film .contents-wrap {background: none;}
+.amazing .lexus-design-award .lexus-short-film.films-apply .main-point1{/*width:266px; margin:0 60px 0 0; float:left*/position: absolute; top: 568px; left: 0}
+.amazing .lexus-design-award .lexus-short-film.films-apply .main-point1 > img {position: absolute; top: -361px; left: 317px}
+.amazing .lexus-design-award .lexus-short-film.films-apply .main-point1 > p {position: absolute; left: 317px; bottom: 1px}
+.amazing .lexus-design-award .lexus-short-film.films-apply .main-point1 dd {margin-top: 17px;}
+.amazing .lexus-design-award .lexus-short-film.films-apply .main-point1 dd > div {width: 760px; clear: both}
+.amazing .lexus-design-award .lexus-short-film.films-apply .main-point1 .btn-area {margin-top: 39px; width: 266px; float: left}
+.amazing .lexus-design-award .lexus-short-film.films-apply .main-point1 a{display:block; width: 266px; height: 58px; text-indent: -1000px}
+.amazing .lexus-design-award .lexus-short-film.films-apply .main-point1 a.see-more {background: url('../images/lexus_story/amazing/btn_design_award_seemore.jpg') 0 0 no-repeat}
+.amazing .lexus-design-award .lexus-short-film.films-apply .main-point1 a.go-join {margin-top: 8px; background: url('../images/lexus_story/amazing/btn_design_award_gojoin.jpg') 0 0 no-repeat}
+
+/* 0912  shortFile 추가 v2 */
+.amazing .lexus-short-film-v2{ height:965px }
+.amazing .lexus-short-film-v2 .main-point1{top: 490px; left: 0}
+.amazing .lexus-short-film-v2 .main-point1 .poster{ left: 326px; top: -331px; position: absolute }
+.amazing .lexus-short-film-v2 .main-point1 p{ position: absolute; left: 326px; bottom: 0px }
+.amazing .lexus-short-film-v2 .main-point1 dl dt{ margin-bottom:41px }
+.amazing .lexus-short-film-v2.films-apply .point-detail2{margin-top:0}
+.amazing .lexus-short-film-v2.films-apply .btn-apply{ margin-top:0}
+.amazing .lexus-short-film-v2.films-apply .main-point1 a{ margin-top:33px}
+
+/* 2016.11.01 / do / 키비주얼 다운 화살표가 모두(모델페이지 포함) 검정색으로 적용되어 있는 현상 수정*/
+/*.btn-next-arr {background: url(../images/lexus_story/amazing/arr_dn.png) 0 0 no-repeat}*/
+
+
+/* Tablet */
+
+@media only screen and (min-width:1024px) and (max-width:1280px){
+    .amazing .subfloat-menu ul{position:relative; width:85%; margin:0; left:50%; margin-left:-42.5%; padding-left:45px}
+    .amazing .subfloat-menu-tablet{display:none}
+
+    .amazing .amazing-in-motion .main-txt{width:60%; margin-left:-285px}
+}
+
+@media only screen and (min-width:768px) and (max-width:1023px){
+    .amazing .subfloat-menu ul{position:relative; width:85%; margin:0; left:50%; margin-left:-42.5%; padding-left:45px}
+    .amazing .subfloat-menu-tablet{display:none}
+
+    .amazing .amazing-in-motion .main-txt{width:60%; margin-left:-200px}
+    .amazing .amazing-in-motion ul li img.btn { left:0; margin-left:10%; width:80%; }
+    .amazing .amazing-in-motion ul li img.sub-txt { left:0; margin-left:10%; width:80%; }
+}
+
+/* Mobile */
+
+@media only screen and (min-width:480px) and (max-width:767px){
+    .amazing .fig-txt h2 img,
+    .amazing .fig-txt h3 img,
+    .amazing .fig-txt p img {width:100%;}
+    .amazing .section-0 .fig-txt {position:absolute; left:0; top:0; margin:0; width:100%; height:100%;}
+    .amazing .section-0 .fig-txt h2 {position:relative; right:0; left:0; top:13.333333%;}
+    .amazing .section-0 .fig-txt span {position:absolute; right:0; left:0; top:56.88888%;}
+    .amazing .section-0 .fig-txt span img {width:100%;}
+    .amazing .section-0 .fig-txt p {position:absolute; left:0; right:0; top:79.111111%;}
+    .amazing .section-1,
+    .amazing .section-1 .fig-txt {height:auto;}
+    .amazing .section-1 .fig-txt h3 {position:static; margin-top:0; padding-top:15.789473%;}
+    .amazing .section-1 .fig-txt p {position:static; margin-top:0; padding-top:11.568719%; padding-bottom:15.789473%;}
+    .amazing .section-1 .fig-txt p a {display:block;}
+    .amazing .section-1 .fig-txt p a img {position:static; display:block;; margin-bottom:6.2411111%; float:none;}
+    .amazing .section-1 .fig-txt p a:last-child img {margin-bottom:0;}
+    .amazing .visual-wrap .fig-content img{position:relative}
+    .amazing .visual-wrap .fig-content #standard{opacity: 1}
+	.popup.amazing-pop { left:0; margin:0; width:100%; }
+	.popup.amazing-pop .btn-prev-next a { top:50%; margin-top:-30px; }
+}

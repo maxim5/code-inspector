@@ -1,0 +1,34 @@
+
+// Background image
+#background-wrapper {
+	.transition-property(background-position);
+	.transition-duration(0ms);
+	&.triggered {
+		.transition-duration(750ms);
+	}
+
+}
+
+// Contact links
+.contacts {
+	a, span, img {
+		.transition-property(all);
+		.transition-duration(75ms);
+	}
+}
+
+// Highlight links
+#highlights {
+	li a {
+		.transition-property(all);
+		.transition-duration(100ms);
+	}
+}
+
+// Main menu links
+#menu {
+	li a {
+		.transition-property(all);
+		.transition-duration(75ms);
+	}
+}

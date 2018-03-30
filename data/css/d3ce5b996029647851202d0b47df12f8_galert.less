@@ -1,0 +1,205 @@
+@border-value: .4em;
+@border-color: rgb(150,150,150);
+@title-bg: rgb(200,200,200);
+@title-bg-stop: rgb(220,220,220);
+@title-color: rgb(110,110,110);
+@title-shadow: 0px 1px 1px white;
+
+.vertical(@startColor: #555, @endColor: #333) {
+    background-color: @endColor;
+    background-repeat: no-repeat;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(@startColor), to(@endColor));
+    background-image: -webkit-linear-gradient(@startColor, @endColor);
+    background-image: -moz-linear-gradient(@startColor, @endColor);
+    background-image: -o-linear-gradient(top,  @startColor,  @endColor);
+    background-image: -khtml-gradient(linear, left top, left bottom, from(@startColor), to(@endColor));
+    filter: e(%("progid:DXImageTransform.Microsoft.Gradient(StartColorStr='%d', EndColorStr='%d', GradientType=0)",@startColor,@endColor));
+    -ms-filter: %("progid:DXImageTransform.Microsoft.gradient(startColorStr='%d', EndColorStr='%d', GradientType=0))",@startColor,@endColor);
+}
+
+#alert-div {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: none;
+    margin: 0;
+    padding: 0;
+    height: 0;
+    width: 0;
+}
+
+#alert-div.overlay, #alert-div.modal {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+}
+
+#alert-div.modal {
+    background: none;
+}
+
+.alert {
+    position: fixed;
+    font-size: 12px;
+    border: 1px solid @border-color;
+    border-radius: @border-value;
+    width: 40em;
+    z-index: 1001;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+
+    .alert-title {
+        position: relative;
+        z-index: 2;
+        padding: .7em 1em;
+        font-size: 1.3em;
+        color: @title-color;
+        text-shadow: @title-shadow;
+        font-weight: normal;
+        text-align: center;
+        background: rgb(200,200,200);
+        background-image: -moz-linear-gradient(0% 50% 0deg,@title-bg, @title-bg-stop, @title-bg 100%);
+        background-image: -webkit-gradient(linear, 0% 0%, 100% 0%, from(@title-bg), to(@title-bg), color-stop(.5,@title-bg-stop));
+        border-bottom: 1px solid @border-color;
+        border-radius: .25em .25em 0 0;
+        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+        -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .alert-content {
+        position: relative;
+        width: 100%;
+        z-index: 1;
+        font-size: 1em;
+        line-height: 1.5em;
+        color: #444;
+        font-weight: normal;
+        background: rgb(235,235,235);
+        border-radius: 0 0 .25em .25em;
+        box-shadow: inset 0px -2px 2px rgba(0,0,0,.2);
+        -webkit-box-shadow: inset 0px -2px 2px rgba(0,0,0,.2);
+        
+        tr td {
+            text-align: left;
+            padding: 1em 2em;
+            padding-bottom: 1.5em;
+            padding-left: 0;
+            vertical-align: middle;
+            letter-spacing: normal;
+            word-spacing: .2em;
+        }
+
+        .alert-html {
+            width: 100%;
+        }
+
+        .alert-type {
+            padding: 1.5em 2em;
+            text-align: center;
+
+            img {
+                width: 4em;
+           }
+        }
+
+        .alert-buttons {
+            text-align: right;
+            padding: 1.5em;
+            padding-top: 0;
+
+            input {
+                font-size: 1.1em;
+                min-width: 6em;
+                .vertical(rgb(225,225,225), rgb(200,200,200));
+                box-shadow: 0px 0px 1px @border-color, 0px 0px 1px @border-color, 0px 0px 1px @border-color, 0px 2px 3px rgba(0,0,0,.4);
+                -webkit-box-shadow: 0px 0px 1px @border-color, 0px 0px 1px @border-color, 0px 0px 1px @border-color, 0px 2px 3px rgba(0,0,0,.4);
+                color: rgb(80,80,80);
+                border: none;
+                border-radius: .4em;
+                border-top: 1px solid white;
+                text-shadow: 0px 1px 1px white;
+                font-family: Arial, Helvetica;
+                font-weight: bold;
+                padding: .4em 1em;
+                cursor: pointer;
+                margin-left: .8em;
+            }
+
+            input:hover {
+                .vertical(rgb(235,235,235), rgb(210,210,210));
+            }
+            input:active {
+                .vertical(rgb(210,210,210), rgb(235,235,235));
+            }
+
+            .suggested {
+                .vertical(rgb(205,205,205), rgb(180,180,180));
+                color: white;
+                text-shadow: 0px 1px 1px black;
+            }
+            .suggested:hover {
+                .vertical(rgb(215,215,215), rgb(190,190,190));
+                color: white;
+                text-shadow: 0px 1px 1px black;
+            }
+            .suggested:active {
+                .vertical(rgb(190,190,190), rgb(215,215,215));
+                color: white;
+                text-shadow: 0px 1px 1px black;
+            }
+        }
+
+        .countdown {
+            text-align: center;
+            font-size: .8em;
+            color: rgb(70,70,70);
+            text-shadow: none;
+            padding: 0 0 1.5em 0;
+        }
+
+        #prompted {
+            width: 100%;
+            padding: 0.5em;
+            border-radius: .3em; 
+            background: white;
+            color: rgb(80,80,80);
+            border: 1px solid @border-color;
+            margin-top: 0.3em;
+        }
+    }       
+}
+
+.no-title {
+    .alert-content {
+        border-radius: .3em;
+
+        tr td {
+            padding: 1.2em 2em;
+            padding-left: 0;
+        }
+    }
+}
+
+.no-type {
+    .alert-content {
+        tr td {
+            padding: 2em;
+        }
+    }
+}
+
+.no-box-shadow {
+    .alert-content {
+        .alert-buttons {
+
+            input {
+                border: 1px solid @border-color;
+            }
+
+            .suggested {
+                background: rgb(180,200,220);
+                color: white;
+            }
+        }
+    }  
+}

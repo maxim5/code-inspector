@@ -1,0 +1,137 @@
+@import 'imports/global';
+
+/*! AUI Inline Dialog */
+.aui-inline-dialog {
+    display: none;
+    position: absolute;
+    z-index: 100;
+}
+
+.aui-inline-dialog .aui-inline-dialog-contents,
+.aui-inline-dialog .contents {
+    background: @aui-panel-bg-color;
+    border: 1px solid @aui-inline-dialog-border-color;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    padding: 20px;
+}
+
+.aui-inline-dialog .aui-inline-dialog-contents.aui-inline-dialog-no-shadow,
+.aui-inline-dialog .contents.aui-inline-dialog-no-shadow {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+
+.aui-inline-dialog .aui-inline-dialog-contents.aui-inline-dialog-auto-width,
+.aui-inline-dialog .contents.aui-inline-dialog-auto-width {
+    width: auto;
+}
+
+#inline-dialog-shim {
+    display: none;
+}
+
+/* Inline Dialog + Forms Integration - top labels and full width fields supported */
+/* funny numbers to add up to 20px spacing in various places (border to cap height/baseline) */
+.aui-inline-dialog .aui-inline-dialog-contents form.aui h2:first-child,
+.aui-inline-dialog .contents form.aui h2:first-child {
+    border-bottom: 1px solid @aui-inline-dialog-border-color;
+    margin: -7px 0 11px 0;
+    padding: 0 0 12px 0;
+}
+.aui-inline-dialog .aui-inline-dialog-contents form.aui .buttons-container,
+.aui-inline-dialog .contents form.aui .buttons-container {
+    margin-top: 16px;
+    padding: 0;
+}
+.aui-inline-dialog .aui-inline-dialog-contents .submit + .cancel,
+.aui-inline-dialog .contents .submit + .cancel {
+    margin-left: 0;
+}
+
+/*Inline Dialog Arrow */
+
+.aui-inline-dialog .aui-inline-dialog-arrow,
+.aui-inline-dialog .arrow {
+    position: absolute;
+    height: 16px; /* for SVG positioning */
+    top: -7px; /* matches #inline-dialog-shim */
+    width: 16px; /* for SVG positioning */
+}
+
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow,
+.aui-inline-dialog .arrow.aui-css-arrow {
+    width: 1px;
+}
+
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow::after,
+.aui-inline-dialog .arrow.aui-css-arrow::after,
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow::before,
+.aui-inline-dialog .arrow.aui-css-arrow::before {
+    border-color: @aui-inline-dialog-border-color transparent;
+    border-style: solid;
+    border-width: 0 8px 8px;
+    content: "";
+    left: -8px;
+    position: absolute;
+    top: 0;
+}
+
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow:after,
+.aui-inline-dialog .arrow.aui-css-arrow:after {
+    border-bottom-color: @aui-panel-bg-color;
+    top: 1px;
+}
+
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow.aui-bottom-arrow:after,
+.aui-inline-dialog .arrow.aui-css-arrow.aui-bottom-arrow:after,
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow.aui-bottom-arrow:before,
+.aui-inline-dialog .arrow.aui-css-arrow.aui-bottom-arrow:before {
+    border-width: 8px 8px 0;
+}
+
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow.aui-bottom-arrow:after,
+.aui-inline-dialog .arrow.aui-css-arrow.aui-bottom-arrow:after {
+    border-top-color: @aui-panel-bg-color;
+    top: -1px;
+}
+
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow.aui-right-arrow,
+.aui-inline-dialog .arrow.aui-css-arrow.aui-right-arrow {
+    right: -7px;
+}
+
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow.aui-left-arrow:after,
+.aui-inline-dialog .arrow.aui-css-arrow.aui-left-arrow:after,
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow.aui-left-arrow:before,
+.aui-inline-dialog .arrow.aui-css-arrow.aui-left-arrow:before {
+    border-width: 8px 8px 8px 0;
+    border-color: transparent #ccc;
+}
+
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow.aui-left-arrow:after,
+.aui-inline-dialog .arrow.aui-css-arrow.aui-left-arrow:after {
+    border-color: transparent #ffffff transparent transparent;
+    top: 0;
+    right: 0;
+}
+
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow.aui-right-arrow:after,
+.aui-inline-dialog .arrow.aui-css-arrow.aui-right-arrow:after,
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow.aui-right-arrow:before,
+.aui-inline-dialog .arrow.aui-css-arrow.aui-right-arrow:before {
+    border-width: 8px 0 8px 8px;
+    border-color: transparent #ccc;
+    left: -7px;
+}
+
+.aui-inline-dialog .aui-inline-dialog-arrow.aui-css-arrow.aui-right-arrow:after,
+.aui-inline-dialog .arrow.aui-css-arrow.aui-right-arrow:after {
+    border-color: transparent transparent transparent #ffffff;
+    top: 0;
+    right: 0;
+    left: -8px;
+}

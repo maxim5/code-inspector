@@ -1,0 +1,103 @@
+.inline-editable {
+  display: inline-block;
+  position: relative;
+  
+  cursor: pointer;
+  
+  &:empty:after {
+    content: attr(data-empty); 
+  }
+  
+  &:focus {
+    min-width: 5px;
+    
+    outline: 0;
+    
+    &:after {
+      content: '';
+      
+      opacity: 0;
+      transition: opacity .3s linear;
+    }
+    
+    &:not(:empty):after {
+      content: attr(data-save);
+      
+      display: inline-block;
+      padding: 5px 10px;
+      
+      border: 1px solid;
+      
+      position: absolute;
+      right: -70px;
+      top: 50%;
+      margin-top: -12px;
+      
+      font-size: 1.1rem;
+      
+      opacity: 1;
+      cursor: pointer;
+      pointer-events: none;
+    }
+  }
+  
+  &.is-saving:after {
+    content: "";
+    display: block;
+    width: 32px;
+    height: 100%;
+    
+    position: absolute;
+    right: -50px;
+    top: 0;
+    
+    background: url('/img/loading-bubbles.svg') no-repeat center;
+    
+  }
+  
+  &.is-saved:after {
+    content: "\e60b";
+    
+    position: absolute;
+    right: -50px;
+    top: 50%;
+    margin-top: -7px;
+    
+    font-family: 'myTravel';
+    font-size: 1.4rem;
+    color: rgba(60, 118, 61, .5);
+    
+    -webkit-animation-name: fadeOut;
+    animation-name: fadeOut; 
+    -webkit-animation-duration: .5s;
+    animation-duration: .5s; 
+    -webkit-animation-delay: 2s;
+    animation-delay: 2s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+  }
+}
+
+input.inline-editable {
+  min-width: 400px;
+  background: none;
+  border: 0;
+  
+  text-align: center;
+  
+  &:focus {
+    min-width: 400px;
+  }
+}
+
+.travel {
+  & .inline-editable {
+    &.is-saving:after {
+      background: url('/img/loading-bubbles-white.svg') no-repeat center;
+    }
+    
+    &.is-saved:after {
+      color: rgba(71, 196, 74, .5);
+    }
+  }
+}
