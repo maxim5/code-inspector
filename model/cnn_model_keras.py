@@ -80,7 +80,7 @@ def main():
     K.clear_session()
     model = build_model(model_params)
 
-    def gen(files, steps):
+    def generator(files, steps):
       while True:
         for i, batch in enumerate(provider.stream_snippets(batch_size=batch_size,
                                                            files=files,
@@ -95,11 +95,11 @@ def main():
           print(files, 'Not enough steps for one epoch: ', i)
           pass
 
-    model.fit_generator(generator=gen(Files.TRAIN, 500), epochs=epochs, steps_per_epoch=500,
-                        validation_data=gen(Files.VAL, 80), validation_steps=80,
+    model.fit_generator(generator=generator(Files.TRAIN, 500), epochs=epochs, steps_per_epoch=500,
+                        validation_data=generator(Files.VAL, 80), validation_steps=80,
                         verbose=1)
 
-    test_result = model.evaluate_generator(generator=gen(Files.TEST, 100), steps=100)
+    test_result = model.evaluate_generator(generator=generator(Files.TEST, 100), steps=100)
     print('Test results: loss=%.5f accuracy=%.3f' % tuple(test_result))
 
 if __name__ == '__main__':
