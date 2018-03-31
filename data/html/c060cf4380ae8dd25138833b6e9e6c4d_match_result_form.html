@@ -1,0 +1,30 @@
+{{ form.instance }}
+<table cellspacing="0" class="match-result">
+    <tr>
+        <td class="team-name left">{{ form.instance.home_player }}</td>
+        <td class="score">{{ form.home_score }}</td>
+        <td>:</td>
+        <td class="score">{{ form.away_score }}</td>
+        <td class="team-name right">{{ form.instance.away_player }}</td>
+    </tr>
+    <tr>
+        <td colspan="5">Extra time</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td class="score">{{ form.home_et_score }}</td>
+        <td>:</td>
+        <td class="score">{{ form.away_et_score }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td colspan="5">Penalty shootout</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td class="score">{{ form.home_ps_score }}</td>
+        <td>:</td>
+        <td class="score">{{ form.away_ps_score }}</td>
+        <td></td>
+    </tr>
+</table>

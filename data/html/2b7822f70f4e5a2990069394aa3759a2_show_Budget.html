@@ -1,0 +1,77 @@
+
+The length of list is {{ list_of_budget|length }}.
+<TABLE BORDER = "5" >
+<TR><TH>&nbsp;Date&nbsp;</TH><TH>&nbsp;Type&nbsp;</TH><TH>&nbsp;Detail&nbsp;</TH><TH>&nbsp;รายรับ (income)&nbsp;</TH><TH>&nbsp;รายจ่าย (expenses)&nbsp;</TH></TR>
+
+
+{% for item in list_of_budget %} 	
+	<TR><TD> <center>
+	{{ item.date }}</center>
+	</TD> 
+	<TD>  <center>
+	{{ item.TYP }}</center>
+	</TD>
+	<TD>  <center>
+	{{ item.detail }}</center>
+	</TD>
+	<TD>  <center>
+	{{ item.getamount}}</center>
+	</TD>
+	<TD>  <center>
+	{{ item.payamount}}</center>
+	</TD>
+	</TR>
+{% endfor %}
+	<TR> <TD colspan = "4" > <p align=right><b>Total </b></p></TD> 
+	<TD>  <center> {{total_object}} </center></TD>	
+	</TR>
+</TABLE>
+<br>
+<form action="/graph/" method="post">
+{% csrf_token %}
+<b>View Chart </b><br>
+<input type=radio name=getit1 value=p1 >Bar Chart
+<SELECT NAME=BarChart>
+{% for item in listbarchart %} 	
+	<OPTION value="{{ item }}">{{ item }}
+{% endfor %}
+</SELECT>
+<br>
+<input type=radio name=getit1 value=p2 >Line Chart
+<SELECT NAME=LineChart>
+{% for item in listlinechart %} 	
+	<OPTION value="{{ item }}">{{ item }}
+{% endfor %}
+</SELECT>
+<br>
+<input type=radio name=getit1 value=p3 >Pie Chart
+<SELECT NAME=PieChart>
+{% for item in listpiechart %} 	
+	<OPTION value="{{ item }}">{{ item }}
+{% endfor %}
+</SELECT>
+<br>
+<input type="submit" value="Submit">
+</form>
+<b>Remove data </b>
+<form action="/deleteForm/" method="post">
+{% csrf_token %}
+Date : <!--<input type="text" name="dd"  size="1" maxlength="2" />-->
+
+<SELECT NAME=BarChart>
+{% for item in listbarchart %} 	
+	<OPTION value="{{ item }}">{{ item }}
+{% endfor %}
+</SELECT>
+<br>
+<input type="submit" value="Submit">
+
+<input type="submit" value="home" name = "home">
+<br><br>
+<input type="submit" value="Delete all" name = "delete">
+</form>
+<h5>(using template)</h5>
+
+
+
+
