@@ -61,24 +61,21 @@ def build_model(params):
 def main():
   while True:
     # Hyper-parameters
+    def random_conv():
+      return dict(filters_num=int(np.random.choice([128, 160, 256])),
+                  filter_size=int(np.random.choice([2, 3, 5])),
+                  pooling_size=int(np.random.choice([2, 3, 5])))
     model_params = dict(
-      sequence_length=2048,
-      dropout_rates=(0.5, 0.75),
-      conv=[
-        dict(filters_num=64,  filter_size=3, pooling_size=2),
-        dict(filters_num=96,  filter_size=5, pooling_size=5),
-        dict(filters_num=128, filter_size=9, pooling_size=9),
-        dict(filters_num=160, filter_size=9, pooling_size=9),
-      ],
-      hidden_size=128
+      sequence_length=np.random.choice([1024, 1600, 2048]),
+      conv=[random_conv() for _ in range(np.random.randint(2, 6))],
+      dropout_rates=(np.random.uniform(0.3, 0.6), np.random.uniform(0.5, 0.8)),
+      hidden_size=np.random.choice([96, 128]),
     )
-    batch_size = 200
+    batch_size = np.random.choice([64, 128, 256])
     epochs = 200
     sequence_length = model_params['sequence_length']
-    print('\nStart training: params=', model_params)
-
-    K.clear_session()
-    model = build_model(model_params)
+    print('\nStart training: batch_size=%d' % batch_size)
+    print('Params:', model_params)
 
     def generator(files, steps):
       while True:
@@ -95,12 +92,19 @@ def main():
           print(files, 'Not enough steps for one epoch: ', i)
           pass
 
-    model.fit_generator(generator=generator(Files.TRAIN, 500), epochs=epochs, steps_per_epoch=500,
-                        validation_data=generator(Files.VAL, 80), validation_steps=80,
-                        verbose=1)
+    try:
+      K.clear_session()
+      model = build_model(model_params)
 
-    test_result = model.evaluate_generator(generator=generator(Files.TEST, 100), steps=100)
-    print('Test results: loss=%.5f accuracy=%.3f' % tuple(test_result))
+      k = 256 // batch_size
+      model.fit_generator(generator=generator(Files.TRAIN, 500*k), epochs=epochs, steps_per_epoch=500*k,
+                          validation_data=generator(Files.VAL, 80*k), validation_steps=80*k,
+                          verbose=1)
+
+      test_result = model.evaluate_generator(generator=generator(Files.TEST, 160*k), steps=160*k)
+      print('Test results: loss=%.5f accuracy=%.3f' % tuple(test_result))
+    except BaseException as e:
+      print('Model failed', e)
 
 if __name__ == '__main__':
   main()
