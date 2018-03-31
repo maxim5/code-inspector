@@ -1,0 +1,41 @@
+
+// The path for our ionicons font files, relative to the built CSS in www/css
+$ionicons-font-path: "../lib/ionic/fonts" !default;
+
+
+
+// Sass utilities
+@import "helpers/variables";
+@import "helpers/functions";
+@import "helpers/mixins";
+@import "helpers/helpers";
+
+// Vendors and external stylesheets
+//@import "vendors/bootstrap";
+
+// Base stuff
+@import "base/reset";
+@import "base/fonts";
+@import "base/typography";
+
+// Layout related stylesheets
+@import "layout/grid";
+@import "layout/header";
+@import "layout/footer";
+@import "layout/forms";
+
+// Components and modules
+@import "components/buttons";
+@import "components/navigation";
+@import "components/svg";
+
+// Page-specific stylesheets
+@import "pages/home";
+@import "pages/edit";
+
+// Themes
+@import "themes/theme";
+
+// Include all of Ionic
+@import "www/lib/ionic/scss/ionic";
+

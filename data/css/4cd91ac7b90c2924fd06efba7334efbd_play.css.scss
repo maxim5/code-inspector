@@ -1,0 +1,60 @@
+$sunk_green: #050;
+
+table td {
+  width: 30px;
+  height: 30px;
+}
+
+.grid {
+  margin-top: 20px;
+  width: 300px;
+  float: left;
+  padding-right: 10px;
+  margin-right: 10px;
+  text-align: center;
+  line-height: 2em;
+  font-size: 12pt;
+}
+
+#enemy_grid {
+  border-right: 2px solid black;
+
+  td a {
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    padding: 0px;
+    margin: 0px;
+  }
+}
+
+td.hit {
+  background-color: green;
+}
+
+td.miss {
+  background-color: red;
+}
+
+td.sunk {
+  background-color: $sunk_green;
+}
+
+#friendly_grid td.miss {
+  background-color: #aaa;
+}
+
+#legend {
+  margin-left: 20px;
+  float: left;
+  width: 80px;
+  .miss    { background-color: red; }
+  .hit     { background-color: green; }
+  .unknown { background-color: #aaa; }
+  .sunk    { background-color: $sunk_green; }
+  .miss, .hit, .unknown, .sunk {
+    color: black;
+    padding: 2px;
+    padding-left: 5px;
+  }
+}

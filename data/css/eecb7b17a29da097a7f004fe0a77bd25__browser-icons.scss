@@ -1,0 +1,29 @@
+/* The following is rendered via a shortcode on the site requirements page */
+.browser-icons {
+	margin-top: 25px ;
+
+	figure {
+		width: 75px ;
+		height: 75px ;
+		float: left ;
+		margin-right: 25px ;
+		&.chrome {
+			@include browser-icons-sprite(chrome-icon);
+		}
+		&.firefox {
+			@include browser-icons-sprite(firefox-icon);
+		}
+		&.safari {
+			@include browser-icons-sprite(safari-icon);
+		}
+		&.opera {
+			@include browser-icons-sprite(opera-icon);
+		}
+		&.internet-explorer {
+			@include browser-icons-sprite(internet-explorer-icon);
+		}
+		a {
+			@extend .link-fill-container ;
+		}
+	}
+}

@@ -1,0 +1,6 @@
+@value unit, font-size from '../global/global.css';
+
+.description {
+  margin-top: unit;
+  font-size: font-size;
+}

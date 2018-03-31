@@ -1,0 +1,123 @@
+/* the board styles ------------
+	pharaoh specific
+
+	 do not edit these, if things need to be moved
+	 edit #board in game.scss, things will break horribly
+	 if these sizes are changed
+*/
+
+.a_board {
+	background-color: #1F2023;
+	color: #CCC;
+	width: 550px;
+	height: 450px;
+
+	.header {
+		text-align: center;
+		font-weight: bold;
+		font-size: 16px;
+	}
+
+	div {
+		border: 1px solid #000;
+		float: left;
+		clear: none;
+		width: 44px;
+		height: 44px;
+		margin: 1px;
+		padding: 1px;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.vert {
+		border: 0;
+		margin: 0;
+		padding: 0;
+		width: 25px;
+		height: 50px;
+		line-height: 50px;
+	}
+
+	.horz {
+		border: 0;
+		margin: 0;
+		padding: 0;
+		width: 50px;
+		height: 25px;
+		line-height: 25px;
+	}
+
+	.corner {
+		border: 0;
+		margin: 0;
+		padding: 0;
+		width: 25px;
+		height: 25px;
+
+		div {
+			border: 2px solid #FFF;
+			width: 14px;
+			height: 14px;
+			margin: 4px;
+			padding: 0;
+			line-height: 10px;
+			-moz-border-radius: 14px;
+			-webkit-border-radius: 14px;
+			border-radius: 14px;
+
+			&.alive {
+				border-color: #0C0;
+				background: #090;
+			}
+
+			&.immune {
+				border-color: #CC0;
+				background: #990;
+				color: #FFF;
+			}
+
+			&.dead {
+				border-color: #C00;
+				background: #900;
+				color: #FFF;
+			}
+		}
+	}
+
+	.c_silver {
+		background-color: #555;
+	}
+
+	.c_red {
+		background-color: #500;
+	}
+
+	.highlight {
+		background-color: #550;
+	}
+
+	.piece {
+		background-position: center center;
+		background-repeat: no-repeat;
+	}
+
+	div {
+		img {
+			position: absolute;
+			top: 0;
+			left: 0;
+
+			&.piece {
+				position: absolute;
+				top: 1px;
+				left: 1px;
+			}
+		}
+	}
+
+	img.ccw {
+		margin-left: 23px;
+	}
+}
+

@@ -1,0 +1,30 @@
+@value unit from  "../global/global.css";
+
+.errorMessage {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.title {
+  font-size: 21px;
+}
+
+.description {
+  font-size: 15px;
+}
+
+.content {
+  flex-flow: column wrap;
+  color: #444; /* should we use scss vars here? */
+}
+
+.content > .title, .description {
+  margin-bottom: 16px;
+}
+
+.icon {
+  margin: 0 16px 24px 0;
+}
