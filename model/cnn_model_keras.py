@@ -8,7 +8,7 @@ from keras import *
 from keras.layers import *
 from keras.utils import to_categorical
 
-from input import DataProvider, Mode, Files
+from input import DataProvider, Mode, Files, util
 
 ########################################################################################################################
 # Data
@@ -62,19 +62,20 @@ def main():
   while True:
     # Hyper-parameters
     def random_conv():
-      return dict(filters_num=int(np.random.choice([128, 160, 256])),
+      return dict(filters_num=int(np.random.choice([128, 160, 256, 320])),
                   filter_size=int(np.random.choice([2, 3, 5])),
                   pooling_size=int(np.random.choice([2, 3, 5])))
     model_params = dict(
       sequence_length=np.random.choice([1024, 1600, 2048]),
       conv=[random_conv() for _ in range(np.random.randint(2, 6))],
-      dropout_rates=(np.random.uniform(0.3, 0.6), np.random.uniform(0.5, 0.8)),
+      dropout_rates=(np.random.uniform(0.2, 0.6), np.random.uniform(0.5, 0.8)),
       hidden_size=np.random.choice([96, 128]),
     )
     batch_size = np.random.choice([64, 128, 256])
-    epochs = 200
+    epochs = 40
     sequence_length = model_params['sequence_length']
-    print('\nStart training: batch_size=%d' % batch_size)
+    print()
+    print('Start training: batch_size=%d' % batch_size)
     print('Params:', model_params)
 
     def generator(files, steps):
@@ -89,7 +90,7 @@ def main():
           batch_x_one_hot = to_categorical(batch_x, vocab_size)
           yield batch_x_one_hot, batch_y
         if i < steps:
-          print(files, 'Not enough steps for one epoch: ', i)
+          # print(files, 'Not enough steps for one epoch: ', i)
           pass
 
     try:
@@ -97,12 +98,24 @@ def main():
       model = build_model(model_params)
 
       k = 256 // batch_size
-      model.fit_generator(generator=generator(Files.TRAIN, 500*k), epochs=epochs, steps_per_epoch=500*k,
-                          validation_data=generator(Files.VAL, 80*k), validation_steps=80*k,
-                          verbose=1)
+      train_result = model.fit_generator(generator=generator(Files.TRAIN, 500*k), epochs=epochs, steps_per_epoch=500*k,
+                                         validation_data=generator(Files.VAL, 80*k), validation_steps=80*k,
+                                         verbose=0)
+      with util.print_options(precision=3, suppress=True):
+        print()
+        print('*** Train results ***')
+        print('loss:', np.array(train_result.history['loss']))
+        print('accuracy:', np.array(train_result.history['acc']))
+
+        print()
+        print('*** Val results ***')
+        print('val-loss:', np.array(train_result.history['val_loss']))
+        print('val-accuracy:', np.array(train_result.history['val_acc']))
 
       test_result = model.evaluate_generator(generator=generator(Files.TEST, 160*k), steps=160*k)
-      print('Test results: loss=%.5f accuracy=%.3f' % tuple(test_result))
+      print()
+      print('*** Test results ***')
+      print('loss=%.3f accuracy=%.3f' % tuple(test_result))
     except BaseException as e:
       print('Model failed', e)
 
